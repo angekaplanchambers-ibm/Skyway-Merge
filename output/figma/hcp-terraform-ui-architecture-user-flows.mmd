@@ -1,0 +1,48 @@
+flowchart LR
+    user(("Operator")) --> entry["HCP Terraform App"]
+    entry --> orgShell["Organization Shell\nnav, context, shared actions"]
+
+    orgShell --> workspaceList["Workspace List\nfind and select workspace"]
+    orgShell --> registrySurface["Registry Surface\nmodules, providers, design"]
+    orgShell --> projectSurface["Projects and Stacks\nportfolio structure"]
+    orgShell --> adminSurface["Org Settings and Usage\ngovernance and billing"]
+    orgShell --> explorerSurface["Explorer\norg-wide investigation"]
+
+    workspaceList --> workspaceHub["Workspace Hub\nstatus, latest run, resource context"]
+
+    workspaceHub --> runFlow["Run Flow\nstart run, inspect history"]
+    runFlow --> runDetail["Run Detail\nplan, apply, cost, resource changes"]
+
+    workspaceHub --> configFlow["Configuration Flow\nvariables, settings, change requests"]
+    configFlow --> variables["Variables"]
+    configFlow --> workspaceSettings["Workspace Settings"]
+    configFlow --> changeRequests["Change Requests"]
+
+    workspaceHub --> healthFlow["Health Flow\ndrift and validation"]
+    healthFlow --> drift["Drift Detection"]
+    healthFlow --> validation["Continuous Validation"]
+
+    workspaceHub --> stateFlow["State and Import Flow"]
+    stateFlow --> states["State Versions"]
+    stateFlow --> searchImport["Search and Import"]
+
+    registrySurface --> registryModules["Modules"]
+    registrySurface --> registryProviders["Providers"]
+    registrySurface --> registryDesign["Design"]
+    registrySurface --> publicNamespaces["Public Namespaces"]
+
+    projectSurface --> projects["Projects"]
+    projects --> projectDetail["Project Detail"]
+    projectSurface --> stacks["Stacks"]
+
+    classDef actor fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A,stroke-width:1.5px;
+    classDef shell fill:#ECFEFF,stroke:#0F766E,color:#134E4A,stroke-width:1.5px;
+    classDef workspace fill:#FFF7ED,stroke:#C2410C,color:#7C2D12,stroke-width:1.5px;
+    classDef secondary fill:#F0FDF4,stroke:#15803D,color:#14532D,stroke-width:1.5px;
+    classDef detail fill:#F5F3FF,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+
+    class user actor;
+    class entry,orgShell shell;
+    class workspaceList,workspaceHub,runFlow,runDetail,configFlow,variables,workspaceSettings,changeRequests,healthFlow,drift,validation,stateFlow,states,searchImport workspace;
+    class registrySurface,projectSurface,adminSurface,explorerSurface secondary;
+    class registryModules,registryProviders,registryDesign,publicNamespaces,projects,projectDetail,stacks detail;
