@@ -397,7 +397,7 @@ function OrgPortfolioOverview({
               <div>Issue</div>
               <div>Blast</div>
               <div>Age (m)</div>
-              <div>Action</div>
+              <div>Actions</div>
             </div>
             {model.remediationQueue.queueItems.map((item) => (
               <div key={item.queueItemId} style={TABLE_ROW}>
@@ -422,11 +422,7 @@ function OrgPortfolioOverview({
                 <div>{item.issueSummary}</div>
                 <div>{item.blastRadiusScore}</div>
                 <div>{item.ageMinutes}</div>
-                <div>
-                  <a href={item.nextActionRoute} target="_top" style={ACTION_LINK}>
-                    {nextActionLabel(item)}
-                  </a>
-                </div>
+                <div>{nextActionLabel(item)}</div>
               </div>
             ))}
             <div style={TABLE_PAGINATION}>
@@ -445,9 +441,7 @@ function OrgPortfolioOverview({
                 <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Dependency hotspots</div>
                 {model.relationshipInsights.dependencyHotspots.map((hotspot) => (
                   <div key={hotspot.hotspotId} style={{ marginTop: 6 }}>
-                    <a href={hotspot.openInResourceGraphRoute} target="_top" style={ACTION_LINK}>
-                      {hotspot.resourceName}
-                    </a>
+                    <div>{hotspot.resourceName}</div>
                     <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
                       {hotspot.organizationCountImpacted} orgs | {hotspot.dependencyCount} deps | {hotspot.riskLevel}
                     </div>

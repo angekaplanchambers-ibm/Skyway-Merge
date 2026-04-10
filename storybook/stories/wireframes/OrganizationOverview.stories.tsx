@@ -815,11 +815,7 @@ function OrganizationOverview({
               <div>{item.affectedWorkspaceCount}</div>
               <div>{item.issueSummary}</div>
               <div>{item.blastRadiusScore}</div>
-              <div>
-                <a href={item.nextActionRoute} target="_top" style={ACTION_LINK}>
-                  {nextActionLabel(item)}
-                </a>
-              </div>
+              <div>{nextActionLabel(item)}</div>
             </div>
           ))}
           <div style={TABLE_PAGINATION}>
