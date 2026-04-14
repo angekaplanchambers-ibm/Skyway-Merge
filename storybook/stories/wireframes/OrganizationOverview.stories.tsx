@@ -209,6 +209,16 @@ const PAGE_ACTIVE: CSSProperties = {
   fontWeight: 600,
 };
 
+const VIEW_BUTTON: CSSProperties = {
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: TOK.layer01,
+  color: TOK.textPrimary,
+  fontSize: 12,
+  fontWeight: 500,
+  padding: '4px 8px',
+};
+
 const FOOTER: CSSProperties = {
   borderTop: `1px solid ${TOK.border}`,
   background: TOK.layer01,
@@ -560,22 +570,9 @@ function OrganizationOverview({
                   Managed-only | on-prem compatible | latest-state snapshot
                 </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <a
-                    href={orgSubpageHref(model.organizationName, 'explorer')}
-                    target="_top"
-                    style={{
-                      border: `1px solid ${TOK.border}`,
-                      borderRadius: 4,
-                      background: TOK.layer01,
-                      color: TOK.textPrimary,
-                      fontSize: 12,
-                      fontWeight: 500,
-                      padding: '4px 8px',
-                      textDecoration: 'none',
-                    }}
-                  >
+                  <button type="button" style={VIEW_BUTTON}>
                     View
-                  </a>
+                  </button>
                 </div>
               </div>
               <div style={{ ...TILE, display: 'flex', flexDirection: 'column', minHeight: 112 }}>
@@ -585,22 +582,9 @@ function OrganizationOverview({
                   Managed + unmanaged | {model.deploymentMode === 'tfe_on_prem' ? 'not on-prem' : 'cloud only'} | status: {model.connectionHealth.resourceGraphStatus}
                 </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <a
-                    href={orgSubpageHref(model.organizationName, 'infragraph')}
-                    target="_top"
-                    style={{
-                      border: `1px solid ${TOK.border}`,
-                      borderRadius: 4,
-                      background: TOK.layer01,
-                      color: TOK.textPrimary,
-                      fontSize: 12,
-                      fontWeight: 500,
-                      padding: '4px 8px',
-                      textDecoration: 'none',
-                    }}
-                  >
+                  <button type="button" style={VIEW_BUTTON}>
                     View
-                  </a>
+                  </button>
                 </div>
               </div>
               <div style={{ ...TILE, display: 'flex', flexDirection: 'column', minHeight: 112 }}>
@@ -610,22 +594,9 @@ function OrganizationOverview({
                   Workspace-scoped | policy checked before import | action continues outside this view
                 </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <a
-                    href={orgSubpageHref(model.organizationName, 'workspaces')}
-                    target="_top"
-                    style={{
-                      border: `1px solid ${TOK.border}`,
-                      borderRadius: 4,
-                      background: TOK.layer01,
-                      color: TOK.textPrimary,
-                      fontSize: 12,
-                      fontWeight: 500,
-                      padding: '4px 8px',
-                      textDecoration: 'none',
-                    }}
-                  >
+                  <button type="button" style={VIEW_BUTTON}>
                     View
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
