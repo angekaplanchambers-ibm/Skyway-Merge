@@ -382,7 +382,7 @@ function OrgPortfolioOverview({
                   Import eligible unmanaged resources as managed.
                 </div>
                 <div style={COVERAGE_CTA_ROW}>
-                  <a href={convertToManagedRoute(model)} target="_top" style={CTA_BUTTON_LINK}>Convert to Managed</a>
+                  <button type="button" style={CTA_BUTTON}>Convert to Managed</button>
                 </div>
               </div>
             </div>
