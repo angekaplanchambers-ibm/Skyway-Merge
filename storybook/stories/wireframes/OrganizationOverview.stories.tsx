@@ -214,6 +214,7 @@ const VIEW_BUTTON: CSSProperties = {
   borderRadius: 4,
   background: TOK.layer01,
   color: TOK.textPrimary,
+  cursor: 'pointer',
   fontSize: 12,
   fontWeight: 500,
   padding: '4px 8px',
@@ -492,6 +493,7 @@ function OrganizationOverview({
   const [showResourceGraphTooltip, setShowResourceGraphTooltip] = useState(false);
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
   const organizationOptions = organizationsRowsFixture.map((org) => org.organizationName);
+  const handleOverviewViewClick = () => {};
 
   return (
     <div style={SHELL}>
@@ -570,7 +572,7 @@ function OrganizationOverview({
                   Managed-only | on-prem compatible | latest-state snapshot
                 </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="button" style={VIEW_BUTTON}>
+                  <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
                     View
                   </button>
                 </div>
@@ -582,7 +584,7 @@ function OrganizationOverview({
                   Managed + unmanaged | {model.deploymentMode === 'tfe_on_prem' ? 'not on-prem' : 'cloud only'} | status: {model.connectionHealth.resourceGraphStatus}
                 </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="button" style={VIEW_BUTTON}>
+                  <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
                     View
                   </button>
                 </div>
@@ -594,7 +596,7 @@ function OrganizationOverview({
                   Workspace-scoped | policy checked before import | action continues outside this view
                 </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="button" style={VIEW_BUTTON}>
+                  <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
                     View
                   </button>
                 </div>
