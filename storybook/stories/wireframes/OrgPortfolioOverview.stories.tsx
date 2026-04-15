@@ -353,6 +353,51 @@ function OrgPortfolioOverview({
           </section>
 
           <section style={PANEL}>
+            <div style={PANEL_HEADER}>Organizations</div>
+            <div style={ORG_TABLE_HEADER}>
+              <div>Name</div>
+              <div>Type</div>
+              <div>Deploy</div>
+              <div>Health</div>
+              <div>Drift</div>
+              <div>Managed / Unmanaged</div>
+              <div>Open Remediation</div>
+              <div>Freshness</div>
+            </div>
+            {model.organizationsTable.organizations.map((org) => (
+              <div key={org.organizationId} style={ORG_TABLE_ROW}>
+                <div>
+                  {enableOrganizationLinks ? (
+                    <a
+                      href={organizationOverviewStoryHref(organizationOverviewStory, org.organizationName)}
+                      target="_top"
+                      style={ORG_NAME_LINK}
+                    >
+                      {org.organizationName}
+                    </a>
+                  ) : (
+                    org.organizationName
+                  )}
+                </div>
+                <div>{org.organizationType}</div>
+                <div>{org.deploymentMode}</div>
+                <div>{healthMark(org.overallHealth)}</div>
+                <div>{org.driftIssueCount}</div>
+                <div>{org.managedResourceCount} / {org.unmanagedResourceCount}</div>
+                <div>{org.openRemediationCount}</div>
+                <div>{org.freshnessStatus} ({org.freshnessMinutes}m)</div>
+              </div>
+            ))}
+            <div style={TABLE_PAGINATION}>
+              <a href="#" style={PAGE_LINK}>{'<'}</a>
+              <a href="#" style={PAGE_LINK}>1</a>
+              <span style={PAGE_ACTIVE}>[2]</span>
+              <a href="#" style={PAGE_LINK}>3</a>
+              <a href="#" style={PAGE_LINK}>{'>'}</a>
+            </div>
+          </section>
+
+          <section style={PANEL}>
             <div style={PANEL_HEADER}>Managed vs Unmanaged Coverage</div>
             <div style={{ padding: 10, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1.3fr', gap: 8 }}>
               <div style={COVERAGE_TILE}>
@@ -539,50 +584,6 @@ function OrgPortfolioOverview({
             </div>
           </section>
 
-          <section style={PANEL}>
-            <div style={PANEL_HEADER}>Organizations</div>
-            <div style={ORG_TABLE_HEADER}>
-              <div>Name</div>
-              <div>Type</div>
-              <div>Deploy</div>
-              <div>Health</div>
-              <div>Drift</div>
-              <div>Managed / Unmanaged</div>
-              <div>Open Remediation</div>
-              <div>Freshness</div>
-            </div>
-            {model.organizationsTable.organizations.map((org) => (
-              <div key={org.organizationId} style={ORG_TABLE_ROW}>
-                <div>
-                  {enableOrganizationLinks ? (
-                    <a
-                      href={organizationOverviewStoryHref(organizationOverviewStory, org.organizationName)}
-                      target="_top"
-                      style={ORG_NAME_LINK}
-                    >
-                      {org.organizationName}
-                    </a>
-                  ) : (
-                    org.organizationName
-                  )}
-                </div>
-                <div>{org.organizationType}</div>
-                <div>{org.deploymentMode}</div>
-                <div>{healthMark(org.overallHealth)}</div>
-                <div>{org.driftIssueCount}</div>
-                <div>{org.managedResourceCount} / {org.unmanagedResourceCount}</div>
-                <div>{org.openRemediationCount}</div>
-                <div>{org.freshnessStatus} ({org.freshnessMinutes}m)</div>
-              </div>
-            ))}
-            <div style={TABLE_PAGINATION}>
-              <a href="#" style={PAGE_LINK}>{'<'}</a>
-              <a href="#" style={PAGE_LINK}>1</a>
-              <span style={PAGE_ACTIVE}>[2]</span>
-              <a href="#" style={PAGE_LINK}>3</a>
-              <a href="#" style={PAGE_LINK}>{'>'}</a>
-            </div>
-          </section>
         </main>
       </div>
 
