@@ -616,6 +616,96 @@ function OrganizationOverview({
             <div style={TILE}><div>Coverage</div><strong>{model.managedCoveragePct}%</strong></div>
           </div>
           </section>
+
+          <section style={PANEL}>
+          <div style={PANEL_HEADER}>Workspace Status</div>
+          <div style={WS_HEADER}>
+            <div>Workspace</div>
+            <div>Run</div>
+            <div>Drift</div>
+            <div>Validation</div>
+            <div>CRs</div>
+            <div>Last successful run</div>
+          </div>
+          {model.workspaces.map((ws) => (
+            <div key={ws.workspaceId} style={WS_ROW}>
+              <div>{ws.workspaceName}</div>
+              <div>{runTag(ws.latestRunStatus)}</div>
+              <div>{ws.driftIssueCount}</div>
+              <div>{ws.validationIssueCount}</div>
+              <div>{ws.openChangeRequestCount}</div>
+              <div>{ws.lastSuccessfulRunAt ?? '-'}</div>
+            </div>
+          ))}
+          <div style={TABLE_PAGINATION}>
+            <a href="#" style={PAGE_LINK}>{'<'}</a>
+            <a href="#" style={PAGE_LINK}>1</a>
+            <span style={PAGE_ACTIVE}>[2]</span>
+            <a href="#" style={PAGE_LINK}>3</a>
+            <a href="#" style={PAGE_LINK}>{'>'}</a>
+          </div>
+          </section>
+
+          <section style={PANEL}>
+            <div style={PANEL_HEADER}>Resource Inventory</div>
+            <div style={RESOURCE_HEADER}>
+              <div>Name</div>
+              <div>Provider</div>
+              <div>Type</div>
+              <div>Surface</div>
+              <div>Status</div>
+              <div>Workspace</div>
+              <div>Import</div>
+            </div>
+            {model.resourceInventory.map((resource) => (
+              <div key={resource.resourceId} style={RESOURCE_ROW}>
+                <div>{resource.resourceName}</div>
+                <div>{resource.provider}</div>
+                <div>{resource.resourceType}</div>
+                <div>{sourceTag(resource.sourceSurface)}</div>
+                <div>{managementTag(resource.managementStatus)}</div>
+                <div>{resource.workspaceName}</div>
+                <div>{importReadinessTag(resource.importReadiness)}</div>
+              </div>
+            ))}
+            <div style={TABLE_PAGINATION}>
+              <a href="#" style={PAGE_LINK}>{'<'}</a>
+              <a href="#" style={PAGE_LINK}>1</a>
+              <span style={PAGE_ACTIVE}>[2]</span>
+              <a href="#" style={PAGE_LINK}>3</a>
+              <a href="#" style={PAGE_LINK}>{'>'}</a>
+            </div>
+          </section>
+
+          <section style={PANEL}>
+          <div style={PANEL_HEADER}>Organization Remediation Queue</div>
+          <div style={LIST_HEADER}>
+            <div>Severity</div>
+            <div>Category</div>
+            <div>Ws</div>
+            <div>Issue</div>
+            <div>Blast</div>
+            <div>Actions</div>
+          </div>
+          {model.remediationQueue.map((item) => (
+            <div key={item.queueItemId} style={LIST_ROW}>
+              <div>{severityTag(item.severity)} {item.severity}</div>
+              <div>{item.issueCategory}</div>
+              <div>{item.affectedWorkspaceCount}</div>
+              <div>{item.issueSummary}</div>
+              <div>{item.blastRadiusScore}</div>
+              <div>{nextActionLabel(item)}</div>
+            </div>
+          ))}
+          <div style={TABLE_PAGINATION}>
+            <a href="#" style={PAGE_LINK}>{'<'}</a>
+            <a href="#" style={PAGE_LINK}>1</a>
+            <span style={PAGE_ACTIVE}>[2]</span>
+            <a href="#" style={PAGE_LINK}>3</a>
+            <a href="#" style={PAGE_LINK}>{'>'}</a>
+          </div>
+          </section>
+
           <section style={TWO_COL}>
             <div style={PANEL}>
               <div style={{ ...PANEL_HEADER, display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
@@ -740,94 +830,6 @@ function OrganizationOverview({
             </div>
           </section>
 
-          <section style={PANEL}>
-            <div style={PANEL_HEADER}>Resource Inventory</div>
-            <div style={RESOURCE_HEADER}>
-              <div>Name</div>
-              <div>Provider</div>
-              <div>Type</div>
-              <div>Surface</div>
-              <div>Status</div>
-              <div>Workspace</div>
-              <div>Import</div>
-            </div>
-            {model.resourceInventory.map((resource) => (
-              <div key={resource.resourceId} style={RESOURCE_ROW}>
-                <div>{resource.resourceName}</div>
-                <div>{resource.provider}</div>
-                <div>{resource.resourceType}</div>
-                <div>{sourceTag(resource.sourceSurface)}</div>
-                <div>{managementTag(resource.managementStatus)}</div>
-                <div>{resource.workspaceName}</div>
-                <div>{importReadinessTag(resource.importReadiness)}</div>
-              </div>
-            ))}
-            <div style={TABLE_PAGINATION}>
-              <a href="#" style={PAGE_LINK}>{'<'}</a>
-              <a href="#" style={PAGE_LINK}>1</a>
-              <span style={PAGE_ACTIVE}>[2]</span>
-              <a href="#" style={PAGE_LINK}>3</a>
-              <a href="#" style={PAGE_LINK}>{'>'}</a>
-            </div>
-          </section>
-
-          <section style={PANEL}>
-          <div style={PANEL_HEADER}>Organization Remediation Queue</div>
-          <div style={LIST_HEADER}>
-            <div>Severity</div>
-            <div>Category</div>
-            <div>Ws</div>
-            <div>Issue</div>
-            <div>Blast</div>
-            <div>Actions</div>
-          </div>
-          {model.remediationQueue.map((item) => (
-            <div key={item.queueItemId} style={LIST_ROW}>
-              <div>{severityTag(item.severity)} {item.severity}</div>
-              <div>{item.issueCategory}</div>
-              <div>{item.affectedWorkspaceCount}</div>
-              <div>{item.issueSummary}</div>
-              <div>{item.blastRadiusScore}</div>
-              <div>{nextActionLabel(item)}</div>
-            </div>
-          ))}
-          <div style={TABLE_PAGINATION}>
-            <a href="#" style={PAGE_LINK}>{'<'}</a>
-            <a href="#" style={PAGE_LINK}>1</a>
-            <span style={PAGE_ACTIVE}>[2]</span>
-            <a href="#" style={PAGE_LINK}>3</a>
-            <a href="#" style={PAGE_LINK}>{'>'}</a>
-          </div>
-          </section>
-
-          <section style={PANEL}>
-          <div style={PANEL_HEADER}>Workspace Health</div>
-          <div style={WS_HEADER}>
-            <div>Workspace</div>
-            <div>Run</div>
-            <div>Drift</div>
-            <div>Validation</div>
-            <div>CRs</div>
-            <div>Last successful run</div>
-          </div>
-          {model.workspaces.map((ws) => (
-            <div key={ws.workspaceId} style={WS_ROW}>
-              <div>{ws.workspaceName}</div>
-              <div>{runTag(ws.latestRunStatus)}</div>
-              <div>{ws.driftIssueCount}</div>
-              <div>{ws.validationIssueCount}</div>
-              <div>{ws.openChangeRequestCount}</div>
-              <div>{ws.lastSuccessfulRunAt ?? '-'}</div>
-            </div>
-          ))}
-          <div style={TABLE_PAGINATION}>
-            <a href="#" style={PAGE_LINK}>{'<'}</a>
-            <a href="#" style={PAGE_LINK}>1</a>
-            <span style={PAGE_ACTIVE}>[2]</span>
-            <a href="#" style={PAGE_LINK}>3</a>
-            <a href="#" style={PAGE_LINK}>{'>'}</a>
-          </div>
-          </section>
         </main>
       </div>
 
