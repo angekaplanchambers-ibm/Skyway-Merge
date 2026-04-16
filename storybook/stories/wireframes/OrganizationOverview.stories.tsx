@@ -354,6 +354,10 @@ function organizationOverviewStoryHref(
   return `?path=/story/wireframes-organizationoverview--${storyId}&args=model.organizationName:${encodeURIComponent(organizationName)}`;
 }
 
+function visibilityStoryHref(): string {
+  return '?path=/story/wireframes-visibility--default';
+}
+
 function orgSubpageHref(
   orgName: string,
   destination:
@@ -437,8 +441,15 @@ function SideNav({ portfolioHref }: { portfolioHref?: string }) {
         )}
       </div>
 
-      <div style={NAV_GROUP_LABEL}>Manage</div>
+      <div style={NAV_GROUP_LABEL}>Discover</div>
+      <div style={NAV_ITEM}>
+        <div style={NAV_ITEM_LEFT}>
+          <NavGlyph />
+          <a href={visibilityStoryHref()} target="_top" style={NAV_LINK}>Visibility</a>
+        </div>
+      </div>
 
+      <div style={NAV_GROUP_LABEL}>Manage</div>
       <div style={NAV_ITEM}>
         <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Projects</span></div>
       </div>
@@ -460,14 +471,6 @@ function SideNav({ portfolioHref }: { portfolioHref?: string }) {
       </div>
       <div style={NAV_ITEM}>
         <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Settings</span></div>
-      </div>
-
-      <div style={{ ...NAV_GROUP_LABEL, marginTop: 16 }}>Visibility</div>
-      <div style={NAV_ITEM}>
-        <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Explorer View</span></div>
-      </div>
-      <div style={NAV_ITEM}>
-        <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Infragraph</span></div>
       </div>
 
       <div style={{ ...NAV_GROUP_LABEL, marginTop: 16 }}>Cloud Platform</div>
