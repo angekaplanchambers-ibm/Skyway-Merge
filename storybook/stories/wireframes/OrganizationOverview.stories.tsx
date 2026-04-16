@@ -489,8 +489,6 @@ function OrganizationOverview({
   portfolioHref?: string;
   organizationOverviewStory?: 'default' | 'high-risk';
 }) {
-  const [showExplorerTooltip, setShowExplorerTooltip] = useState(false);
-  const [showResourceGraphTooltip, setShowResourceGraphTooltip] = useState(false);
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
   const organizationOptions = organizationsRowsFixture.map((org) => org.organizationName);
   const handleOverviewViewClick = () => {};
@@ -561,16 +559,13 @@ function OrganizationOverview({
           <div style={PANEL_HEADER}>Organization Overview</div>
           <div style={{ padding: 10 }}>
             <div style={{ fontSize: 24, fontWeight: 700 }}>{model.organizationName}</div>
-            <div style={{ color: TOK.textSecondary }}>
+            <div style={{ color: TOK.textSecondary, fontSize: 10 }}>
               Health: {statusTag(model.overallHealth)} | Type: {model.organizationType} | Workspaces: {model.workspaceCount}
             </div>
             <div style={SURFACE_GRID}>
               <div style={{ ...TILE, display: 'flex', flexDirection: 'column', minHeight: 112 }}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Explorer View</div>
+                <div style={{ color: TOK.textSecondary, fontSize: 12 }}><strong>Explorer View</strong></div>
                 <div>Best for managed posture, governance, and latest-state overview.</div>
-                <div style={{ color: TOK.textPlaceholder, fontSize: 12, marginTop: 6 }}>
-                  Managed-only | on-prem compatible | latest-state snapshot
-                </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
                   <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
                     View
@@ -578,11 +573,8 @@ function OrganizationOverview({
                 </div>
               </div>
               <div style={{ ...TILE, display: 'flex', flexDirection: 'column', minHeight: 112 }}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Resource Graph</div>
-                <div>Best for relationships, dependencies, and blast-radius investigation.</div>
-                <div style={{ color: TOK.textPlaceholder, fontSize: 12, marginTop: 6 }}>
-                  Managed + unmanaged | {model.deploymentMode === 'tfe_on_prem' ? 'not on-prem' : 'cloud only'} | status: {model.connectionHealth.resourceGraphStatus}
-                </div>
+                <div style={{ color: TOK.textSecondary, fontSize: 12 }}><strong>Resource Graph</strong></div>
+                <div>Investigate managed and unmanaged resource relationships, dependencies and potential blast-radius.</div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
                   <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
                     View
@@ -590,11 +582,8 @@ function OrganizationOverview({
                 </div>
               </div>
               <div style={{ ...TILE, display: 'flex', flexDirection: 'column', minHeight: 112 }}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Search and Import</div>
+                <div style={{ color: TOK.textSecondary, fontSize: 12 }}><strong>Search and Import</strong></div>
                 <div>Find unmanaged resources in a workspace and start guided import.</div>
-                <div style={{ color: TOK.textPlaceholder, fontSize: 12, marginTop: 6 }}>
-                  Workspace-scoped | policy checked before import | action continues outside this view
-                </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
                   <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
                     View
@@ -606,7 +595,12 @@ function OrganizationOverview({
           </section>
 
           <section style={PANEL}>
-          <div style={PANEL_HEADER}>Posture Summary</div>
+          <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+            <span>Posture Summary</span>
+            <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+              At-a-glance counts for incidents, drift, policy, and coverage.
+            </span>
+          </div>
           <div style={TILE_GRID}>
             <div style={TILE}><div>Active incidents</div><strong>{model.activeIncidentCount}</strong></div>
             <div style={TILE}><div>Critical drift ws</div><strong>{model.criticalDriftWorkspaceCount}</strong></div>
@@ -618,7 +612,12 @@ function OrganizationOverview({
           </section>
 
           <section style={PANEL}>
-          <div style={PANEL_HEADER}>Workspace Status</div>
+          <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+            <span>Workspace Status</span>
+            <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+              Workspace run health, drift, validation, and change request status.
+            </span>
+          </div>
           <div style={WS_HEADER}>
             <div>Workspace</div>
             <div>Run</div>
@@ -647,7 +646,12 @@ function OrganizationOverview({
           </section>
 
           <section style={PANEL}>
-            <div style={PANEL_HEADER}>Resource Inventory</div>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span>Resource Inventory</span>
+              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                Resource-level inventory with source, management, workspace, and import status.
+              </span>
+            </div>
             <div style={RESOURCE_HEADER}>
               <div>Name</div>
               <div>Provider</div>
@@ -678,7 +682,12 @@ function OrganizationOverview({
           </section>
 
           <section style={PANEL}>
-          <div style={PANEL_HEADER}>Organization Remediation Queue</div>
+          <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+            <span>Organization Remediation Queue</span>
+            <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+              Prioritized remediation items ranked by severity and blast radius.
+            </span>
+          </div>
           <div style={LIST_HEADER}>
             <div>Severity</div>
             <div>Category</div>
@@ -708,124 +717,38 @@ function OrganizationOverview({
 
           <section style={TWO_COL}>
             <div style={PANEL}>
-              <div style={{ ...PANEL_HEADER, display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
+              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, position: 'relative' }}>
                 <span>Explorer Governance Insights</span>
-                <button
-                  type="button"
-                  onClick={() => setShowExplorerTooltip((v) => !v)}
-                  aria-label="Explorer Governance Insights guidance"
-                  style={{
-                    width: 16,
-                    height: 16,
-                    borderRadius: 999,
-                    border: `1px solid ${TOK.border}`,
-                    background: TOK.layer01,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 11,
-                    color: TOK.textSecondary,
-                    cursor: 'help',
-                    userSelect: 'none',
-                    padding: 0,
-                  }}
-                >
-                  i
-                </button>
-                {showExplorerTooltip ? (
-                  <div
-                    role="tooltip"
-                    style={{
-                      position: 'absolute',
-                      top: 30,
-                      left: 10,
-                      width: 300,
-                      border: `1px solid ${TOK.border}`,
-                      borderRadius: 4,
-                      background: TOK.layer01,
-                      color: TOK.textPrimary,
-                      fontSize: 12,
-                      fontWeight: 400,
-                      textTransform: 'none',
-                      letterSpacing: 'normal',
-                      padding: '6px 8px',
-                      zIndex: 2,
-                    }}
-                  >
-                    View an Organization-level snapshot of your on-prem Infrastructure.
-                  </div>
-                ) : null}
+                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                  Organization-level snapshot of your on-prem Infrastructure.
+                </span>
               </div>
               <div style={{ padding: 10 }}>
-                <div>RUM resources in snapshot: {model.explorerInsights.rumResourceCount}</div>
-                <div>Standardization score: {model.explorerInsights.standardizationScorePct}%</div>
-                <div>Outdated provider workspaces: {model.explorerInsights.outdatedProviderWorkspaceCount}</div>
-                <div>Non-compliant tag workspaces: {model.explorerInsights.nonCompliantTagWorkspaceCount}</div>
+                <div><strong>RUM resources in snapshot:</strong> {model.explorerInsights.rumResourceCount}</div>
+                <div><strong>Outdated provider workspaces:</strong> {model.explorerInsights.outdatedProviderWorkspaceCount}</div>
+                <div><strong>Non-compliant tag workspaces:</strong> {model.explorerInsights.nonCompliantTagWorkspaceCount}</div>
                 <div style={{ marginTop: 8 }}>
-                  Data status: Explorer {model.connectionHealth.explorerStatus}, Terraform {model.connectionHealth.terraformStatus}
+                  <strong>Data status:</strong> Explorer {model.connectionHealth.explorerStatus}, Terraform {model.connectionHealth.terraformStatus}
                 </div>
               </div>
             </div>
 
             <div style={PANEL}>
-              <div style={{ ...PANEL_HEADER, display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
+              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, position: 'relative' }}>
                 <span>Resource Graph and Import Readiness</span>
-                <button
-                  type="button"
-                  onClick={() => setShowResourceGraphTooltip((v) => !v)}
-                  aria-label="Resource Graph and Import Readiness guidance"
-                  style={{
-                    width: 16,
-                    height: 16,
-                    borderRadius: 999,
-                    border: `1px solid ${TOK.border}`,
-                    background: TOK.layer01,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 11,
-                    color: TOK.textSecondary,
-                    cursor: 'help',
-                    userSelect: 'none',
-                    padding: 0,
-                  }}
-                >
-                  i
-                </button>
-                {showResourceGraphTooltip ? (
-                  <div
-                    role="tooltip"
-                    style={{
-                      position: 'absolute',
-                      top: 30,
-                      left: 10,
-                      width: 340,
-                      border: `1px solid ${TOK.border}`,
-                      borderRadius: 4,
-                      background: TOK.layer01,
-                      color: TOK.textPrimary,
-                      fontSize: 12,
-                      fontWeight: 400,
-                      textTransform: 'none',
-                      letterSpacing: 'normal',
-                      padding: '6px 8px',
-                      zIndex: 2,
-                    }}
-                  >
-                    View your unmanaged and managed resources to gain dependency and relationship context.
-                  </div>
-                ) : null}
+                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                  Gain dependency and relationship context on your resources.
+                </span>
               </div>
               <div style={{ padding: 10 }}>
-                <div>Managed detected: {model.resourceGraphInsights.managedResourceDetectedCount}</div>
-                <div>Unmanaged detected: {model.resourceGraphInsights.unmanagedResourceDetectedCount}</div>
-                <div>Dependency hotspots: {model.resourceGraphInsights.dependencyHotspotCount}</div>
-                <div>Blast radius score: {model.resourceGraphInsights.crossWorkspaceBlastRadiusScore}</div>
-                <div>Unmanaged linked to managed: {model.resourceGraphInsights.unmanagedLinkedToManagedCount}</div>
+                <div><strong>Managed:</strong> {model.resourceGraphInsights.managedResourceDetectedCount}</div>
+                <div><strong>Unmanaged:</strong> {model.resourceGraphInsights.unmanagedResourceDetectedCount}</div>
+                <div><strong>Dependency hotspots:</strong> {model.resourceGraphInsights.dependencyHotspotCount}</div>
+                <div><strong>Unmanaged linked to managed:</strong> {model.resourceGraphInsights.unmanagedLinkedToManagedCount}</div>
                 <div style={{ marginTop: 8 }}>
-                  Import candidates: {model.importCandidateCount} | Blocked by policy: {model.importBlockedByPolicyCount}
+                  <strong>Import candidates:</strong> {model.importCandidateCount} | <strong>Blocked by policy:</strong> {model.importBlockedByPolicyCount}
                 </div>
-                <div style={{ marginTop: 8 }}>Resource Graph connection: {model.connectionHealth.resourceGraphStatus}</div>
+                <div style={{ marginTop: 8 }}><strong>Resource Graph connection:</strong> {model.connectionHealth.resourceGraphStatus}</div>
               </div>
             </div>
           </section>

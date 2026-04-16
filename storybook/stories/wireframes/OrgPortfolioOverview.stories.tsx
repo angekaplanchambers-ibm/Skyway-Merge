@@ -327,33 +327,12 @@ function OrgPortfolioOverview({
 
         <main style={MAIN}>
           <section style={PANEL}>
-            <div style={PANEL_HEADER}>Organizations Portfolio</div>
-            <div style={{ padding: 10 }}>
-              <div style={{ color: TOK.textSecondary }}>
-                User can access {model.global.accessibleOrganizationCount} organizations. Data sources:
-                {' '}
-                {model.global.dataSources.map((d) => `${d.source}:${d.status}`).join(' | ')}
-              </div>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span>Organizations Portfolio</span>
+              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                Organization inventory and current posture by account.
+              </span>
             </div>
-          </section>
-
-          <section style={PANEL}>
-            <div style={PANEL_HEADER}>Global Posture Summary</div>
-            <div style={KPI_GRID}>
-              {model.postureKpiCards.map((card) => (
-                <div key={card.id} style={TILE}>
-                  <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{card.label}</div>
-                  <div style={{ fontSize: 22, fontWeight: 700 }}>{card.value}</div>
-                  <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
-                    7d: {card.delta7d ?? 0} ({card.trendDirection ?? 'flat'})
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section style={PANEL}>
-            <div style={PANEL_HEADER}>Organizations</div>
             <div style={ORG_TABLE_HEADER}>
               <div>Name</div>
               <div>Type</div>
@@ -398,7 +377,32 @@ function OrgPortfolioOverview({
           </section>
 
           <section style={PANEL}>
-            <div style={PANEL_HEADER}>Managed vs Unmanaged Coverage</div>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span>Global Posture Summary</span>
+              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                Portfolio-level posture metrics across organizations.
+              </span>
+            </div>
+            <div style={KPI_GRID}>
+              {model.postureKpiCards.map((card) => (
+                <div key={card.id} style={TILE}>
+                  <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{card.label}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700 }}>{card.value}</div>
+                  <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
+                    7d: {card.delta7d ?? 0} ({card.trendDirection ?? 'flat'})
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section style={PANEL}>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span>Managed vs Unmanaged Coverage</span>
+              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                Coverage split and conversion opportunities.
+              </span>
+            </div>
             <div style={{ padding: 10, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1.3fr', gap: 8 }}>
               <div style={COVERAGE_TILE}>
                 <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Managed</div>
@@ -434,7 +438,12 @@ function OrgPortfolioOverview({
           </section>
 
           <section style={PANEL}>
-            <div style={PANEL_HEADER}>Prioritized Remediation Queue</div>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span>Prioritized Remediation Queue</span>
+              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                Highest-impact remediation work ranked by urgency.
+              </span>
+            </div>
             <div style={TABLE_HEADER}>
               <div>Severity</div>
               <div>Organization</div>
@@ -480,7 +489,12 @@ function OrgPortfolioOverview({
           </section>
 
           <section style={PANEL}>
-            <div style={PANEL_HEADER}>Cross-Organization Relationship Insights</div>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span>Cross-Organization Relationship Insights</span>
+              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                Dependency and blast-radius context across organizations.
+              </span>
+            </div>
             <div style={RELATIONSHIP_GRID}>
               <div style={TILE}>
                 <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Dependency hotspots</div>
@@ -559,7 +573,12 @@ function OrgPortfolioOverview({
 
           <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
             <div style={PANEL}>
-              <div style={PANEL_HEADER}>Health</div>
+              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                <span>Health</span>
+                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                  Run reliability and stale-state risk trends.
+                </span>
+              </div>
               <div style={{ padding: 10 }}>
                 <div>Run success 24h: {model.healthStrip.runSuccessRate24hPct}%</div>
                 <div>Run success 7d: {model.healthStrip.runSuccessRate7dPct}%</div>
@@ -567,7 +586,12 @@ function OrgPortfolioOverview({
               </div>
             </div>
             <div style={PANEL}>
-              <div style={PANEL_HEADER}>Governance</div>
+              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                <span>Governance</span>
+                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                  Policy, RBAC, and change control posture.
+                </span>
+              </div>
               <div style={{ padding: 10 }}>
                 <div>Policy failing orgs: {model.governancePanel.policyFailingOrganizationCount}</div>
                 <div>RBAC anomalies: {model.governancePanel.rbacAnomalyCount}</div>
@@ -575,7 +599,12 @@ function OrgPortfolioOverview({
               </div>
             </div>
             <div style={PANEL}>
-              <div style={PANEL_HEADER}>Cost</div>
+              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                <span>Cost</span>
+                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                  Spend posture and remediation savings signals.
+                </span>
+              </div>
               <div style={{ padding: 10 }}>
                 <div>Monthly spend: ${model.costPanel.monthlySpendTotalUsd.toLocaleString()}</div>
                 <div>Anomaly orgs: {model.costPanel.spendAnomalyOrganizationCount}</div>
