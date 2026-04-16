@@ -86,7 +86,7 @@ const PANEL_HEADER: CSSProperties = {
 
 const KPI_GRID: CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(5, minmax(120px, 1fr))',
+  gridTemplateColumns: 'repeat(4, minmax(120px, 1fr))',
   gap: 8,
   padding: 10,
 };
@@ -195,7 +195,7 @@ const ACTION_LINK: CSSProperties = {
 
 const RELATIONSHIP_GRID: CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr 180px',
+  gridTemplateColumns: '1fr 1fr 1fr',
   gap: 8,
   padding: 10,
 };
@@ -221,6 +221,14 @@ function healthMark(health: 'healthy' | 'warning' | 'critical'): string {
   if (health === 'healthy') return 'OK';
   if (health === 'warning') return 'WARN';
   return 'CRIT';
+}
+
+function kpi7dGoal(id: OrgPortfolioViewModel['postureKpiCards'][number]['id']): string {
+  if (id === 'criticalIncidents') return '<= 0';
+  if (id === 'criticalDriftOrganizations') return '<= 0';
+  if (id === 'validationFailingOrganizations') return '<= 0';
+  if (id === 'policyViolatingOrganizations') return '<= 0';
+  return '0';
 }
 
 function organizationOverviewStoryHref(
@@ -275,6 +283,13 @@ function convertToManagedRoute(model: OrgPortfolioViewModel): string {
   return `${baseRoute}?${params.toString()}`;
 }
 
+function workspaceFromRoute(route: string): string | undefined {
+  const parts = route.split('/').filter(Boolean);
+  const wsIndex = parts.findIndex((part) => part === 'workspaces');
+  const workspace = wsIndex >= 0 ? parts[wsIndex + 1] : undefined;
+  return workspace ? decodeURIComponent(workspace) : undefined;
+}
+
 function NavGlyph() {
   return (
     <span
@@ -300,10 +315,17 @@ function OrgPortfolioOverview({
   enableOrganizationLinks?: boolean;
   organizationOverviewStory?: 'default' | 'high-risk';
 }) {
-  const [showBlastTooltip, setShowBlastTooltip] = useState(false);
+  const [showCoverageTooltip, setShowCoverageTooltip] = useState(false);
   const organizationNameById = Object.fromEntries(
     model.organizationsTable.organizations.map((org) => [org.organizationId, org.organizationName]),
   );
+  const recommendedConversionItem = model.remediationQueue.queueItems.find(
+    (item) => item.issueCategory === 'unmanaged_resource',
+  ) ?? model.remediationQueue.queueItems.find((item) => item.nextActionType === 'openSearchImport');
+  const recommendedResourceType = model.coverage.topUnmanagedResourceTypes[0]?.resourceType ?? 'unmanaged resource';
+  const recommendedWorkspace = recommendedConversionItem
+    ? workspaceFromRoute(recommendedConversionItem.nextActionRoute)
+    : undefined;
 
   return (
     <div style={SHELL}>
@@ -384,26 +406,54 @@ function OrgPortfolioOverview({
               </span>
             </div>
             <div style={KPI_GRID}>
-              {model.postureKpiCards.map((card) => (
+              {model.postureKpiCards
+                .filter((card) => card.id !== 'accessibleOrganizations')
+                .map((card) => (
                 <div key={card.id} style={TILE}>
                   <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{card.label}</div>
                   <div style={{ fontSize: 22, fontWeight: 700 }}>{card.value}</div>
                   <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
-                    7d: {card.delta7d ?? 0} ({card.trendDirection ?? 'flat'})
+                    7d: {card.delta7d ?? 0} ({card.trendDirection ?? 'flat'}) | Goal: {kpi7dGoal(card.id)}
                   </div>
                 </div>
               ))}
+            </div>
+            <div
+              style={{
+                borderTop: `1px solid ${TOK.border}`,
+                margin: '2px 18px 8px',
+              }}
+            />
+            <div style={{ ...RELATIONSHIP_GRID, paddingTop: 0 }}>
+              <div style={TILE}>
+                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Health</div>
+                <div style={{ marginTop: 6 }}><strong>Run success 24h:</strong> {model.healthStrip.runSuccessRate24hPct}%</div>
+                <div><strong>Run success 7d:</strong> {model.healthStrip.runSuccessRate7dPct}% | Goal: 98%</div>
+                <div><strong>Stale state risk:</strong> {model.healthStrip.staleStateRiskCount}</div>
+              </div>
+              <div style={TILE}>
+                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Governance</div>
+                <div style={{ marginTop: 6 }}><strong>Policy failing orgs:</strong> {model.governancePanel.policyFailingOrganizationCount}</div>
+                <div><strong>RBAC anomalies:</strong> {model.governancePanel.rbacAnomalyCount}</div>
+                <div><strong>Change request backlog:</strong> {model.governancePanel.changeRequestBacklogCount}</div>
+              </div>
+              <div style={TILE}>
+                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Cost</div>
+                <div style={{ marginTop: 6 }}><strong>Monthly spend:</strong> ${model.costPanel.monthlySpendTotalUsd.toLocaleString()}</div>
+                <div><strong>Anomaly orgs:</strong> {model.costPanel.spendAnomalyOrganizationCount}</div>
+                <div><strong>Savings est 30d:</strong> ${model.costPanel.remediationSavingsEstimateUsd30d.toLocaleString()}</div>
+              </div>
             </div>
           </section>
 
           <section style={PANEL}>
             <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-              <span>Managed vs Unmanaged Coverage</span>
+              <span>Managed vs. Unmanaged Resource Coverage</span>
               <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
                 Coverage split and conversion opportunities.
               </span>
             </div>
-            <div style={{ padding: 10, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1.3fr', gap: 8 }}>
+            <div style={{ padding: 10, display: 'grid', gridTemplateColumns: '1fr 1fr 1.3fr', gap: 8 }}>
               <div style={COVERAGE_TILE}>
                 <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Managed</div>
                 <div style={{ fontSize: 22, fontWeight: 700 }}>{model.coverage.managedResourceCount}</div>
@@ -418,17 +468,65 @@ function OrgPortfolioOverview({
                   <button type="button" style={CTA_BUTTON}>View All Unmanaged</button>
                 </div>
               </div>
-              <div style={TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Coverage</div>
-                <div style={{ fontSize: 22, fontWeight: 700 }}>{model.coverage.managedCoveragePct}%</div>
-              </div>
               <div style={COVERAGE_TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Top unmanaged types</div>
-                {model.coverage.topUnmanagedResourceTypes.slice(0, 3).map((item) => (
-                  <div key={item.resourceType}>{item.resourceType}: {item.count}</div>
-                ))}
-                <div style={{ marginTop: 6, color: TOK.textPlaceholder, fontSize: 12 }}>
-                  Import eligible unmanaged resources as managed.
+                <div style={{ color: TOK.textSecondary, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
+                  <span>Resource coverage insights</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowCoverageTooltip((v) => !v)}
+                    aria-label="Resource coverage insights guidance"
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: 999,
+                      border: `1px solid ${TOK.border}`,
+                      background: TOK.layer01,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 11,
+                      color: TOK.textSecondary,
+                      cursor: 'help',
+                      userSelect: 'none',
+                      padding: 0,
+                    }}
+                  >
+                    i
+                  </button>
+                  {showCoverageTooltip ? (
+                    <div
+                      role="tooltip"
+                      style={{
+                        position: 'absolute',
+                        top: 24,
+                        left: 0,
+                        width: 260,
+                        border: `1px solid ${TOK.border}`,
+                        borderRadius: 4,
+                        background: TOK.layer01,
+                        color: TOK.textPrimary,
+                        fontSize: 12,
+                        padding: '6px 8px',
+                        zIndex: 2,
+                      }}
+                    >
+                      Reduce potential drift and improve policy coverage by converting your unmanaged resources
+                    </div>
+                  ) : null}
+                </div>
+                <div style={{ marginTop: 6, fontSize: 12 }}>
+                  <strong>Resource:</strong>{' '}
+                  {recommendedResourceType}
+                  {recommendedConversionItem ? ` in ${recommendedConversionItem.organizationName}` : ''}
+                  {recommendedWorkspace ? ` / ${recommendedWorkspace}` : ''}
+                </div>
+                <div style={{ marginTop: 6, color: TOK.textSecondary, fontSize: 12 }}>
+                  <strong style={{ color: TOK.textPrimary }}>Risk:</strong>{' '}
+                  {recommendedConversionItem?.issueSummary ?? 'Unmanaged resources can bypass drift and policy controls.'}
+                </div>
+                <div style={{ marginTop: 6, color: TOK.textSecondary, fontSize: 12 }}>
+                  <strong style={{ color: TOK.textPrimary }}>Result:</strong>{' '}
+                  Enforce policy checks and drift detection through normal Terraform runs.
                 </div>
                 <div style={COVERAGE_CTA_ROW}>
                   <button type="button" style={CTA_BUTTON}>Convert to Managed</button>
@@ -485,131 +583,6 @@ function OrgPortfolioOverview({
               <span style={PAGE_ACTIVE}>[2]</span>
               <a href="#" style={PAGE_LINK}>3</a>
               <a href="#" style={PAGE_LINK}>{'>'}</a>
-            </div>
-          </section>
-
-          <section style={PANEL}>
-            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-              <span>Cross-Organization Relationship Insights</span>
-              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                Dependency and blast-radius context across organizations.
-              </span>
-            </div>
-            <div style={RELATIONSHIP_GRID}>
-              <div style={TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Dependency hotspots</div>
-                {model.relationshipInsights.dependencyHotspots.map((hotspot) => (
-                  <div key={hotspot.hotspotId} style={{ marginTop: 6 }}>
-                    <div>{hotspot.resourceName}</div>
-                    <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
-                      {hotspot.organizationCountImpacted} orgs | {hotspot.dependencyCount} deps | {hotspot.riskLevel}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div style={TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Shared critical assets</div>
-                {model.relationshipInsights.sharedCriticalAssets.map((asset) => (
-                  <div key={asset.assetId} style={{ marginTop: 6 }}>
-                    <div>{asset.assetName}</div>
-                    <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
-                      {asset.resourceType} | {asset.organizationCountImpacted} orgs | {asset.managedStatus}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div style={TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Cross-org blast radius score</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
-                  <div style={{ fontSize: 22, fontWeight: 700 }}>
-                    {model.relationshipInsights.crossOrganizationBlastRadiusScore}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowBlastTooltip((v) => !v)}
-                    aria-label="Blast radius guidance"
-                    style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 999,
-                      border: `1px solid ${TOK.border}`,
-                      background: TOK.layer01,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 11,
-                      color: TOK.textSecondary,
-                      cursor: 'help',
-                      userSelect: 'none',
-                      padding: 0,
-                    }}
-                  >
-                    i
-                  </button>
-                  {showBlastTooltip ? (
-                    <div
-                      role="tooltip"
-                      style={{
-                        position: 'absolute',
-                        top: 24,
-                        left: 0,
-                        width: 240,
-                        border: `1px solid ${TOK.border}`,
-                        borderRadius: 4,
-                        background: TOK.layer01,
-                        color: TOK.textPrimary,
-                        fontSize: 12,
-                        padding: '6px 8px',
-                        zIndex: 2,
-                      }}
-                    >
-                      Higher score means wider shared-dependency impact; use Resource Graph next.
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-            <div style={PANEL}>
-              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-                <span>Health</span>
-                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                  Run reliability and stale-state risk trends.
-                </span>
-              </div>
-              <div style={{ padding: 10 }}>
-                <div>Run success 24h: {model.healthStrip.runSuccessRate24hPct}%</div>
-                <div>Run success 7d: {model.healthStrip.runSuccessRate7dPct}%</div>
-                <div>Stale state risk: {model.healthStrip.staleStateRiskCount}</div>
-              </div>
-            </div>
-            <div style={PANEL}>
-              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-                <span>Governance</span>
-                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                  Policy, RBAC, and change control posture.
-                </span>
-              </div>
-              <div style={{ padding: 10 }}>
-                <div>Policy failing orgs: {model.governancePanel.policyFailingOrganizationCount}</div>
-                <div>RBAC anomalies: {model.governancePanel.rbacAnomalyCount}</div>
-                <div>Change request backlog: {model.governancePanel.changeRequestBacklogCount}</div>
-              </div>
-            </div>
-            <div style={PANEL}>
-              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-                <span>Cost</span>
-                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                  Spend posture and remediation savings signals.
-                </span>
-              </div>
-              <div style={{ padding: 10 }}>
-                <div>Monthly spend: ${model.costPanel.monthlySpendTotalUsd.toLocaleString()}</div>
-                <div>Anomaly orgs: {model.costPanel.spendAnomalyOrganizationCount}</div>
-                <div>Savings est 30d: ${model.costPanel.remediationSavingsEstimateUsd30d.toLocaleString()}</div>
-              </div>
             </div>
           </section>
 
