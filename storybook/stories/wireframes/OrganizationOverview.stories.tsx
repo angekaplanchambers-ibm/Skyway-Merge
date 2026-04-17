@@ -134,12 +134,6 @@ const TILE: CSSProperties = {
   padding: 8,
 };
 
-const TWO_COL: CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: 8,
-};
-
 const LIST_HEADER: CSSProperties = {
   display: 'grid',
   gridTemplateColumns: '90px 1.4fr 0.8fr 2fr 0.8fr 1fr',
@@ -716,44 +710,6 @@ function OrganizationOverview({
             <a href="#" style={PAGE_LINK}>3</a>
             <a href="#" style={PAGE_LINK}>{'>'}</a>
           </div>
-          </section>
-
-          <section style={TWO_COL}>
-            <div style={PANEL}>
-              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, position: 'relative' }}>
-                <span>Explorer Governance Insights</span>
-                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                  Organization-level snapshot of your on-prem Infrastructure.
-                </span>
-              </div>
-              <div style={{ padding: 10 }}>
-                <div><strong>RUM resources in snapshot:</strong> {model.explorerInsights.rumResourceCount}</div>
-                <div><strong>Outdated provider workspaces:</strong> {model.explorerInsights.outdatedProviderWorkspaceCount}</div>
-                <div><strong>Non-compliant tag workspaces:</strong> {model.explorerInsights.nonCompliantTagWorkspaceCount}</div>
-                <div style={{ marginTop: 8 }}>
-                  <strong>Data status:</strong> Explorer {model.connectionHealth.explorerStatus}, Terraform {model.connectionHealth.terraformStatus}
-                </div>
-              </div>
-            </div>
-
-            <div style={PANEL}>
-              <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, position: 'relative' }}>
-                <span>Resource Graph and Import Readiness</span>
-                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                  Gain dependency and relationship context on your resources.
-                </span>
-              </div>
-              <div style={{ padding: 10 }}>
-                <div><strong>Managed:</strong> {model.resourceGraphInsights.managedResourceDetectedCount}</div>
-                <div><strong>Unmanaged:</strong> {model.resourceGraphInsights.unmanagedResourceDetectedCount}</div>
-                <div><strong>Dependency hotspots:</strong> {model.resourceGraphInsights.dependencyHotspotCount}</div>
-                <div><strong>Unmanaged linked to managed:</strong> {model.resourceGraphInsights.unmanagedLinkedToManagedCount}</div>
-                <div style={{ marginTop: 8 }}>
-                  <strong>Import candidates:</strong> {model.importCandidateCount} | <strong>Blocked by policy:</strong> {model.importBlockedByPolicyCount}
-                </div>
-                <div style={{ marginTop: 8 }}><strong>Resource Graph connection:</strong> {model.connectionHealth.resourceGraphStatus}</div>
-              </div>
-            </div>
           </section>
 
         </main>
