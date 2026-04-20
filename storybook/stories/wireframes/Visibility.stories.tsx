@@ -303,20 +303,6 @@ const TAB_COUNT_BADGE: CSSProperties = {
   padding: '0 5px',
 };
 
-const PREVIEW_SPLIT: CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: 10,
-  marginTop: 14,
-};
-
-const PREVIEW_PANEL: CSSProperties = {
-  border: `1px solid ${TOK.border}`,
-  borderRadius: 6,
-  background: TOK.layer02,
-  padding: 10,
-};
-
 const SAVED_TABLE_HEADER: CSSProperties = {
   display: 'grid',
   gridTemplateColumns: '1.6fr 1fr 1fr 1fr 64px',
@@ -458,17 +444,6 @@ const SAVED_ROW_MENU_ITEM: CSSProperties = {
   textAlign: 'left',
   fontSize: 12,
   padding: '7px 8px',
-  cursor: 'pointer',
-};
-
-const NEW_QUERY_BUTTON: CSSProperties = {
-  border: `1px solid ${TOK.border}`,
-  borderRadius: 4,
-  background: 'var(--z-accent, #2563eb)',
-  color: '#fff',
-  fontSize: 12,
-  fontWeight: 600,
-  padding: '6px 10px',
   cursor: 'pointer',
 };
 
@@ -670,8 +645,8 @@ function VisibilityPage({
   pageLabel = 'Visibility A',
   layoutVariant = 'A',
 }: {
-  pageLabel?: 'Visibility A' | 'Visibility B' | 'Visibility C';
-  layoutVariant?: 'A' | 'B' | 'C';
+  pageLabel?: 'Visibility A' | 'Visibility B';
+  layoutVariant?: 'A' | 'B';
 }) {
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState('ILM_Demo_Space');
@@ -681,7 +656,7 @@ function VisibilityPage({
     questions: false,
     saved: false,
   });
-  const [queryMenuOpenFor, setQueryMenuOpenFor] = useState<'a' | 'b' | 'c' | null>(null);
+  const [queryMenuOpenFor, setQueryMenuOpenFor] = useState<'a' | 'b' | null>(null);
   const [selectedQueryMenuSection, setSelectedQueryMenuSection] = useState('recommended');
   const [savedViewMenuOpenFor, setSavedViewMenuOpenFor] = useState<string | null>(null);
   const [showTypeFilterMenu, setShowTypeFilterMenu] = useState(false);
@@ -842,11 +817,9 @@ function VisibilityPage({
   const isVisibilityA = layoutVariant === 'A';
   const isVisibilityB = layoutVariant === 'B';
   const pageSubtitle =
-    isVisibilityA || isVisibilityB
-      ? "Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk."
-      : 'Start in Explorer View for usage and posture insights, then use Infragraph to investigate dependency and risk.';
+    "Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.";
 
-  function renderQueryDropdown(menuKey: 'a' | 'b' | 'c') {
+  function renderQueryDropdown(menuKey: 'a' | 'b') {
     const isStaticQuerySection =
       selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static';
 
@@ -1518,73 +1491,7 @@ function VisibilityPage({
                   </div>
                 </div>
               </div>
-            ) : (
-              <div style={PREVIEW_SPLIT}>
-                <div style={PREVIEW_PANEL}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <strong style={{ fontSize: 22 }}>Explorer View</strong>
-                    <button type="button" style={{ ...NEW_QUERY_BUTTON, marginLeft: 'auto' }}>New query</button>
-                  </div>
-                  <div style={{ color: TOK.textSecondary, fontSize: 12, marginTop: 4 }}>
-                    Explore your managed resources to analyze your organization's Terraform usage.
-                  </div>
-
-                  <div style={HDS_TAB_ROW}>
-                    <span style={HDS_TAB_ACTIVE}>Types & use cases</span>
-                    <span style={HDS_TAB}>Saved views (50)</span>
-                  </div>
-
-                  <div style={{ marginTop: 12, fontSize: 13, color: TOK.textSecondary }}>Types</div>
-                  <div style={{ ...STACKED_CARD_GRID, marginTop: 8 }}>
-                    {explorerTypeCards.map((label) => (
-                      <div key={label} style={CARD}>
-                        <span>{label}</span>
-                        <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div style={{ marginTop: 14, fontSize: 13, color: TOK.textSecondary }}>Use cases</div>
-                  <div style={{ ...STACKED_CARD_GRID, marginTop: 8 }}>
-                    {explorerUseCases.map((label) => (
-                      <div key={label} style={CARD}>
-                        <span>{label}</span>
-                        <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={PREVIEW_PANEL}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <strong style={{ fontSize: 22 }}>Graph Explorer</strong>
-                  </div>
-                  <div style={{ color: TOK.textSecondary, fontSize: 12, marginTop: 4 }}>
-                    Ask graph-based questions to investigate resource relationships and risk.
-                  </div>
-
-                  <div style={{ ...PANEL, marginTop: 10, padding: 10, background: TOK.layer01 }}>
-                    <div style={{ fontSize: 12, color: TOK.textSecondary, marginBottom: 8 }}>Build your Infragraph query</div>
-                    <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-                      <button type="button" style={{ ...TAB, borderRadius: 4 }}>Clear query</button>
-                      <button type="button" style={{ ...TAB, borderRadius: 4 }}>{'</>'}</button>
-                      <button type="button" style={{ ...TAB, borderRadius: 4 }}>x</button>
-                    </div>
-                    {renderQueryDropdown('c')}
-                  </div>
-
-                  <div style={{ marginTop: 12, fontSize: 13, color: TOK.textSecondary }}>Suggested questions</div>
-                  <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
-                    {graphQuestions.map((question) => (
-                      <div key={question} style={CARD}>
-                        <span>{question}</span>
-                        <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+            ) : null}
           </section>
         </main>
       </div>
@@ -1619,12 +1526,5 @@ export const VisibilityB: Story = {
   args: {
     pageLabel: 'Visibility B',
     layoutVariant: 'B',
-  },
-};
-
-export const VisibilityC: Story = {
-  args: {
-    pageLabel: 'Visibility C',
-    layoutVariant: 'C',
   },
 };
