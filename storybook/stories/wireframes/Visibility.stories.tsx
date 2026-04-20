@@ -59,17 +59,30 @@ const NAV_GROUP_LABEL: CSSProperties = {
 const NAV_ITEM: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: 10,
   padding: '9px 6px',
   color: TOK.textSecondary,
   fontSize: 12,
+  fontWeight: 400,
 };
 
-const NAV_SINGLE_ITEM: CSSProperties = {
+const NAV_ACTIVE: CSSProperties = {
   ...NAV_ITEM,
   background: TOK.layer02,
   borderRadius: 6,
   color: 'var(--z-accent, #2563eb)',
+  fontWeight: 500,
+};
+
+const NAV_ITEM_LEFT: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+};
+
+const NAV_SUBITEM: CSSProperties = {
+  padding: '8px 6px 8px 42px',
+  color: TOK.textSecondary,
+  fontSize: 12,
 };
 
 const NAV_LINK: CSSProperties = {
@@ -641,11 +654,36 @@ function organizationOverviewHref(): string {
   return '?path=/story/wireframes-organizationoverview--default';
 }
 
+function visibilityStoryHref(variant: 'a' | 'b'): string {
+  if (variant === 'b') return '?path=/story/wireframes-visibility--visibility-b';
+  return '?path=/story/wireframes-visibility--visibility-a';
+}
+
+function organizationOverviewForOrgHref(organizationName: string): string {
+  return `?path=/story/wireframes-organizationoverview--default&args=model.organizationName:${encodeURIComponent(organizationName)}`;
+}
+
+function NavGlyph() {
+  return (
+    <span
+      aria-hidden
+      style={{
+        width: 14,
+        height: 14,
+        border: `2px solid ${TOK.textSecondary}`,
+        borderRadius: 999,
+        display: 'inline-block',
+        opacity: 0.85,
+      }}
+    />
+  );
+}
+
 function VisibilityPage({
-  pageLabel = 'Visibility A',
+  pageLabel = 'Visibility (A)',
   layoutVariant = 'A',
 }: {
-  pageLabel?: 'Visibility A' | 'Visibility B';
+  pageLabel?: 'Visibility (A)' | 'Visibility (B)';
   layoutVariant?: 'A' | 'B';
 }) {
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
@@ -818,6 +856,19 @@ function VisibilityPage({
   const isVisibilityB = layoutVariant === 'B';
   const pageSubtitle =
     "Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.";
+
+  const visibilityNavLinkStyle: CSSProperties = {
+    ...NAV_LINK,
+    color: 'var(--z-accent, #2563eb)',
+  };
+
+  const visibilityInlineRowStyle: CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    color: TOK.textPrimary,
+    fontSize: 12,
+  };
 
   function renderQueryDropdown(menuKey: 'a' | 'b') {
     const isStaticQuerySection =
@@ -1005,7 +1056,9 @@ function VisibilityPage({
         <span style={{ color: TOK.textSecondary }}>
           <a href={organizationOverviewHref()} target="_top" style={BREADCRUMB_LINK}>Organizations Portfolio</a>
           {' / '}
-          {selectedOrganization}
+          <a href={organizationOverviewForOrgHref(selectedOrganization)} target="_top" style={BREADCRUMB_LINK}>
+            {selectedOrganization}
+          </a>
           {' / '}
           {pageLabel}
         </span>
@@ -1014,10 +1067,53 @@ function VisibilityPage({
 
       <div style={BODY}>
         <aside style={SIDEBAR}>
-          <div style={NAV_SINGLE_ITEM}>
-            <a href={organizationOverviewHref()} target="_top" style={NAV_LINK}>
-              {'< Organization Overview'}
-            </a>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}>
+              <a href={organizationOverviewHref()} target="_top" style={NAV_LINK}>
+                {'< Organization Overview'}
+              </a>
+            </div>
+          </div>
+
+          <div style={NAV_GROUP_LABEL}>Discover</div>
+          <div style={NAV_ACTIVE}>
+            <div style={NAV_ITEM_LEFT}>
+              <NavGlyph />
+              <span style={visibilityInlineRowStyle}>
+                <span>Visibility</span>
+                <a href={visibilityStoryHref('a')} target="_top" style={visibilityNavLinkStyle}>(A)</a>
+                <a href={visibilityStoryHref('b')} target="_top" style={visibilityNavLinkStyle}>(B)</a>
+              </span>
+            </div>
+          </div>
+
+          <div style={NAV_GROUP_LABEL}>Manage</div>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Projects</span></div>
+          </div>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Stacks</span></div>
+          </div>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Workspaces</span></div>
+          </div>
+          <div style={NAV_SUBITEM}>Search and Import</div>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}><NavGlyph /><span>IAM</span></div>
+          </div>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Usage</span></div>
+          </div>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Registry</span></div>
+          </div>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}><NavGlyph /><span>Settings</span></div>
+          </div>
+
+          <div style={{ ...NAV_GROUP_LABEL, marginTop: 16 }}>Cloud Platform</div>
+          <div style={NAV_ITEM}>
+            <div style={NAV_ITEM_LEFT}><NavGlyph /><span>HashiCorp Cloud Platform</span></div>
           </div>
         </aside>
 
@@ -1524,7 +1620,7 @@ export const VisibilityA: Story = {};
 
 export const VisibilityB: Story = {
   args: {
-    pageLabel: 'Visibility B',
+    pageLabel: 'Visibility (B)',
     layoutVariant: 'B',
   },
 };

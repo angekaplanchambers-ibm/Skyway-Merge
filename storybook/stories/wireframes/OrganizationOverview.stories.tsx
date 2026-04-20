@@ -431,6 +431,14 @@ function SideNav({ portfolioHref }: { portfolioHref?: string }) {
     color: 'var(--z-accent, #2563eb)',
   };
 
+  const visibilityInlineRowStyle: CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    color: TOK.textSecondary,
+    fontSize: 12,
+  };
+
   return (
     <aside style={SIDEBAR}>
       <div style={NAV_ACTIVE}>
@@ -445,13 +453,11 @@ function SideNav({ portfolioHref }: { portfolioHref?: string }) {
       <div style={NAV_ITEM}>
         <div style={NAV_ITEM_LEFT}>
           <NavGlyph />
-          <a href={visibilityStoryHref('a')} target="_top" style={visibilityNavLinkStyle}>Visibility A</a>
-        </div>
-      </div>
-      <div style={NAV_ITEM}>
-        <div style={NAV_ITEM_LEFT}>
-          <NavGlyph />
-          <a href={visibilityStoryHref('b')} target="_top" style={visibilityNavLinkStyle}>Visibility B</a>
+          <span style={visibilityInlineRowStyle}>
+            <span>Visibility</span>
+            <a href={visibilityStoryHref('a')} target="_top" style={visibilityNavLinkStyle}>(A)</a>
+            <a href={visibilityStoryHref('b')} target="_top" style={visibilityNavLinkStyle}>(B)</a>
+          </span>
         </div>
       </div>
 
