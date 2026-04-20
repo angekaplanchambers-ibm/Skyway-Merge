@@ -179,6 +179,21 @@ const CARD: CSSProperties = {
   alignItems: 'center',
 };
 
+const CARD_LEFT_WITH_CIRCLE: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  minWidth: 0,
+};
+
+const CARD_CIRCLE_ICON: CSSProperties = {
+  width: 12,
+  height: 12,
+  borderRadius: 999,
+  border: `1px solid ${TOK.textSecondary}`,
+  flex: '0 0 auto',
+};
+
 const TAB: CSSProperties = {
   border: `1px solid ${TOK.border}`,
   borderRadius: 999,
@@ -203,7 +218,7 @@ const HDS_TAB_ROW: CSSProperties = {
 
 const HDS_TAB: CSSProperties = {
   border: 'none',
-  borderBottom: '2px solid transparent',
+  borderBottom: 'none',
   background: 'transparent',
   borderRadius: 0,
   padding: '6px 0',
@@ -216,7 +231,76 @@ const HDS_TAB: CSSProperties = {
 const HDS_TAB_ACTIVE: CSSProperties = {
   ...HDS_TAB,
   color: 'var(--z-accent, #2563eb)',
-  borderBottomColor: 'var(--z-accent, #2563eb)',
+  borderBottom: '2px solid var(--z-accent, #2563eb)',
+};
+
+const COLLAPSIBLE_STACK: CSSProperties = {
+  display: 'grid',
+  gap: 8,
+  marginTop: 12,
+};
+
+const COLLAPSIBLE_SECTION: CSSProperties = {
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 6,
+  background: TOK.layer01,
+  overflow: 'hidden',
+};
+
+const COLLAPSIBLE_TRIGGER: CSSProperties = {
+  width: '100%',
+  border: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  minHeight: 40,
+  padding: '8px 12px',
+  fontSize: 12,
+  fontWeight: 600,
+  cursor: 'pointer',
+};
+
+const COLLAPSIBLE_TRIGGER_OPEN: CSSProperties = {
+  background: TOK.layer02,
+  color: TOK.textPrimary,
+};
+
+const COLLAPSIBLE_TRIGGER_CLOSED: CSSProperties = {
+  background: TOK.layer01,
+  color: TOK.textSecondary,
+};
+
+const COLLAPSIBLE_TRIGGER_LABEL: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+};
+
+const COLLAPSIBLE_CHEVRON: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  color: TOK.textSecondary,
+};
+
+const COLLAPSIBLE_CONTENT: CSSProperties = {
+  padding: '0 10px 10px',
+  borderTop: `1px solid ${TOK.border}`,
+  background: '#ffffff',
+};
+
+const TAB_COUNT_BADGE: CSSProperties = {
+  marginLeft: 6,
+  minWidth: 18,
+  height: 18,
+  borderRadius: 999,
+  border: `1px solid ${TOK.border}`,
+  background: TOK.layer02,
+  color: TOK.textSecondary,
+  fontSize: 11,
+  lineHeight: '16px',
+  textAlign: 'center',
+  display: 'inline-block',
+  padding: '0 5px',
 };
 
 const PREVIEW_SPLIT: CSSProperties = {
@@ -231,6 +315,150 @@ const PREVIEW_PANEL: CSSProperties = {
   borderRadius: 6,
   background: TOK.layer02,
   padding: 10,
+};
+
+const SAVED_TABLE_HEADER: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1.6fr 1fr 1fr 1fr 64px',
+  gap: 0,
+  padding: '10px 12px',
+  borderBottom: `1px solid ${TOK.border}`,
+  fontSize: 12,
+  color: TOK.textSecondary,
+  fontWeight: 600,
+  background: TOK.layer02,
+};
+
+const SAVED_TABLE_ROW: CSSProperties = {
+  ...SAVED_TABLE_HEADER,
+  color: TOK.textPrimary,
+  fontSize: 13,
+  fontWeight: 400,
+  background: 'transparent',
+  borderBottom: `1px solid ${TOK.border}`,
+};
+
+const SAVED_CELL: CSSProperties = {
+  padding: '0 5px',
+  display: 'flex',
+  alignItems: 'center',
+  minHeight: 30,
+};
+
+const SAVED_CELL_LAST: CSSProperties = {
+  ...SAVED_CELL,
+  justifyContent: 'center',
+  position: 'relative',
+};
+
+const SAVED_LINK: CSSProperties = {
+  color: TOK.textPrimary,
+  textDecoration: 'none',
+  fontWeight: 400,
+};
+
+const SAVED_FILTER_ROW: CSSProperties = {
+  display: 'inline-grid',
+  gridTemplateColumns: '1fr auto',
+  width: 440,
+  border: `1px solid #9ca3af`,
+  borderRadius: 4,
+  overflow: 'hidden',
+  background: TOK.layer01,
+  marginBottom: 8,
+};
+
+const SAVED_FILTER_INPUT: CSSProperties = {
+  height: 24,
+  width: '100%',
+  border: 'none',
+  background: 'transparent',
+  padding: '0 10px',
+  fontSize: 11,
+  color: TOK.textSecondary,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+};
+
+const SAVED_FILTER_SELECT: CSSProperties = {
+  ...SAVED_FILTER_INPUT,
+  width: 128,
+  borderLeft: `1px solid #9ca3af`,
+  fontSize: 11,
+  color: TOK.textPrimary,
+  justifyContent: 'space-between',
+};
+
+const SAVED_TYPE_FILTER_WRAPPER: CSSProperties = {
+  position: 'relative',
+};
+
+const SAVED_TYPE_FILTER_MENU: CSSProperties = {
+  position: 'absolute',
+  top: 28,
+  right: 0,
+  width: 172,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: TOK.layer01,
+  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+  zIndex: 5,
+  padding: 4,
+};
+
+const SAVED_TYPE_FILTER_ITEM: CSSProperties = {
+  width: '100%',
+  border: 'none',
+  background: 'transparent',
+  color: TOK.textPrimary,
+  fontSize: 12,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  padding: '6px 8px',
+  textAlign: 'left',
+  cursor: 'pointer',
+};
+
+const SAVED_FOOTER: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr auto 1fr',
+  alignItems: 'center',
+  padding: '10px 0 0',
+  color: TOK.textSecondary,
+  fontSize: 12,
+};
+
+const SAVED_PAGER: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+};
+
+const SAVED_ROW_MENU: CSSProperties = {
+  position: 'absolute',
+  top: 32,
+  right: 6,
+  minWidth: 110,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: TOK.layer01,
+  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+  zIndex: 4,
+  padding: 4,
+};
+
+const SAVED_ROW_MENU_ITEM: CSSProperties = {
+  width: '100%',
+  border: 'none',
+  borderRadius: 3,
+  background: 'transparent',
+  color: TOK.textPrimary,
+  textAlign: 'left',
+  fontSize: 12,
+  padding: '7px 8px',
+  cursor: 'pointer',
 };
 
 const NEW_QUERY_BUTTON: CSSProperties = {
@@ -248,9 +476,24 @@ function organizationOverviewHref(): string {
   return '?path=/story/wireframes-organizationoverview--default';
 }
 
-function VisibilityPage() {
+function VisibilityPage({
+  pageLabel = 'Visibility A',
+  layoutVariant = 'A',
+}: {
+  pageLabel?: 'Visibility A' | 'Visibility B' | 'Visibility C';
+  layoutVariant?: 'A' | 'B' | 'C';
+}) {
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState('ILM_Demo_Space');
+  const [activeVisibilityATab, setActiveVisibilityATab] = useState<'types' | 'questions' | 'saved'>('types');
+  const [visibilityBSectionsOpen, setVisibilityBSectionsOpen] = useState({
+    types: true,
+    questions: false,
+    saved: false,
+  });
+  const [savedViewMenuOpenFor, setSavedViewMenuOpenFor] = useState<string | null>(null);
+  const [showTypeFilterMenu, setShowTypeFilterMenu] = useState(false);
+  const [selectedSavedViewTypes, setSelectedSavedViewTypes] = useState<string[]>([]);
   const organizationOptions = [
     'ILM_Demo_Space',
     'Payments Platform',
@@ -290,6 +533,44 @@ function VisibilityPage() {
     'Which resources are missing an Owner tag?',
     'Which of my VMs are using images not provisioned by Packer?',
   ];
+
+  const savedViews = [
+    { name: 'Test-87', type: 'Modules', owner: 'davidjohn', updated: 'Oct 16 2025' },
+    { name: 'child saved', type: 'Workspaces', owner: 'ashtronaut', updated: 'Oct 1 2025' },
+    { name: 'test', type: 'Workspaces', owner: 'simonxmhuang', updated: 'Jul 28 2025' },
+    { name: 'red', type: 'Workspaces', owner: 'simonxmhuang', updated: 'Jul 25 2025' },
+    { name: 'test2', type: 'Workspaces', owner: 'simonxmhuang', updated: 'Jul 25 2025' },
+    { name: 'rum_test', type: 'Workspaces', owner: 'simonxmhuang', updated: 'Jul 25 2025' },
+    { name: 'random stuff', type: 'Workspaces', owner: 'lyn_kotuby-e2f5b9c9', updated: 'Jun 4 2025' },
+    { name: 'sim', type: 'Workspaces', owner: 'simonxmhuang', updated: 'Jun 2 2025' },
+    { name: 'testing tf version bug', type: 'Terraform Versions', owner: 'jondavidjohn', updated: 'Nov 14 2024' },
+    { name: 'new view', type: 'Terraform Versions', owner: 'jondavidjohn', updated: 'Nov 14 2024' },
+    { name: 'try again', type: 'Workspaces', owner: 'jondavidjohn', updated: 'Nov 12 2024' },
+    { name: 'yet another one', type: 'Workspaces', owner: 'jondavidjohn', updated: 'Nov 12 2024' },
+    { name: 'new test name', type: 'Workspaces', owner: 'jondavidjohn', updated: 'Nov 12 2024' },
+    { name: 'super duper errored workspaces', type: 'Workspaces', owner: 'jondavidjohn', updated: 'Nov 12 2024' },
+    { name: 'another new name', type: 'Workspaces', owner: 'jondavidjohn', updated: 'Nov 12 2024' },
+    { name: 'new name', type: 'Workspaces', owner: 'jondavidjohn', updated: 'Nov 12 2024' },
+    { name: 'tf test', type: 'Terraform Versions', owner: 'aditisl', updated: 'Nov 12 2024' },
+    { name: 'new tf versions', type: 'Terraform Versions', owner: 'martinhenry', updated: 'Nov 12 2024' },
+    { name: 'workspace tf version is 1.7.0', type: 'Workspaces', owner: 'martinhenry', updated: 'Nov 12 2024' },
+    { name: 'terraform versions', type: 'Terraform Versions', owner: 'jondavidjohn', updated: 'Nov 12 2024' },
+  ];
+
+  const savedViewTypeOptions = [
+    'Workspaces',
+    'Modules',
+    'Providers',
+    'Resources',
+    'Terraform versions',
+  ];
+
+  const isVisibilityA = layoutVariant === 'A';
+  const isVisibilityB = layoutVariant === 'B';
+  const pageSubtitle =
+    isVisibilityA || isVisibilityB
+      ? "Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk."
+      : 'Start in Explorer View for usage and posture insights, then use Infragraph to investigate dependency and risk.';
 
   return (
     <div style={SHELL}>
@@ -344,7 +625,8 @@ function VisibilityPage() {
           <a href={organizationOverviewHref()} target="_top" style={BREADCRUMB_LINK}>Organizations Portfolio</a>
           {' / '}
           {selectedOrganization}
-          {' / Visibility'}
+          {' / '}
+          {pageLabel}
         </span>
         <span style={{ marginLeft: 'auto', color: TOK.textSecondary }}>Deploy mode: tfe_on_prem</span>
       </header>
@@ -362,59 +644,17 @@ function VisibilityPage() {
           <section style={{ padding: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.1 }}>Visibility</div>
+                <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.1 }}>{pageLabel}</div>
                 <div style={{ color: TOK.textSecondary, fontSize: 12, marginTop: 4 }}>
-                  Start in Explorer View for usage and posture insights, then use Infragraph to investigate dependency and risk.
+                  {pageSubtitle}
                 </div>
               </div>
             </div>
 
-            <div style={PREVIEW_SPLIT}>
-              <div style={PREVIEW_PANEL}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <strong style={{ fontSize: 22 }}>Explorer View</strong>
-                  <button type="button" style={{ ...NEW_QUERY_BUTTON, marginLeft: 'auto' }}>New query</button>
-                </div>
-                <div style={{ color: TOK.textSecondary, fontSize: 12, marginTop: 4 }}>
-                  Explore your managed resources to analyze your organization's Terraform usage.
-                </div>
-
-                <div style={HDS_TAB_ROW}>
-                  <span style={HDS_TAB_ACTIVE}>Types & use cases</span>
-                  <span style={HDS_TAB}>Saved views (50)</span>
-                </div>
-
-                <div style={{ marginTop: 12, fontSize: 13, color: TOK.textSecondary }}>Types</div>
-                <div style={{ ...STACKED_CARD_GRID, marginTop: 8 }}>
-                  {explorerTypeCards.map((label) => (
-                    <div key={label} style={CARD}>
-                      <span>{label}</span>
-                      <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{ marginTop: 14, fontSize: 13, color: TOK.textSecondary }}>Use cases</div>
-                <div style={{ ...STACKED_CARD_GRID, marginTop: 8 }}>
-                  {explorerUseCases.map((label) => (
-                    <div key={label} style={CARD}>
-                      <span>{label}</span>
-                      <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={PREVIEW_PANEL}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <strong style={{ fontSize: 22 }}>Graph Explorer</strong>
-                </div>
-                <div style={{ color: TOK.textSecondary, fontSize: 12, marginTop: 4 }}>
-                  Ask graph-based questions to investigate resource relationships and risk.
-                </div>
-
-                <div style={{ ...PANEL, marginTop: 10, padding: 10, background: TOK.layer01 }}>
-                  <div style={{ fontSize: 12, color: TOK.textSecondary, marginBottom: 8 }}>Edit your query</div>
+            {isVisibilityA ? (
+              <div style={{ marginTop: 12 }}>
+                <div style={{ ...PANEL, padding: 10, background: TOK.layer01 }}>
+                  <div style={{ fontSize: 12, color: TOK.textSecondary, marginBottom: 8 }}>Build your Infragraph query</div>
                   <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
                     <button type="button" style={{ ...TAB, borderRadius: 4 }}>Clear query</button>
                     <button type="button" style={{ ...TAB, borderRadius: 4 }}>{'</>'}</button>
@@ -435,17 +675,544 @@ function VisibilityPage() {
                   </div>
                 </div>
 
-                <div style={{ marginTop: 12, fontSize: 13, color: TOK.textSecondary }}>Suggested questions</div>
-                <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
-                  {graphQuestions.map((question) => (
-                    <div key={question} style={CARD}>
-                      <span>{question}</span>
-                      <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                <div style={HDS_TAB_ROW}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveVisibilityATab('types')}
+                    style={activeVisibilityATab === 'types' ? HDS_TAB_ACTIVE : HDS_TAB}
+                  >
+                    Types & Use cases
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveVisibilityATab('questions')}
+                    style={activeVisibilityATab === 'questions' ? HDS_TAB_ACTIVE : HDS_TAB}
+                  >
+                    Suggested questions
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveVisibilityATab('saved')}
+                    style={activeVisibilityATab === 'saved' ? HDS_TAB_ACTIVE : HDS_TAB}
+                  >
+                    Saved Views
+                    <span style={TAB_COUNT_BADGE}>{savedViews.length}</span>
+                  </button>
+                </div>
+
+                {activeVisibilityATab === 'types' ? (
+                  <div>
+                    <div style={{ marginTop: 12, fontSize: 13, color: TOK.textSecondary }}>Types</div>
+                    <div style={{ ...CARD_GRID, marginTop: 8 }}>
+                      {explorerTypeCards.map((label) => (
+                        <div key={label} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}>
+                            <span style={CARD_CIRCLE_ICON} />
+                            <span>{label}</span>
+                          </span>
+                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+
+                    <div style={{ marginTop: 14, fontSize: 13, color: TOK.textSecondary }}>Use cases</div>
+                    <div style={{ ...CARD_GRID, marginTop: 8 }}>
+                      {explorerUseCases.map((label) => (
+                        <div key={label} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}>
+                            <span style={CARD_CIRCLE_ICON} />
+                            <span>{label}</span>
+                          </span>
+                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
+                {activeVisibilityATab === 'questions' ? (
+                  <div>
+                    <div style={{ marginTop: 12, fontSize: 13, color: TOK.textSecondary }}>Suggested questions</div>
+                    <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+                      {graphQuestions.map((question) => (
+                        <div key={question} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}>
+                            <span style={CARD_CIRCLE_ICON} />
+                            <span>{question}</span>
+                          </span>
+                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
+                {activeVisibilityATab === 'saved' ? (
+                  <div style={{ marginTop: 12 }}>
+                    <div style={SAVED_FILTER_ROW}>
+                      <div style={SAVED_FILTER_INPUT}>
+                        <span style={{ color: '#6b7280', fontSize: 11, lineHeight: 1 }}>o</span>
+                        <span>Search</span>
+                      </div>
+                      <div style={SAVED_TYPE_FILTER_WRAPPER}>
+                        <button
+                          type="button"
+                          style={{ ...SAVED_FILTER_SELECT, border: 'none', cursor: 'pointer' }}
+                          onClick={() => setShowTypeFilterMenu((current) => !current)}
+                          aria-haspopup="menu"
+                          aria-expanded={showTypeFilterMenu}
+                        >
+                          <span>Type</span>
+                          <span style={{ color: '#4b5563', fontSize: 11, lineHeight: 1 }}>v</span>
+                        </button>
+                        {showTypeFilterMenu ? (
+                          <div role="menu" aria-label="Type filters" style={SAVED_TYPE_FILTER_MENU}>
+                            {savedViewTypeOptions.map((typeOption) => {
+                              const isChecked = selectedSavedViewTypes.includes(typeOption);
+
+                              return (
+                                <button
+                                  key={typeOption}
+                                  type="button"
+                                  role="menuitemcheckbox"
+                                  aria-checked={isChecked}
+                                  style={SAVED_TYPE_FILTER_ITEM}
+                                  onClick={() => {
+                                    setSelectedSavedViewTypes((current) =>
+                                      current.includes(typeOption)
+                                        ? current.filter((item) => item !== typeOption)
+                                        : [...current, typeOption],
+                                    );
+                                  }}
+                                >
+                                  <span style={{ width: 12, color: '#374151', lineHeight: 1 }}>{isChecked ? 'x' : ''}</span>
+                                  <span>{typeOption}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div style={{ color: TOK.textSecondary, fontSize: 12, marginBottom: 8 }}>No filters applied</div>
+
+                    <div style={{ ...PANEL, background: TOK.layer01, overflow: 'hidden' }}>
+                    <div style={SAVED_TABLE_HEADER}>
+                      <div style={SAVED_CELL}>Name</div>
+                      <div style={SAVED_CELL}>Type</div>
+                      <div style={SAVED_CELL}>Owner</div>
+                      <div style={SAVED_CELL}>Last Updated</div>
+                      <div style={SAVED_CELL_LAST}>Options</div>
+                    </div>
+                    {savedViews.map((view) => (
+                      <div key={view.name} style={SAVED_TABLE_ROW}>
+                        <div style={SAVED_CELL}><span style={SAVED_LINK}>{view.name}</span></div>
+                        <div style={SAVED_CELL}>{view.type}</div>
+                        <div style={SAVED_CELL}>{view.owner}</div>
+                        <div style={SAVED_CELL}>{view.updated}</div>
+                        <div style={SAVED_CELL_LAST}>
+                          <button
+                            type="button"
+                            onClick={() => setSavedViewMenuOpenFor((current) => (current === view.name ? null : view.name))}
+                            aria-haspopup="menu"
+                            aria-expanded={savedViewMenuOpenFor === view.name}
+                            style={{
+                              border: `1px solid ${TOK.border}`,
+                              borderRadius: 4,
+                              background: TOK.layer01,
+                              color: TOK.textSecondary,
+                              fontSize: 12,
+                              lineHeight: 1,
+                              padding: '4px 7px',
+                            }}
+                          >
+                            ...
+                          </button>
+                          {savedViewMenuOpenFor === view.name ? (
+                            <div role="menu" aria-label={`Saved view options for ${view.name}`} style={SAVED_ROW_MENU}>
+                              <button
+                                type="button"
+                                role="menuitem"
+                                style={SAVED_ROW_MENU_ITEM}
+                                onClick={() => setSavedViewMenuOpenFor(null)}
+                              >
+                                Rename
+                              </button>
+                              <button
+                                type="button"
+                                role="menuitem"
+                                style={SAVED_ROW_MENU_ITEM}
+                                onClick={() => setSavedViewMenuOpenFor(null)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
+                    </div>
+
+                    <div style={SAVED_FOOTER}>
+                      <div>1-20 of 50</div>
+                      <div style={SAVED_PAGER}>
+                        <span>{'<'}</span>
+                        <span style={{ color: 'var(--z-accent, #2563eb)', fontWeight: 600 }}>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                        <span>{'>'}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8 }}>
+                        <span>Items per page</span>
+                        <button type="button" style={{ ...TAB, borderRadius: 4, padding: '2px 8px' }}>20</button>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : isVisibilityB ? (
+              <div style={{ marginTop: 12 }}>
+                <div style={{ ...PANEL, padding: 10, background: TOK.layer01 }}>
+                  <div style={{ fontSize: 12, color: TOK.textSecondary, marginBottom: 8 }}>Build your Infragraph query</div>
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                    <button type="button" style={{ ...TAB, borderRadius: 4 }}>Clear query</button>
+                    <button type="button" style={{ ...TAB, borderRadius: 4 }}>{'</>'}</button>
+                    <button type="button" style={{ ...TAB, borderRadius: 4 }}>x</button>
+                  </div>
+                  <div
+                    style={{
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 4,
+                      background: 'var(--z-accent, #2563eb)',
+                      color: '#fff',
+                      fontSize: 12,
+                      padding: '6px 10px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    Find...
+                  </div>
+                </div>
+
+                <div style={COLLAPSIBLE_STACK}>
+                  <div style={COLLAPSIBLE_SECTION}>
+                    <button
+                      type="button"
+                      style={{
+                        ...COLLAPSIBLE_TRIGGER,
+                        ...(visibilityBSectionsOpen.types ? COLLAPSIBLE_TRIGGER_OPEN : COLLAPSIBLE_TRIGGER_CLOSED),
+                      }}
+                      onClick={() =>
+                        setVisibilityBSectionsOpen((current) => ({
+                          ...current,
+                          types: !current.types,
+                        }))
+                      }
+                      aria-expanded={visibilityBSectionsOpen.types}
+                    >
+                      <span style={COLLAPSIBLE_TRIGGER_LABEL}>Types & Use cases</span>
+                      <span style={COLLAPSIBLE_CHEVRON}>
+                        {visibilityBSectionsOpen.types ? <IconChevronUp16 aria-hidden /> : <IconChevronDown16 aria-hidden />}
+                      </span>
+                    </button>
+                    {visibilityBSectionsOpen.types ? (
+                      <div style={COLLAPSIBLE_CONTENT}>
+                        <div style={{ marginTop: 10, fontSize: 12, color: TOK.textSecondary }}>Types</div>
+                        <div style={{ ...CARD_GRID, marginTop: 6 }}>
+                          {explorerTypeCards.map((label) => (
+                            <div key={label} style={CARD}>
+                              <span style={CARD_LEFT_WITH_CIRCLE}>
+                                <span style={CARD_CIRCLE_ICON} />
+                                <span>{label}</span>
+                              </span>
+                              <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div style={{ marginTop: 12, fontSize: 12, color: TOK.textSecondary }}>Use cases</div>
+                        <div style={{ ...CARD_GRID, marginTop: 6 }}>
+                          {explorerUseCases.map((label) => (
+                            <div key={label} style={CARD}>
+                              <span style={CARD_LEFT_WITH_CIRCLE}>
+                                <span style={CARD_CIRCLE_ICON} />
+                                <span>{label}</span>
+                              </span>
+                              <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div style={COLLAPSIBLE_SECTION}>
+                    <button
+                      type="button"
+                      style={{
+                        ...COLLAPSIBLE_TRIGGER,
+                        ...(visibilityBSectionsOpen.questions ? COLLAPSIBLE_TRIGGER_OPEN : COLLAPSIBLE_TRIGGER_CLOSED),
+                      }}
+                      onClick={() =>
+                        setVisibilityBSectionsOpen((current) => ({
+                          ...current,
+                          questions: !current.questions,
+                        }))
+                      }
+                      aria-expanded={visibilityBSectionsOpen.questions}
+                    >
+                      <span style={COLLAPSIBLE_TRIGGER_LABEL}>Suggested questions</span>
+                      <span style={COLLAPSIBLE_CHEVRON}>
+                        {visibilityBSectionsOpen.questions ? <IconChevronUp16 aria-hidden /> : <IconChevronDown16 aria-hidden />}
+                      </span>
+                    </button>
+                    {visibilityBSectionsOpen.questions ? (
+                      <div style={COLLAPSIBLE_CONTENT}>
+                        <div style={{ marginTop: 10, fontSize: 12, color: TOK.textSecondary }}>Suggested questions</div>
+                        <div style={{ display: 'grid', gap: 6, marginTop: 6 }}>
+                          {graphQuestions.map((question) => (
+                            <div key={question} style={CARD}>
+                              <span style={CARD_LEFT_WITH_CIRCLE}>
+                                <span style={CARD_CIRCLE_ICON} />
+                                <span>{question}</span>
+                              </span>
+                              <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div style={COLLAPSIBLE_SECTION}>
+                    <button
+                      type="button"
+                      style={{
+                        ...COLLAPSIBLE_TRIGGER,
+                        ...(visibilityBSectionsOpen.saved ? COLLAPSIBLE_TRIGGER_OPEN : COLLAPSIBLE_TRIGGER_CLOSED),
+                      }}
+                      onClick={() =>
+                        setVisibilityBSectionsOpen((current) => ({
+                          ...current,
+                          saved: !current.saved,
+                        }))
+                      }
+                      aria-expanded={visibilityBSectionsOpen.saved}
+                    >
+                      <span style={COLLAPSIBLE_TRIGGER_LABEL}>
+                        Saved Views
+                        <span style={TAB_COUNT_BADGE}>{savedViews.length}</span>
+                      </span>
+                      <span style={COLLAPSIBLE_CHEVRON}>
+                        {visibilityBSectionsOpen.saved ? <IconChevronUp16 aria-hidden /> : <IconChevronDown16 aria-hidden />}
+                      </span>
+                    </button>
+                    {visibilityBSectionsOpen.saved ? (
+                      <div style={COLLAPSIBLE_CONTENT}>
+                        <div style={{ marginTop: 10 }}>
+                          <div style={SAVED_FILTER_ROW}>
+                            <div style={SAVED_FILTER_INPUT}>
+                              <span style={{ color: '#6b7280', fontSize: 11, lineHeight: 1 }}>o</span>
+                              <span>Search</span>
+                            </div>
+                            <div style={SAVED_TYPE_FILTER_WRAPPER}>
+                              <button
+                                type="button"
+                                style={{ ...SAVED_FILTER_SELECT, border: 'none', cursor: 'pointer' }}
+                                onClick={() => setShowTypeFilterMenu((current) => !current)}
+                                aria-haspopup="menu"
+                                aria-expanded={showTypeFilterMenu}
+                              >
+                                <span>Type</span>
+                                <span style={{ color: '#4b5563', fontSize: 11, lineHeight: 1 }}>v</span>
+                              </button>
+                              {showTypeFilterMenu ? (
+                                <div role="menu" aria-label="Type filters" style={SAVED_TYPE_FILTER_MENU}>
+                                  {savedViewTypeOptions.map((typeOption) => {
+                                    const isChecked = selectedSavedViewTypes.includes(typeOption);
+
+                                    return (
+                                      <button
+                                        key={typeOption}
+                                        type="button"
+                                        role="menuitemcheckbox"
+                                        aria-checked={isChecked}
+                                        style={SAVED_TYPE_FILTER_ITEM}
+                                        onClick={() => {
+                                          setSelectedSavedViewTypes((current) =>
+                                            current.includes(typeOption)
+                                              ? current.filter((item) => item !== typeOption)
+                                              : [...current, typeOption],
+                                          );
+                                        }}
+                                      >
+                                        <span style={{ width: 12, color: '#374151', lineHeight: 1 }}>{isChecked ? 'x' : ''}</span>
+                                        <span>{typeOption}</span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              ) : null}
+                            </div>
+                          </div>
+                          <div style={{ color: TOK.textSecondary, fontSize: 12, marginBottom: 8 }}>No filters applied</div>
+
+                          <div style={{ ...PANEL, background: TOK.layer01, overflow: 'hidden' }}>
+                            <div style={SAVED_TABLE_HEADER}>
+                              <div style={SAVED_CELL}>Name</div>
+                              <div style={SAVED_CELL}>Type</div>
+                              <div style={SAVED_CELL}>Owner</div>
+                              <div style={SAVED_CELL}>Last Updated</div>
+                              <div style={SAVED_CELL_LAST}>Options</div>
+                            </div>
+                            {savedViews.map((view) => (
+                              <div key={view.name} style={SAVED_TABLE_ROW}>
+                                <div style={SAVED_CELL}><span style={SAVED_LINK}>{view.name}</span></div>
+                                <div style={SAVED_CELL}>{view.type}</div>
+                                <div style={SAVED_CELL}>{view.owner}</div>
+                                <div style={SAVED_CELL}>{view.updated}</div>
+                                <div style={SAVED_CELL_LAST}>
+                                  <button
+                                    type="button"
+                                    onClick={() => setSavedViewMenuOpenFor((current) => (current === view.name ? null : view.name))}
+                                    aria-haspopup="menu"
+                                    aria-expanded={savedViewMenuOpenFor === view.name}
+                                    style={{
+                                      border: `1px solid ${TOK.border}`,
+                                      borderRadius: 4,
+                                      background: TOK.layer01,
+                                      color: TOK.textSecondary,
+                                      fontSize: 12,
+                                      lineHeight: 1,
+                                      padding: '4px 7px',
+                                    }}
+                                  >
+                                    ...
+                                  </button>
+                                  {savedViewMenuOpenFor === view.name ? (
+                                    <div role="menu" aria-label={`Saved view options for ${view.name}`} style={SAVED_ROW_MENU}>
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        style={SAVED_ROW_MENU_ITEM}
+                                        onClick={() => setSavedViewMenuOpenFor(null)}
+                                      >
+                                        Rename
+                                      </button>
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        style={SAVED_ROW_MENU_ITEM}
+                                        onClick={() => setSavedViewMenuOpenFor(null)}
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div style={SAVED_FOOTER}>
+                            <div>1-20 of 50</div>
+                            <div style={SAVED_PAGER}>
+                              <span>{'<'}</span>
+                              <span style={{ color: 'var(--z-accent, #2563eb)', fontWeight: 600 }}>1</span>
+                              <span>2</span>
+                              <span>3</span>
+                              <span>{'>'}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8 }}>
+                              <span>Items per page</span>
+                              <button type="button" style={{ ...TAB, borderRadius: 4, padding: '2px 8px' }}>20</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div style={PREVIEW_SPLIT}>
+                <div style={PREVIEW_PANEL}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <strong style={{ fontSize: 22 }}>Explorer View</strong>
+                    <button type="button" style={{ ...NEW_QUERY_BUTTON, marginLeft: 'auto' }}>New query</button>
+                  </div>
+                  <div style={{ color: TOK.textSecondary, fontSize: 12, marginTop: 4 }}>
+                    Explore your managed resources to analyze your organization's Terraform usage.
+                  </div>
+
+                  <div style={HDS_TAB_ROW}>
+                    <span style={HDS_TAB_ACTIVE}>Types & use cases</span>
+                    <span style={HDS_TAB}>Saved views (50)</span>
+                  </div>
+
+                  <div style={{ marginTop: 12, fontSize: 13, color: TOK.textSecondary }}>Types</div>
+                  <div style={{ ...STACKED_CARD_GRID, marginTop: 8 }}>
+                    {explorerTypeCards.map((label) => (
+                      <div key={label} style={CARD}>
+                        <span>{label}</span>
+                        <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: 14, fontSize: 13, color: TOK.textSecondary }}>Use cases</div>
+                  <div style={{ ...STACKED_CARD_GRID, marginTop: 8 }}>
+                    {explorerUseCases.map((label) => (
+                      <div key={label} style={CARD}>
+                        <span>{label}</span>
+                        <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={PREVIEW_PANEL}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <strong style={{ fontSize: 22 }}>Graph Explorer</strong>
+                  </div>
+                  <div style={{ color: TOK.textSecondary, fontSize: 12, marginTop: 4 }}>
+                    Ask graph-based questions to investigate resource relationships and risk.
+                  </div>
+
+                  <div style={{ ...PANEL, marginTop: 10, padding: 10, background: TOK.layer01 }}>
+                    <div style={{ fontSize: 12, color: TOK.textSecondary, marginBottom: 8 }}>Build your Infragraph query</div>
+                    <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                      <button type="button" style={{ ...TAB, borderRadius: 4 }}>Clear query</button>
+                      <button type="button" style={{ ...TAB, borderRadius: 4 }}>{'</>'}</button>
+                      <button type="button" style={{ ...TAB, borderRadius: 4 }}>x</button>
+                    </div>
+                    <div
+                      style={{
+                        border: `1px solid ${TOK.border}`,
+                        borderRadius: 4,
+                        background: 'var(--z-accent, #2563eb)',
+                        color: '#fff',
+                        fontSize: 12,
+                        padding: '6px 10px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      Find...
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 12, fontSize: 13, color: TOK.textSecondary }}>Suggested questions</div>
+                  <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+                    {graphQuestions.map((question) => (
+                      <div key={question} style={CARD}>
+                        <span>{question}</span>
+                        <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         </main>
       </div>
@@ -474,4 +1241,18 @@ export default meta;
 
 type Story = StoryObj<typeof VisibilityPage>;
 
-export const Default: Story = {};
+export const VisibilityA: Story = {};
+
+export const VisibilityB: Story = {
+  args: {
+    pageLabel: 'Visibility B',
+    layoutVariant: 'B',
+  },
+};
+
+export const VisibilityC: Story = {
+  args: {
+    pageLabel: 'Visibility C',
+    layoutVariant: 'C',
+  },
+};

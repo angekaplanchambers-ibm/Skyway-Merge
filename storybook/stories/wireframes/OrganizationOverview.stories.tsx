@@ -348,8 +348,10 @@ function organizationOverviewStoryHref(
   return `?path=/story/wireframes-organizationoverview--${storyId}&args=model.organizationName:${encodeURIComponent(organizationName)}`;
 }
 
-function visibilityStoryHref(): string {
-  return '?path=/story/wireframes-visibility--default';
+function visibilityStoryHref(variant: 'a' | 'b' | 'c'): string {
+  if (variant === 'b') return '?path=/story/wireframes-visibility--visibility-b';
+  if (variant === 'c') return '?path=/story/wireframes-visibility--visibility-c';
+  return '?path=/story/wireframes-visibility--visibility-a';
 }
 
 function orgSubpageHref(
@@ -439,7 +441,19 @@ function SideNav({ portfolioHref }: { portfolioHref?: string }) {
       <div style={NAV_ITEM}>
         <div style={NAV_ITEM_LEFT}>
           <NavGlyph />
-          <a href={visibilityStoryHref()} target="_top" style={NAV_LINK}>Visibility</a>
+          <a href={visibilityStoryHref('a')} target="_top" style={NAV_LINK}>Visibility A</a>
+        </div>
+      </div>
+      <div style={NAV_ITEM}>
+        <div style={NAV_ITEM_LEFT}>
+          <NavGlyph />
+          <a href={visibilityStoryHref('b')} target="_top" style={NAV_LINK}>Visibility B</a>
+        </div>
+      </div>
+      <div style={NAV_ITEM}>
+        <div style={NAV_ITEM_LEFT}>
+          <NavGlyph />
+          <a href={visibilityStoryHref('c')} target="_top" style={NAV_LINK}>Visibility C</a>
         </div>
       </div>
 
