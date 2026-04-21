@@ -182,6 +182,46 @@ const RESOURCE_ROW: CSSProperties = {
   color: TOK.textPrimary,
 };
 
+const STATUS_FILTER_BUTTON: CSSProperties = {
+  border: 'none',
+  background: 'transparent',
+  padding: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 18,
+  height: 18,
+  color: TOK.textSecondary,
+  cursor: 'pointer',
+};
+
+const STATUS_FILTER_MENU: CSSProperties = {
+  position: 'absolute',
+  top: 20,
+  right: 0,
+  minWidth: 120,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: TOK.layer01,
+  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.12)',
+  zIndex: 3,
+  padding: 4,
+};
+
+const STATUS_FILTER_MENU_ITEM: CSSProperties = {
+  width: '100%',
+  border: 'none',
+  background: 'transparent',
+  color: TOK.textPrimary,
+  fontSize: 12,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  padding: '6px 8px',
+  textAlign: 'left',
+  cursor: 'pointer',
+};
+
 const TABLE_PAGINATION: CSSProperties = {
   display: 'flex',
   justifyContent: 'flex-end',
@@ -505,8 +545,25 @@ function OrganizationOverview({
   organizationOverviewStory?: 'default' | 'high-risk';
 }) {
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
+  const [showStatusFilterMenu, setShowStatusFilterMenu] = useState(false);
+  const [resourceStatusPriority, setResourceStatusPriority] = useState<'managed' | 'unmanaged' | null>(null);
   const organizationOptions = organizationsRowsFixture.map((org) => org.organizationName);
   const handleOverviewViewClick = () => {};
+
+  const sortedResourceInventory = [...model.resourceInventory].sort((a, b) => {
+    if (!resourceStatusPriority) return 0;
+
+    const leftStatus = managementTag(a.managementStatus);
+    const rightStatus = managementTag(b.managementStatus);
+    const leftRank = leftStatus === resourceStatusPriority ? 0 : 1;
+    const rightRank = rightStatus === resourceStatusPriority ? 0 : 1;
+
+    if (leftRank !== rightRank) {
+      return leftRank - rightRank;
+    }
+
+    return a.resourceName.localeCompare(b.resourceName);
+  });
 
   return (
     <div style={SHELL}>
@@ -571,64 +628,59 @@ function OrganizationOverview({
 
         <main style={MAIN}>
           <section style={PANEL}>
-          <div style={PANEL_HEADER}>Organization Overview</div>
-          <div style={{ padding: 10 }}>
-            <div style={{ fontSize: 24, fontWeight: 700 }}>{model.organizationName}</div>
-            <div style={{ color: TOK.textSecondary, fontSize: 10 }}>
-              Health: {statusTag(model.overallHealth)} | Type: {model.organizationType} | Workspaces: {model.workspaceCount}
-            </div>
-            <div style={SURFACE_GRID}>
-              <div style={{ ...TILE, display: 'flex', flexDirection: 'column', minHeight: 112 }}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}><strong>Explorer View</strong></div>
-                <div>Best for managed posture, governance, and latest-state overview.</div>
-                <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
-                    View
-                  </button>
-                </div>
-              </div>
-              <div style={{ ...TILE, display: 'flex', flexDirection: 'column', minHeight: 112 }}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}><strong>Resource Graph</strong></div>
-                <div>Investigate managed and unmanaged resource relationships, dependencies and potential blast-radius.</div>
-                <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
-                    View
-                  </button>
-                </div>
-              </div>
-              <div style={{ ...TILE, display: 'flex', flexDirection: 'column', minHeight: 112 }}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}><strong>Search and Import</strong></div>
-                <div>Find unmanaged resources in a workspace and start guided import.</div>
-                <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>
-                    View
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          </section>
-
-          <section style={PANEL}>
-          <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-            <span>Posture Summary</span>
-            <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-              At-a-glance counts for incidents, drift, policy, and coverage.
+          <div style={{ ...PANEL_HEADER, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>Organization Overview</span>
+            <span style={{ color: TOK.textSecondary, fontSize: 12, fontWeight: 500, letterSpacing: 'normal', textTransform: 'none' }}>
+              Type: {model.organizationType}
             </span>
           </div>
-          <div style={TILE_GRID}>
-            <div style={TILE}><div>Active incidents</div><strong>{model.activeIncidentCount}</strong></div>
-            <div style={TILE}><div>Critical drift ws</div><strong>{model.criticalDriftWorkspaceCount}</strong></div>
-            <div style={TILE}><div>Validation failing ws</div><strong>{model.validationFailingWorkspaceCount}</strong></div>
-            <div style={TILE}><div>Policy violating ws</div><strong>{model.policyViolatingWorkspaceCount}</strong></div>
-            <div style={TILE}><div>Managed / Unmanaged</div><strong>{model.managedResourceCount} / {model.unmanagedResourceCount}</strong></div>
-            <div style={TILE}><div>Coverage</div><strong>{model.managedCoveragePct}%</strong></div>
+          <div style={{ padding: 10 }}>
+            <div style={{ fontSize: 24, fontWeight: 700 }}>{model.organizationName}</div>
+            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                Posture Summary
+              </span>
+              <span style={{ color: TOK.textSecondary, fontSize: 10 }}>
+                At-a-glance counts for incidents, drift, policy, and coverage.
+              </span>
+            </div>
+            <div style={{ ...TILE_GRID, padding: '10px 0 0' }}>
+              <div style={TILE}><div>Active incidents</div><strong>{model.activeIncidentCount}</strong></div>
+              <div style={TILE}><div>Critical drift ws</div><strong>{model.criticalDriftWorkspaceCount}</strong></div>
+              <div style={TILE}><div>Validation failing ws</div><strong>{model.validationFailingWorkspaceCount}</strong></div>
+              <div style={TILE}><div>Policy violating ws</div><strong>{model.policyViolatingWorkspaceCount}</strong></div>
+              <div style={TILE}><div>Managed / Unmanaged</div><strong>{model.managedResourceCount} / {model.unmanagedResourceCount}</strong></div>
+              <div style={TILE}><div>Coverage</div><strong>{model.managedCoveragePct}%</strong></div>
+            </div>
           </div>
           </section>
 
           <section style={PANEL}>
-          <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-            <span>Workspace Status</span>
+          <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, width: '100%' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span>Workspace Status</span>
+                <span
+                  style={{
+                    minWidth: 18,
+                    height: 18,
+                    borderRadius: 999,
+                    border: `1px solid ${TOK.border}`,
+                    background: TOK.layer02,
+                    color: TOK.textSecondary,
+                    fontSize: 11,
+                    lineHeight: '16px',
+                    textAlign: 'center',
+                    display: 'inline-block',
+                    padding: '0 5px',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  {model.workspaces.length}
+                </span>
+              </span>
+              <button type="button" onClick={handleOverviewViewClick} style={VIEW_BUTTON}>View</button>
+            </div>
             <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
               Workspace run health, drift, validation, and change request status.
             </span>
@@ -661,8 +713,46 @@ function OrganizationOverview({
           </section>
 
           <section style={PANEL}>
-            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-              <span>Resource Inventory</span>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, width: '100%' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span>Resource Inventory</span>
+                  <span
+                    style={{
+                      minWidth: 18,
+                      height: 18,
+                      borderRadius: 999,
+                      border: `1px solid ${TOK.border}`,
+                      background: TOK.layer02,
+                      color: TOK.textSecondary,
+                      fontSize: 11,
+                      lineHeight: '16px',
+                      textAlign: 'center',
+                      display: 'inline-block',
+                      padding: '0 5px',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {model.resourceInventory.length}
+                  </span>
+                </span>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 0 }}>
+                  <button
+                    type="button"
+                    onClick={handleOverviewViewClick}
+                    style={{ ...VIEW_BUTTON, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                  >
+                    Import
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOverviewViewClick}
+                    style={{ ...VIEW_BUTTON, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, borderLeft: 'none' }}
+                  >
+                    View
+                  </button>
+                </div>
+              </div>
               <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
                 Resource-level inventory with source, management, workspace, and import status.
               </span>
@@ -672,11 +762,68 @@ function OrganizationOverview({
               <div>Provider</div>
               <div>Type</div>
               <div>Surface</div>
-              <div>Status</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, position: 'relative' }}>
+                <span>Status</span>
+                <button
+                  type="button"
+                  onClick={() => setShowStatusFilterMenu((current) => !current)}
+                  aria-label="Filter status"
+                  aria-haspopup="menu"
+                  aria-expanded={showStatusFilterMenu}
+                  style={{
+                    ...STATUS_FILTER_BUTTON,
+                    color: resourceStatusPriority ? TOK.textPrimary : TOK.textSecondary,
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
+                    <path
+                      d="M1.5 2H10.5L7 6V10L5 9V6L1.5 2Z"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                      fill="none"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                {showStatusFilterMenu ? (
+                  <div role="menu" aria-label="Status filters" style={STATUS_FILTER_MENU}>
+                    <button
+                      type="button"
+                      role="menuitemradio"
+                      aria-checked={resourceStatusPriority === 'managed'}
+                      style={STATUS_FILTER_MENU_ITEM}
+                      onClick={() => {
+                        setResourceStatusPriority('managed');
+                        setShowStatusFilterMenu(false);
+                      }}
+                    >
+                      <span style={{ width: 12, color: '#374151', lineHeight: 1 }}>
+                        {resourceStatusPriority === 'managed' ? 'x' : ''}
+                      </span>
+                      <span>Managed</span>
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitemradio"
+                      aria-checked={resourceStatusPriority === 'unmanaged'}
+                      style={STATUS_FILTER_MENU_ITEM}
+                      onClick={() => {
+                        setResourceStatusPriority('unmanaged');
+                        setShowStatusFilterMenu(false);
+                      }}
+                    >
+                      <span style={{ width: 12, color: '#374151', lineHeight: 1 }}>
+                        {resourceStatusPriority === 'unmanaged' ? 'x' : ''}
+                      </span>
+                      <span>Unmanaged</span>
+                    </button>
+                  </div>
+                ) : null}
+              </div>
               <div>Workspace</div>
               <div>Import</div>
             </div>
-            {model.resourceInventory.map((resource) => (
+            {sortedResourceInventory.map((resource) => (
               <div key={resource.resourceId} style={RESOURCE_ROW}>
                 <div>{resource.resourceName}</div>
                 <div>{resource.provider}</div>
