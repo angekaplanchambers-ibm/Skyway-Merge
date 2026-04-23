@@ -122,7 +122,7 @@ const PANEL_HEADER: CSSProperties = {
 
 const TILE_GRID: CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(6, minmax(120px, 1fr))',
+  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
   gap: 8,
   padding: 10,
 };
@@ -132,6 +132,103 @@ const TILE: CSSProperties = {
   background: TOK.layer02,
   borderRadius: 4,
   padding: 8,
+};
+
+const TABLE_HEADER: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '40px 120px 170px 120px 140px 120px 120px 1.5fr',
+  padding: '8px 10px',
+  borderBottom: `1px solid ${TOK.border}`,
+  fontSize: 12,
+  color: TOK.textSecondary,
+  gap: 8,
+};
+
+const TABLE_ROW: CSSProperties = {
+  ...TABLE_HEADER,
+  fontSize: 13,
+  color: TOK.textPrimary,
+};
+
+const FILTER_ROW: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 8,
+  padding: '8px 10px',
+  borderBottom: `1px solid ${TOK.border}`,
+  background: TOK.layer02,
+};
+
+const FILTER_PILL: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 6,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 999,
+  background: TOK.layer01,
+  padding: '4px 8px',
+  fontSize: 12,
+  color: TOK.textSecondary,
+};
+
+const ACTIONS_DROPDOWN_BUTTON: CSSProperties = {
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: TOK.layer01,
+  color: TOK.textPrimary,
+  fontSize: 12,
+  fontWeight: 600,
+  padding: '4px 10px',
+  cursor: 'pointer',
+};
+
+const FILTER_MENU_BUTTON: CSSProperties = {
+  ...ACTIONS_DROPDOWN_BUTTON,
+  minWidth: 108,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  textAlign: 'left',
+};
+
+const CHECKBOX_INPUT: CSSProperties = {
+  width: 14,
+  height: 14,
+  accentColor: 'var(--z-accent, #2563eb)',
+};
+
+const CRITICALITY_TAG: Record<'P0' | 'P1' | 'P2', CSSProperties> = {
+  P0: {
+    border: '1px solid #b91c1c',
+    color: '#b91c1c',
+    background: '#fee2e2',
+    borderRadius: 999,
+    padding: '2px 8px',
+    fontSize: 12,
+    fontWeight: 700,
+    width: 'fit-content',
+  },
+  P1: {
+    border: '1px solid #b45309',
+    color: '#b45309',
+    background: '#ffedd5',
+    borderRadius: 999,
+    padding: '2px 8px',
+    fontSize: 12,
+    fontWeight: 700,
+    width: 'fit-content',
+  },
+  P2: {
+    border: '1px solid #1d4ed8',
+    color: '#1d4ed8',
+    background: '#dbeafe',
+    borderRadius: 999,
+    padding: '2px 8px',
+    fontSize: 12,
+    fontWeight: 700,
+    width: 'fit-content',
+  },
 };
 
 const LIST_HEADER: CSSProperties = {
@@ -338,6 +435,42 @@ const SURFACE_GRID: CSSProperties = {
   marginTop: 10,
 };
 
+const FLEET_SNAPSHOT_PANEL: CSSProperties = {
+  paddingTop: 0,
+};
+
+const FLEET_ROW: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1.2fr 1.8fr 150px 100px 36px',
+  alignItems: 'center',
+  gap: 12,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 8,
+  padding: '12px 14px',
+  background: TOK.layer02,
+};
+
+const STATUS_PILL: Record<'active' | 'inactive', CSSProperties> = {
+  active: {
+    borderRadius: 8,
+    padding: '4px 10px',
+    background: '#d1fae5',
+    color: '#166534',
+    fontWeight: 600,
+    fontSize: 12,
+    width: 'fit-content',
+  },
+  inactive: {
+    borderRadius: 8,
+    padding: '4px 10px',
+    background: '#e5e7eb',
+    color: '#374151',
+    fontWeight: 600,
+    fontSize: 12,
+    width: 'fit-content',
+  },
+};
+
 function statusTag(status: 'healthy' | 'warning' | 'critical'): string {
   if (status === 'healthy') return 'OK';
   if (status === 'warning') return 'WARN';
@@ -369,6 +502,43 @@ function importReadinessTag(status: 'ready' | 'blocked_policy' | 'not_applicable
   if (status === 'ready') return 'Ready';
   if (status === 'blocked_policy') return 'Blocked';
   return '-';
+}
+
+function kpi7dGoal(id: OrganizationOverviewData['postureKpiCards'][number]['id']): string {
+  if (id === 'criticalIncidents') return '>= 75';
+  if (id === 'criticalDriftOrganizations') return '>=$150k';
+  if (id === 'validationFailingOrganizations') return '>= 15';
+  if (id === 'policyViolatingOrganizations') return '>= 80%';
+  return '0';
+}
+
+function formatKpiValue(card: OrganizationOverviewData['postureKpiCards'][number]): string {
+  if (card.id === 'criticalDriftOrganizations') {
+    return `$${card.value.toLocaleString()}`;
+  }
+  if (card.id === 'policyViolatingOrganizations') {
+    return `${card.value}%`;
+  }
+  return card.value.toLocaleString();
+}
+
+function agentProgressLabel(
+  status: OrganizationOverviewData['remediationQueue'][number]['agentProgressStatus'],
+): string {
+  if (status === 'queued') return 'Queued';
+  if (status === 'analyzing') return 'Analyzing';
+  if (status === 'drafting_pr') return 'Drafting PR';
+  if (status === 'awaiting_review') return 'Awaiting review';
+  return 'Merged';
+}
+
+function repoLabel(repoUrl: string): string {
+  const parts = repoUrl.split('/').filter(Boolean);
+  return parts[parts.length - 1] ?? 'Repository';
+}
+
+function agentTypeLabel(agentType: string): string {
+  return agentType.replace(/\s+Agent$/, '');
 }
 
 function orgPortfolioStoryHref(story: 'default' | 'high-risk'): string {
@@ -493,11 +663,9 @@ function SideNav({ portfolioHref }: { portfolioHref?: string }) {
       <div style={NAV_ITEM}>
         <div style={NAV_ITEM_LEFT}>
           <NavGlyph />
-          <span style={visibilityInlineRowStyle}>
-            <span>Visibility</span>
-            <a href={visibilityStoryHref('a')} target="_top" style={visibilityNavLinkStyle}>(A)</a>
-            <a href={visibilityStoryHref('b')} target="_top" style={visibilityNavLinkStyle}>(B)</a>
-          </span>
+          <a href={visibilityStoryHref('a')} target="_top" style={{ ...visibilityInlineRowStyle, ...visibilityNavLinkStyle }}>
+            Visibility
+          </a>
         </div>
       </div>
 
@@ -546,9 +714,15 @@ function OrganizationOverview({
 }) {
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
   const [showStatusFilterMenu, setShowStatusFilterMenu] = useState(false);
+  const [selectedQueueItemIds, setSelectedQueueItemIds] = useState<string[]>([]);
+  const [showQueueFilterMenu, setShowQueueFilterMenu] = useState(false);
+  const [showQueueActionsMenu, setShowQueueActionsMenu] = useState(false);
   const [resourceStatusPriority, setResourceStatusPriority] = useState<'managed' | 'unmanaged' | null>(null);
   const organizationOptions = organizationsRowsFixture.map((org) => org.organizationName);
   const handleOverviewViewClick = () => {};
+  const allQueueItemIds = model.remediationQueue.map((item) => item.queueItemId);
+  const allQueueRowsSelected =
+    allQueueItemIds.length > 0 && allQueueItemIds.every((id) => selectedQueueItemIds.includes(id));
 
   const sortedResourceInventory = [...model.resourceInventory].sort((a, b) => {
     if (!resourceStatusPriority) return 0;
@@ -641,18 +815,233 @@ function OrganizationOverview({
                 Posture Summary
               </span>
               <span style={{ color: TOK.textSecondary, fontSize: 10 }}>
-                At-a-glance counts for incidents, drift, policy, and coverage.
+                Shared posture KPIs for remediation performance, savings, and coverage.
               </span>
             </div>
             <div style={{ ...TILE_GRID, padding: '10px 0 0' }}>
-              <div style={TILE}><div>Active incidents</div><strong>{model.activeIncidentCount}</strong></div>
-              <div style={TILE}><div>Critical drift ws</div><strong>{model.criticalDriftWorkspaceCount}</strong></div>
-              <div style={TILE}><div>Validation failing ws</div><strong>{model.validationFailingWorkspaceCount}</strong></div>
-              <div style={TILE}><div>Policy violating ws</div><strong>{model.policyViolatingWorkspaceCount}</strong></div>
-              <div style={TILE}><div>Managed / Unmanaged</div><strong>{model.managedResourceCount} / {model.unmanagedResourceCount}</strong></div>
-              <div style={TILE}><div>Coverage</div><strong>{model.managedCoveragePct}%</strong></div>
+              {model.postureKpiCards
+                .filter((card) => card.id !== 'accessibleOrganizations')
+                .map((card) => (
+                  <div key={card.id} style={TILE}>
+                    <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{card.label}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                      <div style={{ fontSize: 22, fontWeight: 700 }}>{formatKpiValue(card)}</div>
+                      {card.id === 'criticalDriftOrganizations' ? (
+                        <div style={{ color: '#15803d', fontSize: 18, fontWeight: 700 }} aria-label="Savings trending down">
+                          ↓
+                        </div>
+                      ) : null}
+                    </div>
+                    <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
+                      7d: {card.delta7d ?? 0} ({card.trendDirection ?? 'flat'}) | Goal: {kpi7dGoal(card.id)}
+                    </div>
+                  </div>
+                ))}
+            </div>
+            <div
+              style={{
+                borderTop: `1px solid ${TOK.border}`,
+                margin: '10px 0 0',
+              }}
+            />
+            <div style={{ ...FLEET_SNAPSHOT_PANEL, marginTop: 10 }}>
+              <div style={{ marginBottom: 8, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                  Agentic Fleet Snapshot
+                </span>
+                <span style={{ color: TOK.textSecondary, fontSize: 10 }}>
+                  Fleet-level activity and current agent status.
+                </span>
+              </div>
+              <div style={{ display: 'grid', gap: 10 }}>
+                {model.fleetSnapshot.map((agent) => (
+                  <div key={agent.agentId} style={FLEET_ROW}>
+                    <div style={{ fontSize: 12, fontWeight: 700 }}>{agent.name}</div>
+                    <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{agent.description}</div>
+                    <div style={{ fontSize: 12 }}><strong>{agent.metricLabel}:</strong> {agent.remediations}</div>
+                    <div><span style={STATUS_PILL[agent.status]}>{agent.status === 'active' ? '✓ Active' : '× Inactive'}</span></div>
+                    <div style={{ fontSize: 18, color: TOK.textSecondary, textAlign: 'center' }}>→</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+          </section>
+
+          <section style={PANEL}>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span>Agentic Workflows</span>
+              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                View performance of Fleet Agents
+              </span>
+            </div>
+            <div style={FILTER_ROW}>
+              <div style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  style={ACTIONS_DROPDOWN_BUTTON}
+                  onClick={() => setShowQueueActionsMenu((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={showQueueActionsMenu}
+                >
+                  Actions v
+                </button>
+                {showQueueActionsMenu ? (
+                  <div
+                    role="menu"
+                    style={{
+                      position: 'absolute',
+                      top: 30,
+                      left: 0,
+                      minWidth: 120,
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 4,
+                      background: TOK.layer01,
+                      padding: 4,
+                      zIndex: 2,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      role="menuitem"
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        border: 0,
+                        background: 'transparent',
+                        color: TOK.textPrimary,
+                        fontSize: 12,
+                        padding: '6px 8px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Escalate
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button
+                  type="button"
+                  style={ACTIONS_DROPDOWN_BUTTON}
+                >
+                  Agentic Workflow
+                </button>
+                <div style={{ position: 'relative' }}>
+                  <button
+                    type="button"
+                    style={FILTER_MENU_BUTTON}
+                    onClick={() => setShowQueueFilterMenu((v) => !v)}
+                    aria-haspopup="menu"
+                    aria-expanded={showQueueFilterMenu}
+                  >
+                    <span>Filter By</span>
+                    <span aria-hidden>v</span>
+                  </button>
+                  {showQueueFilterMenu ? (
+                    <div
+                      role="menu"
+                      style={{
+                        position: 'absolute',
+                        top: 30,
+                        left: 0,
+                        minWidth: 230,
+                        border: `1px solid ${TOK.border}`,
+                        borderRadius: 4,
+                        background: TOK.layer01,
+                        padding: 6,
+                        zIndex: 2,
+                      }}
+                    >
+                      <div style={FILTER_PILL}>
+                        <strong style={{ color: TOK.textPrimary }}>Project</strong>
+                        <span>all-projects</span>
+                      </div>
+                      <div style={{ height: 6 }} />
+                      <div style={FILTER_PILL}>
+                        <strong style={{ color: TOK.textPrimary }}>Workspace</strong>
+                        <span>all-workspaces</span>
+                      </div>
+                      <div style={{ height: 6 }} />
+                      <div style={FILTER_PILL}>
+                        <strong style={{ color: TOK.textPrimary }}>Agent status</strong>
+                        <span>all-statuses</span>
+                      </div>
+                      <div style={{ height: 6 }} />
+                      <div style={FILTER_PILL}>
+                        <strong style={{ color: TOK.textPrimary }}>Criticality</strong>
+                        <span>all-levels</span>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+            <div style={TABLE_HEADER}>
+              <div>
+                <input
+                  type="checkbox"
+                  aria-label="Select all queue items"
+                  style={CHECKBOX_INPUT}
+                  checked={allQueueRowsSelected}
+                  onChange={(event) => {
+                    setSelectedQueueItemIds(event.target.checked ? allQueueItemIds : []);
+                  }}
+                />
+              </div>
+              <div>Criticality</div>
+              <div>Agent</div>
+              <div>Agent Status</div>
+              <div>Workspace</div>
+              <div>GitHub Ticket</div>
+              <div>GitHub Repo</div>
+              <div>Issue</div>
+            </div>
+            {model.remediationQueue.map((item) => (
+              <div key={item.queueItemId} style={TABLE_ROW}>
+                <div>
+                  <input
+                    type="checkbox"
+                    aria-label={`Select ${item.queueItemId}`}
+                    style={CHECKBOX_INPUT}
+                    checked={selectedQueueItemIds.includes(item.queueItemId)}
+                    onChange={(event) => {
+                      setSelectedQueueItemIds((prev) => {
+                        if (event.target.checked) return [...prev, item.queueItemId];
+                        return prev.filter((id) => id !== item.queueItemId);
+                      });
+                    }}
+                  />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={CRITICALITY_TAG[item.criticalityTag]}>{item.criticalityTag}</span>
+                    <span>{item.ageMinutes}m</span>
+                  </div>
+                </div>
+                <div>{agentTypeLabel(item.agentType)}</div>
+                <div>{agentProgressLabel(item.agentProgressStatus)}</div>
+                <div>{item.primaryWorkspaceName ?? `${item.affectedWorkspaceCount} workspaces`}</div>
+                <div>
+                  <a href={item.githubTicketUrl} target="_blank" rel="noreferrer" style={ACTION_LINK}>
+                    {item.githubTicketId}
+                  </a>
+                </div>
+                <div>
+                  <a href={item.githubRepoUrl} target="_blank" rel="noreferrer" style={ACTION_LINK}>
+                    {repoLabel(item.githubRepoUrl)}
+                  </a>
+                </div>
+                <div>{item.issueSummary}</div>
+              </div>
+            ))}
+            <div style={TABLE_PAGINATION}>
+              <a href="#" style={PAGE_LINK}>{'<'}</a>
+              <a href="#" style={PAGE_LINK}>1</a>
+              <span style={PAGE_ACTIVE}>[2]</span>
+              <a href="#" style={PAGE_LINK}>3</a>
+              <a href="#" style={PAGE_LINK}>{'>'}</a>
+            </div>
           </section>
 
           <section style={PANEL}>
@@ -841,40 +1230,6 @@ function OrganizationOverview({
               <a href="#" style={PAGE_LINK}>3</a>
               <a href="#" style={PAGE_LINK}>{'>'}</a>
             </div>
-          </section>
-
-          <section style={PANEL}>
-          <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-            <span>Organization Remediation Queue</span>
-            <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-              Prioritized remediation items ranked by severity and blast radius.
-            </span>
-          </div>
-          <div style={LIST_HEADER}>
-            <div>Severity</div>
-            <div>Category</div>
-            <div>Ws</div>
-            <div>Issue</div>
-            <div>Blast</div>
-            <div>Actions</div>
-          </div>
-          {model.remediationQueue.map((item) => (
-            <div key={item.queueItemId} style={LIST_ROW}>
-              <div>{severityTag(item.severity)} {item.severity}</div>
-              <div>{item.issueCategory}</div>
-              <div>{item.affectedWorkspaceCount}</div>
-              <div>{item.issueSummary}</div>
-              <div>{item.blastRadiusScore}</div>
-              <div>{nextActionLabel(item)}</div>
-            </div>
-          ))}
-          <div style={TABLE_PAGINATION}>
-            <a href="#" style={PAGE_LINK}>{'<'}</a>
-            <a href="#" style={PAGE_LINK}>1</a>
-            <span style={PAGE_ACTIVE}>[2]</span>
-            <a href="#" style={PAGE_LINK}>3</a>
-            <a href="#" style={PAGE_LINK}>{'>'}</a>
-          </div>
           </section>
 
         </main>

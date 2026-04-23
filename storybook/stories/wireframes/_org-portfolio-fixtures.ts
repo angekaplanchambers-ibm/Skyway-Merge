@@ -65,10 +65,14 @@ export interface CoveragePanelData {
 
 export interface RemediationQueueItem {
   queueItemId: string;
+  criticalityTag: 'P0' | 'P1' | 'P2';
   severity: 'critical' | 'high' | 'medium';
+  agentType: string;
   organizationId: string;
   organizationName: string;
+  projectName?: string;
   affectedWorkspaceCount: number;
+  primaryWorkspaceName?: string;
   issueCategory:
     | 'drift'
     | 'validation'
@@ -79,6 +83,15 @@ export interface RemediationQueueItem {
   blastRadiusScore: number; // 0-100
   firstDetectedAt: string; // ISO 8601
   ageMinutes: number;
+  agentProgressStatus:
+    | 'queued'
+    | 'analyzing'
+    | 'drafting_pr'
+    | 'awaiting_review'
+    | 'merged';
+  githubTicketId: string;
+  githubTicketUrl: string;
+  githubRepoUrl: string;
   nextActionType:
     | 'openWorkspaceHub'
     | 'openRunDetail'
@@ -95,6 +108,34 @@ export interface RemediationQueueTotals {
   critical: number;
   high: number;
   medium: number;
+}
+
+export interface FleetSnapshotAgent {
+  agentId: string;
+  name: string;
+  description: string;
+  metricLabel: string;
+  remediations: number;
+  status: 'active' | 'inactive';
+}
+
+export interface OrganizationFleetSnapshotRow {
+  fleetId: string;
+  organizationId: string;
+  organizationName: string;
+  fleetName: string;
+  activeAgentCount: number;
+  inactiveAgentCount: number;
+  metricLabel: string;
+  metricValue: number;
+  status: 'active' | 'inactive';
+}
+
+export interface RemediationQueueFilters {
+  project?: string;
+  workspace?: string;
+  agentProgressStatus?: RemediationQueueItem['agentProgressStatus'];
+  criticalityTag?: RemediationQueueItem['criticalityTag'];
 }
 
 /* ------------------------------------------------------------------
@@ -166,6 +207,16 @@ export interface PaginationState {
   totalRows: number;
 }
 
+export interface VisibilitySummaryData {
+  typeCount: number;
+  useCaseCount: number;
+  suggestedQuestionCount: number;
+  savedViewCount: number;
+  queryCategoryCount: number;
+  resourceTypeCount: number;
+  topUseCases: string[];
+}
+
 /* ------------------------------------------------------------------
  * View model - convenient bundle for story args
  * ------------------------------------------------------------------ */
@@ -174,9 +225,11 @@ export interface OrgPortfolioViewModel {
   global: OrgPortfolioGlobal;
   postureKpiCards: PostureKpiCard[];
   coverage: CoveragePanelData;
+  visibilitySummary: VisibilitySummaryData;
   remediationQueue: {
     queueItems: RemediationQueueItem[];
     queueTotals: RemediationQueueTotals;
+    filters?: RemediationQueueFilters;
   };
   healthStrip: {
     runSuccessRate24hPct: number;
@@ -198,6 +251,7 @@ export interface OrgPortfolioViewModel {
     idleResourceEstimateCount: number;
     remediationSavingsEstimateUsd30d: number;
   };
+  fleetSnapshot: OrganizationFleetSnapshotRow[];
   relationshipInsights: RelationshipInsightsData;
   organizationsTable: {
     organizations: OrganizationRow[];
@@ -248,31 +302,31 @@ export const postureKpiCardsFixture: PostureKpiCard[] = [
   },
   {
     id: 'criticalIncidents',
-    label: 'Critical incidents',
-    value: 3,
-    delta7d: -2,
-    trendDirection: 'down',
+    label: 'Issues Remediated',
+    value: 84,
+    delta7d: 12,
+    trendDirection: 'up',
   },
   {
     id: 'criticalDriftOrganizations',
-    label: 'Critical drift organizations',
-    value: 2,
-    delta7d: 1,
+    label: 'Cost Savings (USD)',
+    value: 184200,
+    delta7d: 16,
     trendDirection: 'up',
   },
   {
     id: 'validationFailingOrganizations',
-    label: 'Validation failing organizations',
-    value: 4,
-    delta7d: 0,
-    trendDirection: 'flat',
+    label: 'Critical Findings Resolved',
+    value: 19,
+    delta7d: 5,
+    trendDirection: 'up',
   },
   {
     id: 'policyViolatingOrganizations',
-    label: 'Policy violating organizations',
-    value: 2,
-    delta7d: -1,
-    trendDirection: 'down',
+    label: 'Workplace Coverage',
+    value: 73,
+    delta7d: 8,
+    trendDirection: 'up',
   },
 ];
 
@@ -289,18 +343,40 @@ export const coveragePanelFixture: CoveragePanelData = {
   ],
 };
 
+export const visibilitySummaryFixture: VisibilitySummaryData = {
+  typeCount: 5,
+  useCaseCount: 12,
+  suggestedQuestionCount: 6,
+  savedViewCount: 20,
+  queryCategoryCount: 12,
+  resourceTypeCount: 9,
+  topUseCases: [
+    'Drifted workspaces',
+    'Workspaces with failed checks',
+    'Resources by module name',
+  ],
+};
+
 export const remediationQueueItemsFixture: RemediationQueueItem[] = [
   {
     queueItemId: 'rq_001',
+    criticalityTag: 'P0',
     severity: 'critical',
+    agentType: 'Remediation Agent',
     organizationId: 'org_ilm_demo',
     organizationName: 'ILM_Demo_Space',
+    projectName: 'core-networking',
     affectedWorkspaceCount: 7,
+    primaryWorkspaceName: 'ws-prod-network',
     issueCategory: 'drift',
     issueSummary: 'Internet-facing ingress rule changed outside Terraform.',
     blastRadiusScore: 88,
     firstDetectedAt: '2026-04-08T14:43:00Z',
     ageMinutes: 97,
+    agentProgressStatus: 'awaiting_review',
+    githubTicketId: 'GH-4182',
+    githubTicketUrl: 'https://github.com/hashicorp/terraform-remediation/issues/4182',
+    githubRepoUrl: 'https://github.com/hashicorp/terraform-remediation',
     nextActionType: 'openRunDetail',
     nextActionRoute: '/app/ILM_Demo_Space/workspaces/ws-prod-network/runs/R123.4',
     ownerTeam: 'platform-core',
@@ -308,15 +384,23 @@ export const remediationQueueItemsFixture: RemediationQueueItem[] = [
   },
   {
     queueItemId: 'rq_002',
+    criticalityTag: 'P1',
     severity: 'high',
+    agentType: 'Drift Remediation Agent',
     organizationId: 'org_payments',
     organizationName: 'Payments Platform',
+    projectName: 'payments-runtime',
     affectedWorkspaceCount: 3,
+    primaryWorkspaceName: 'ws-prod-payments',
     issueCategory: 'unmanaged_resource',
     issueSummary: 'Unmanaged EC2 set discovered in production account.',
     blastRadiusScore: 64,
     firstDetectedAt: '2026-04-08T12:10:00Z',
     ageMinutes: 250,
+    agentProgressStatus: 'analyzing',
+    githubTicketId: 'GH-4225',
+    githubTicketUrl: 'https://github.com/hashicorp/terraform-remediation/issues/4225',
+    githubRepoUrl: 'https://github.com/hashicorp/terraform-remediation',
     nextActionType: 'openSearchImport',
     nextActionRoute: '/app/Payments%20Platform/workspaces/ws-prod/search',
     ownerTeam: 'cloud-governance',
@@ -324,15 +408,23 @@ export const remediationQueueItemsFixture: RemediationQueueItem[] = [
   },
   {
     queueItemId: 'rq_003',
+    criticalityTag: 'P2',
     severity: 'medium',
+    agentType: 'Policy Compliance Agent',
     organizationId: 'org_data',
     organizationName: 'Data Foundation',
+    projectName: 'data-foundation-core',
     affectedWorkspaceCount: 2,
+    primaryWorkspaceName: 'ws-stage-shared',
     issueCategory: 'policy',
     issueSummary: 'Policy set failure on tag compliance baseline.',
     blastRadiusScore: 39,
     firstDetectedAt: '2026-04-08T09:05:00Z',
     ageMinutes: 435,
+    agentProgressStatus: 'queued',
+    githubTicketId: 'GH-4270',
+    githubTicketUrl: 'https://github.com/hashicorp/terraform-remediation/issues/4270',
+    githubRepoUrl: 'https://github.com/hashicorp/terraform-remediation',
     nextActionType: 'openExplorer',
     nextActionRoute: '/app/Data%20Foundation/explorer',
     ownerTeam: 'compliance-ops',
@@ -388,6 +480,96 @@ export const relationshipInsightsFixture: RelationshipInsightsData = {
   ],
   crossOrganizationBlastRadiusScore: 71,
 };
+
+export const fleetSnapshotFixture: FleetSnapshotAgent[] = [
+  {
+    agentId: 'fleet_001',
+    name: 'Remediation Agent',
+    description: 'Automatically find and remediate security issues on your Terraform repositories',
+    metricLabel: 'Remediations',
+    remediations: 1347,
+    status: 'active',
+  },
+  {
+    agentId: 'fleet_002',
+    name: 'Upgrade Agent',
+    description: 'Automatically keep your workspaces, modules and providers at the latest eligible version',
+    metricLabel: 'Upgrades',
+    remediations: 23,
+    status: 'active',
+  },
+  {
+    agentId: 'fleet_003',
+    name: 'Drift Agent',
+    description: 'Automatically remediate drifted workspaces at scale',
+    metricLabel: 'Remediations',
+    remediations: 41,
+    status: 'active',
+  },
+  {
+    agentId: 'fleet_004',
+    name: 'Plan Analyzer Agent',
+    description: 'Analyze your Terraform runs with ease',
+    metricLabel: 'Plan Adjustments',
+    remediations: 12,
+    status: 'active',
+  },
+  {
+    agentId: 'fleet_005',
+    name: 'FinOps Agent',
+    description: 'Automatically find and raise cost optimization pull requests.',
+    metricLabel: 'FinOps Adjustments',
+    remediations: 0,
+    status: 'inactive',
+  },
+];
+
+export const organizationFleetSnapshotFixture: OrganizationFleetSnapshotRow[] = [
+  {
+    fleetId: 'org_fleet_001',
+    organizationId: 'org_ilm_demo',
+    organizationName: 'ILM_Demo_Space',
+    fleetName: 'ILM Core Fleet',
+    activeAgentCount: 4,
+    inactiveAgentCount: 10,
+    metricLabel: 'Fleet Actions',
+    metricValue: 1423,
+    status: 'active',
+  },
+  {
+    fleetId: 'org_fleet_002',
+    organizationId: 'org_payments',
+    organizationName: 'Payments Platform',
+    fleetName: 'Payments Runtime Fleet',
+    activeAgentCount: 3,
+    inactiveAgentCount: 7,
+    metricLabel: 'Fleet Actions',
+    metricValue: 612,
+    status: 'active',
+  },
+  {
+    fleetId: 'org_fleet_003',
+    organizationId: 'org_data',
+    organizationName: 'Data Foundation',
+    fleetName: 'Data Foundation Fleet',
+    activeAgentCount: 2,
+    inactiveAgentCount: 5,
+    metricLabel: 'Fleet Actions',
+    metricValue: 274,
+    status: 'active',
+  },
+  {
+    fleetId: 'org_fleet_004',
+    organizationId: 'org_ilm_demo',
+    organizationName: 'ILM_Demo_Space',
+    fleetName: 'FinOps Pilot Fleet',
+    activeAgentCount: 1,
+    inactiveAgentCount: 4,
+    metricLabel: 'Fleet Actions',
+    metricValue: 38,
+    status: 'inactive',
+  },
+];
 
 export const organizationsRowsFixture: OrganizationRow[] = [
   {
@@ -447,9 +629,16 @@ export const orgPortfolioDefaultFixture: OrgPortfolioViewModel = {
   global: orgPortfolioGlobalFixture,
   postureKpiCards: postureKpiCardsFixture,
   coverage: coveragePanelFixture,
+  visibilitySummary: visibilitySummaryFixture,
   remediationQueue: {
     queueItems: remediationQueueItemsFixture,
     queueTotals: remediationQueueTotalsFixture,
+    filters: {
+      project: 'all-projects',
+      workspace: 'all-workspaces',
+      agentProgressStatus: undefined,
+      criticalityTag: undefined,
+    },
   },
   healthStrip: {
     runSuccessRate24hPct: 91.4,
@@ -471,6 +660,7 @@ export const orgPortfolioDefaultFixture: OrgPortfolioViewModel = {
     idleResourceEstimateCount: 49,
     remediationSavingsEstimateUsd30d: 184200,
   },
+  fleetSnapshot: organizationFleetSnapshotFixture,
   relationshipInsights: relationshipInsightsFixture,
   organizationsTable: {
     organizations: organizationsRowsFixture,
@@ -497,7 +687,10 @@ export const orgPortfolioHighRiskFixture: OrgPortfolioViewModel = {
   },
   postureKpiCards: orgPortfolioDefaultFixture.postureKpiCards.map((card) => {
     if (card.id === 'criticalIncidents') {
-      return { ...card, value: 7, delta7d: 3, trendDirection: 'up' as const };
+      return { ...card, value: 126, delta7d: 18, trendDirection: 'up' as const };
+    }
+    if (card.id === 'criticalDriftOrganizations') {
+      return { ...card, value: 252400, delta7d: 21, trendDirection: 'up' as const };
     }
     return card;
   }),
@@ -555,6 +748,7 @@ export interface OrganizationOverviewData {
   organizationType: 'terraform_standalone' | 'hcp_organization' | 'mixed';
   deploymentMode: 'tfe_on_prem' | 'hcp_saas';
   overallHealth: 'healthy' | 'warning' | 'critical';
+  postureKpiCards: PostureKpiCard[];
   workspaceCount: number;
   activeIncidentCount: number;
   criticalDriftWorkspaceCount: number;
@@ -584,6 +778,7 @@ export interface OrganizationOverviewData {
     terraformStatus: 'healthy' | 'degraded';
   };
   dataFreshness: DataSourceFreshness[];
+  fleetSnapshot: FleetSnapshotAgent[];
   resourceProviderBreakdown: OrganizationResourceProviderBreakdown[];
   resourceInventory: OrganizationResourceInventoryRow[];
   remediationQueue: RemediationQueueItem[];
@@ -596,6 +791,7 @@ export const organizationOverviewDefaultFixture: OrganizationOverviewData = {
   organizationType: 'terraform_standalone',
   deploymentMode: 'tfe_on_prem',
   overallHealth: 'warning',
+  postureKpiCards: orgPortfolioDefaultFixture.postureKpiCards,
   workspaceCount: 12,
   activeIncidentCount: 2,
   criticalDriftWorkspaceCount: 1,
@@ -644,6 +840,7 @@ export const organizationOverviewDefaultFixture: OrganizationOverviewData = {
       status: 'stale',
     },
   ],
+  fleetSnapshot: fleetSnapshotFixture,
   resourceProviderBreakdown: [
     { provider: 'aws', managedCount: 2140, unmanagedCount: 166 },
     { provider: 'packer', managedCount: 126, unmanagedCount: 18 },
@@ -719,15 +916,23 @@ export const organizationOverviewDefaultFixture: OrganizationOverviewData = {
   remediationQueue: [
     {
       queueItemId: 'org_rq_001',
+      criticalityTag: 'P0',
       severity: 'critical',
+      agentType: 'Remediation Agent',
       organizationId: 'org_ilm_demo',
       organizationName: 'ILM_Demo_Space',
+      projectName: 'core-networking',
       affectedWorkspaceCount: 1,
+      primaryWorkspaceName: 'ws-prod-network',
       issueCategory: 'drift',
       issueSummary: 'Security group ingress modified outside Terraform in ws-prod-network.',
       blastRadiusScore: 81,
       firstDetectedAt: '2026-04-08T14:43:00Z',
       ageMinutes: 97,
+      agentProgressStatus: 'awaiting_review',
+      githubTicketId: 'GH-4182',
+      githubTicketUrl: 'https://github.com/hashicorp/terraform-remediation/issues/4182',
+      githubRepoUrl: 'https://github.com/hashicorp/terraform-remediation',
       nextActionType: 'openRunDetail',
       nextActionRoute: '/app/ILM_Demo_Space/workspaces/ws-prod-network/runs/R123.4',
       ownerTeam: 'platform-core',
@@ -735,15 +940,23 @@ export const organizationOverviewDefaultFixture: OrganizationOverviewData = {
     },
     {
       queueItemId: 'org_rq_002',
+      criticalityTag: 'P1',
       severity: 'high',
+      agentType: 'Drift Remediation Agent',
       organizationId: 'org_ilm_demo',
       organizationName: 'ILM_Demo_Space',
+      projectName: 'core-networking',
       affectedWorkspaceCount: 2,
+      primaryWorkspaceName: 'ws-prod-network',
       issueCategory: 'unmanaged_resource',
       issueSummary: 'Unmanaged VM set linked to managed dependencies in prod account.',
       blastRadiusScore: 68,
       firstDetectedAt: '2026-04-08T12:10:00Z',
       ageMinutes: 250,
+      agentProgressStatus: 'drafting_pr',
+      githubTicketId: 'GH-4203',
+      githubTicketUrl: 'https://github.com/hashicorp/terraform-remediation/issues/4203',
+      githubRepoUrl: 'https://github.com/hashicorp/terraform-remediation',
       nextActionType: 'openSearchImport',
       nextActionRoute: '/app/ILM_Demo_Space/workspaces/ws-prod-network/search',
       ownerTeam: 'cloud-governance',
@@ -784,6 +997,7 @@ export const organizationOverviewDefaultFixture: OrganizationOverviewData = {
 export const organizationOverviewHighRiskFixture: OrganizationOverviewData = {
   ...organizationOverviewDefaultFixture,
   overallHealth: 'critical',
+  postureKpiCards: orgPortfolioHighRiskFixture.postureKpiCards,
   activeIncidentCount: 5,
   criticalDriftWorkspaceCount: 3,
   validationFailingWorkspaceCount: 6,

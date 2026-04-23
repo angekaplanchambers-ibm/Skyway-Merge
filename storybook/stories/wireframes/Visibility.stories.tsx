@@ -680,10 +680,10 @@ function NavGlyph() {
 }
 
 function VisibilityPage({
-  pageLabel = 'Visibility (A)',
+  pageLabel = 'Visibility',
   layoutVariant = 'A',
 }: {
-  pageLabel?: 'Visibility (A)' | 'Visibility (B)';
+  pageLabel?: 'Visibility' | 'Visibility (B)';
   layoutVariant?: 'A' | 'B';
 }) {
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
@@ -1079,11 +1079,9 @@ function VisibilityPage({
           <div style={NAV_ACTIVE}>
             <div style={NAV_ITEM_LEFT}>
               <NavGlyph />
-              <span style={visibilityInlineRowStyle}>
-                <span>Visibility</span>
-                <a href={visibilityStoryHref('a')} target="_top" style={visibilityNavLinkStyle}>(A)</a>
-                <a href={visibilityStoryHref('b')} target="_top" style={visibilityNavLinkStyle}>(B)</a>
-              </span>
+              <a href={visibilityStoryHref('a')} target="_top" style={{ ...visibilityInlineRowStyle, ...visibilityNavLinkStyle }}>
+                Visibility
+              </a>
             </div>
           </div>
 

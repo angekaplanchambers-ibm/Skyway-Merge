@@ -130,7 +130,7 @@ const CTA_BUTTON_LINK: CSSProperties = {
 
 const TABLE_HEADER: CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '120px 1.1fr 90px 1.6fr 96px 96px 150px',
+  gridTemplateColumns: '40px 120px 170px 120px 140px 120px 120px 1.5fr',
   padding: '8px 10px',
   borderBottom: `1px solid ${TOK.border}`,
   fontSize: 12,
@@ -144,9 +144,90 @@ const TABLE_ROW: CSSProperties = {
   color: TOK.textPrimary,
 };
 
+const FILTER_ROW: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 8,
+  padding: '8px 10px',
+  borderBottom: `1px solid ${TOK.border}`,
+  background: TOK.layer02,
+};
+
+const FILTER_PILL: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 6,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 999,
+  background: TOK.layer01,
+  padding: '4px 8px',
+  fontSize: 12,
+  color: TOK.textSecondary,
+};
+
+const ACTIONS_DROPDOWN_BUTTON: CSSProperties = {
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: TOK.layer01,
+  color: TOK.textPrimary,
+  fontSize: 12,
+  fontWeight: 600,
+  padding: '4px 10px',
+  cursor: 'pointer',
+};
+
+const FILTER_MENU_BUTTON: CSSProperties = {
+  ...ACTIONS_DROPDOWN_BUTTON,
+  minWidth: 108,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  textAlign: 'left',
+};
+
+const CHECKBOX_INPUT: CSSProperties = {
+  width: 14,
+  height: 14,
+  accentColor: 'var(--z-accent, #2563eb)',
+};
+
+const CRITICALITY_TAG: Record<'P0' | 'P1' | 'P2', CSSProperties> = {
+  P0: {
+    border: '1px solid #b91c1c',
+    color: '#b91c1c',
+    background: '#fee2e2',
+    borderRadius: 999,
+    padding: '2px 8px',
+    fontSize: 12,
+    fontWeight: 700,
+    width: 'fit-content',
+  },
+  P1: {
+    border: '1px solid #b45309',
+    color: '#b45309',
+    background: '#ffedd5',
+    borderRadius: 999,
+    padding: '2px 8px',
+    fontSize: 12,
+    fontWeight: 700,
+    width: 'fit-content',
+  },
+  P2: {
+    border: '1px solid #1d4ed8',
+    color: '#1d4ed8',
+    background: '#dbeafe',
+    borderRadius: 999,
+    padding: '2px 8px',
+    fontSize: 12,
+    fontWeight: 700,
+    width: 'fit-content',
+  },
+};
+
 const ORG_TABLE_HEADER: CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '1.2fr 170px 90px 80px 80px 160px 110px 120px',
+  gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
   padding: '8px 10px',
   borderBottom: `1px solid ${TOK.border}`,
   fontSize: 12,
@@ -193,11 +274,113 @@ const ACTION_LINK: CSSProperties = {
   fontWeight: 500,
 };
 
-const RELATIONSHIP_GRID: CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr',
-  gap: 8,
+const FLEET_SNAPSHOT_PANEL: CSSProperties = {
   padding: 10,
+};
+
+const FLEET_ROW: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+  alignItems: 'center',
+  gap: 12,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 8,
+  padding: '12px 14px',
+  background: TOK.layer01,
+};
+
+const FLEET_HEADER_ROW: CSSProperties = {
+  ...FLEET_ROW,
+  border: 'none',
+  borderRadius: 0,
+  background: 'transparent',
+  padding: '0 14px 2px',
+  color: TOK.textSecondary,
+  fontSize: 11,
+  fontWeight: 600,
+};
+
+const VISIBILITY_SUMMARY_LAYOUT: CSSProperties = {
+  padding: 10,
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 8,
+};
+
+const VISIBILITY_QUERY_TILE: CSSProperties = {
+  ...TILE,
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const VISIBILITY_TYPES_GRID: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  gap: 8,
+};
+
+const VISIBILITY_TYPE_CARD: CSSProperties = {
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: TOK.layer01,
+  padding: '8px 10px',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+};
+
+const VISIBILITY_TYPE_CARD_LEFT: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  minWidth: 0,
+};
+
+const VISIBILITY_TYPE_CARD_CIRCLE: CSSProperties = {
+  width: 12,
+  height: 12,
+  borderRadius: 999,
+  border: `1px solid ${TOK.textSecondary}`,
+  flex: '0 0 auto',
+};
+
+const VISIBILITY_TABS_ROW: CSSProperties = {
+  display: 'flex',
+  gap: 16,
+  marginBottom: 10,
+  borderBottom: `1px solid ${TOK.border}`,
+};
+
+const VISIBILITY_TAB: CSSProperties = {
+  border: 'none',
+  borderBottom: 'none',
+  background: 'transparent',
+  borderRadius: 0,
+  padding: '6px 0',
+  marginBottom: -1,
+  color: TOK.textSecondary,
+  fontSize: 12,
+  fontWeight: 500,
+};
+
+const VISIBILITY_TAB_ACTIVE: CSSProperties = {
+  ...VISIBILITY_TAB,
+  color: 'var(--z-accent, #2563eb)',
+  borderBottom: '2px solid var(--z-accent, #2563eb)',
+};
+
+const VISIBILITY_FIND_BUTTON: CSSProperties = {
+  width: '100%',
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: 'var(--z-accent, #2563eb)',
+  color: '#fff',
+  fontSize: 12,
+  fontWeight: 600,
+  padding: '6px 10px',
+  textAlign: 'center',
+  cursor: 'pointer',
+  marginTop: 'auto',
 };
 
 const FOOTER: CSSProperties = {
@@ -224,11 +407,21 @@ function healthMark(health: 'healthy' | 'warning' | 'critical'): string {
 }
 
 function kpi7dGoal(id: OrgPortfolioViewModel['postureKpiCards'][number]['id']): string {
-  if (id === 'criticalIncidents') return '<= 0';
-  if (id === 'criticalDriftOrganizations') return '<= 0';
-  if (id === 'validationFailingOrganizations') return '<= 0';
-  if (id === 'policyViolatingOrganizations') return '<= 0';
+  if (id === 'criticalIncidents') return '>= 75';
+  if (id === 'criticalDriftOrganizations') return '>=$150k';
+  if (id === 'validationFailingOrganizations') return '>= 15';
+  if (id === 'policyViolatingOrganizations') return '>= 80%';
   return '0';
+}
+
+function formatKpiValue(card: OrgPortfolioViewModel['postureKpiCards'][number]): string {
+  if (card.id === 'criticalDriftOrganizations') {
+    return `$${card.value.toLocaleString()}`;
+  }
+  if (card.id === 'policyViolatingOrganizations') {
+    return `${card.value}%`;
+  }
+  return card.value.toLocaleString();
 }
 
 function organizationOverviewStoryHref(
@@ -267,6 +460,23 @@ function nextActionLabel(item: RemediationQueueItem): string {
   return 'Workspace hub';
 }
 
+function agentProgressLabel(status: RemediationQueueItem['agentProgressStatus']): string {
+  if (status === 'queued') return 'Queued';
+  if (status === 'analyzing') return 'Analyzing';
+  if (status === 'drafting_pr') return 'Drafting PR';
+  if (status === 'awaiting_review') return 'Awaiting review';
+  return 'Merged';
+}
+
+function repoLabel(repoUrl: string): string {
+  const parts = repoUrl.split('/').filter(Boolean);
+  return parts[parts.length - 1] ?? 'Repository';
+}
+
+function agentTypeLabel(agentType: string): string {
+  return agentType.replace(/\s+Agent$/, '');
+}
+
 function convertToManagedRoute(model: OrgPortfolioViewModel): string {
   const searchImportItem = model.remediationQueue.queueItems.find(
     (item) => item.nextActionType === 'openSearchImport',
@@ -288,6 +498,10 @@ function workspaceFromRoute(route: string): string | undefined {
   const wsIndex = parts.findIndex((part) => part === 'workspaces');
   const workspace = wsIndex >= 0 ? parts[wsIndex + 1] : undefined;
   return workspace ? decodeURIComponent(workspace) : undefined;
+}
+
+function visibilityStoryHref(): string {
+  return '?path=/story/wireframes-visibility--visibility-a';
 }
 
 function NavGlyph() {
@@ -315,10 +529,14 @@ function OrgPortfolioOverview({
   enableOrganizationLinks?: boolean;
   organizationOverviewStory?: 'default' | 'high-risk';
 }) {
-  const [showCoverageTooltip, setShowCoverageTooltip] = useState(false);
-  const organizationNameById = Object.fromEntries(
-    model.organizationsTable.organizations.map((org) => [org.organizationId, org.organizationName]),
-  );
+  const [showActorsTooltip, setShowActorsTooltip] = useState(false);
+  const [activeVisibilitySummaryTab, setActiveVisibilitySummaryTab] = useState<'types' | 'questions'>('types');
+  const [selectedQueueItemIds, setSelectedQueueItemIds] = useState<string[]>([]);
+  const [showQueueFilterMenu, setShowQueueFilterMenu] = useState(false);
+  const [showQueueActionsMenu, setShowQueueActionsMenu] = useState(false);
+  const allQueueItemIds = model.remediationQueue.queueItems.map((item) => item.queueItemId);
+  const allQueueRowsSelected =
+    allQueueItemIds.length > 0 && allQueueItemIds.every((id) => selectedQueueItemIds.includes(id));
   const recommendedConversionItem = model.remediationQueue.queueItems.find(
     (item) => item.issueCategory === 'unmanaged_resource',
   ) ?? model.remediationQueue.queueItems.find((item) => item.nextActionType === 'openSearchImport');
@@ -326,6 +544,15 @@ function OrgPortfolioOverview({
   const recommendedWorkspace = recommendedConversionItem
     ? workspaceFromRoute(recommendedConversionItem.nextActionRoute)
     : undefined;
+  const visibilityTypeCards = ['Modules', 'Providers', 'Workspaces', 'Resources (Beta)', 'Terraform Versions'];
+  const visibilityGraphQuestions = [
+    "Do I have any Virtual Machines that aren't managed by Terraform?",
+    'Are any of my AWS resources provisioned by a non-current version of Terraform?',
+    "Do I have any volumes that aren't encrypted at rest?",
+    'Which of my EC2 instances are more than 30 days old?',
+    'Which resources are missing an Owner tag?',
+    'Which of my VMs are using images not provisioned by Packer?',
+  ];
 
   return (
     <div style={SHELL}>
@@ -360,10 +587,7 @@ function OrgPortfolioOverview({
               <div>Type</div>
               <div>Deploy</div>
               <div>Health</div>
-              <div>Drift</div>
-              <div>Managed / Unmanaged</div>
-              <div>Open Remediation</div>
-              <div>Freshness</div>
+              <div style={{ textAlign: 'right' }}>Resources</div>
             </div>
             {model.organizationsTable.organizations.map((org) => (
               <div key={org.organizationId} style={ORG_TABLE_ROW}>
@@ -383,10 +607,9 @@ function OrgPortfolioOverview({
                 <div>{org.organizationType}</div>
                 <div>{org.deploymentMode}</div>
                 <div>{healthMark(org.overallHealth)}</div>
-                <div>{org.driftIssueCount}</div>
-                <div>{org.managedResourceCount} / {org.unmanagedResourceCount}</div>
-                <div>{org.openRemediationCount}</div>
-                <div>{org.freshnessStatus} ({org.freshnessMinutes}m)</div>
+                <div style={{ textAlign: 'right' }}>
+                  {org.managedResourceCount} Managed / {org.unmanagedResourceCount} Unmanaged
+                </div>
               </div>
             ))}
             <div style={TABLE_PAGINATION}>
@@ -411,7 +634,14 @@ function OrgPortfolioOverview({
                 .map((card) => (
                 <div key={card.id} style={TILE}>
                   <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{card.label}</div>
-                  <div style={{ fontSize: 22, fontWeight: 700 }}>{card.value}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ fontSize: 22, fontWeight: 700 }}>{formatKpiValue(card)}</div>
+                    {card.id === 'criticalDriftOrganizations' ? (
+                      <div style={{ color: '#15803d', fontSize: 18, fontWeight: 700 }} aria-label="Savings trending down">
+                        ↓
+                      </div>
+                    ) : null}
+                  </div>
                   <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
                     7d: {card.delta7d ?? 0} ({card.trendDirection ?? 'flat'}) | Goal: {kpi7dGoal(card.id)}
                   </div>
@@ -424,112 +654,96 @@ function OrgPortfolioOverview({
                 margin: '2px 18px 8px',
               }}
             />
-            <div style={{ ...RELATIONSHIP_GRID, paddingTop: 0 }}>
-              <div style={TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Health</div>
-                <div style={{ marginTop: 6 }}><strong>Run success 24h:</strong> {model.healthStrip.runSuccessRate24hPct}%</div>
-                <div><strong>Run success 7d:</strong> {model.healthStrip.runSuccessRate7dPct}% | Goal: 98%</div>
-                <div><strong>Stale state risk:</strong> {model.healthStrip.staleStateRiskCount}</div>
+            <div style={{ ...FLEET_SNAPSHOT_PANEL, paddingTop: 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, marginBottom: 8 }}>
+                <span style={{ fontWeight: 600, fontSize: 12, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                  Agentic Fleet Snapshot
+                </span>
+                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400 }}>
+                  Multi-fleet activity across organizations.
+                </span>
               </div>
-              <div style={TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Governance</div>
-                <div style={{ marginTop: 6 }}><strong>Policy failing orgs:</strong> {model.governancePanel.policyFailingOrganizationCount}</div>
-                <div><strong>RBAC anomalies:</strong> {model.governancePanel.rbacAnomalyCount}</div>
-                <div><strong>Change request backlog:</strong> {model.governancePanel.changeRequestBacklogCount}</div>
-              </div>
-              <div style={TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Cost</div>
-                <div style={{ marginTop: 6 }}><strong>Monthly spend:</strong> ${model.costPanel.monthlySpendTotalUsd.toLocaleString()}</div>
-                <div><strong>Anomaly orgs:</strong> {model.costPanel.spendAnomalyOrganizationCount}</div>
-                <div><strong>Savings est 30d:</strong> ${model.costPanel.remediationSavingsEstimateUsd30d.toLocaleString()}</div>
-              </div>
-            </div>
-          </section>
-
-          <section style={PANEL}>
-            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-              <span>Managed vs. Unmanaged Resource Coverage</span>
-              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                Coverage split and conversion opportunities.
-              </span>
-            </div>
-            <div style={{ padding: 10, display: 'grid', gridTemplateColumns: '1fr 1fr 1.3fr', gap: 8 }}>
-              <div style={COVERAGE_TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Managed</div>
-                <div style={{ fontSize: 22, fontWeight: 700 }}>{model.coverage.managedResourceCount}</div>
-                <div style={COVERAGE_CTA_ROW}>
-                  <button type="button" style={CTA_BUTTON}>View All Managed</button>
-                </div>
-              </div>
-              <div style={COVERAGE_TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12 }}>Unmanaged</div>
-                <div style={{ fontSize: 22, fontWeight: 700 }}>{model.coverage.unmanagedResourceCount}</div>
-                <div style={COVERAGE_CTA_ROW}>
-                  <button type="button" style={CTA_BUTTON}>View All Unmanaged</button>
-                </div>
-              </div>
-              <div style={COVERAGE_TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
-                  <span>Resource coverage insights</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowCoverageTooltip((v) => !v)}
-                    aria-label="Resource coverage insights guidance"
-                    style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 999,
-                      border: `1px solid ${TOK.border}`,
-                      background: TOK.layer01,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 11,
-                      color: TOK.textSecondary,
-                      cursor: 'help',
-                      userSelect: 'none',
-                      padding: 0,
-                    }}
-                  >
-                    i
-                  </button>
-                  {showCoverageTooltip ? (
-                    <div
-                      role="tooltip"
-                      style={{
-                        position: 'absolute',
-                        top: 24,
-                        left: 0,
-                        width: 260,
-                        border: `1px solid ${TOK.border}`,
-                        borderRadius: 4,
-                        background: TOK.layer01,
-                        color: TOK.textPrimary,
-                        fontSize: 12,
-                        padding: '6px 8px',
-                        zIndex: 2,
-                      }}
-                    >
-                      Reduce potential drift and improve policy coverage by converting your unmanaged resources
+              <div style={{ ...TILE, background: TOK.layer02 }}>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  <div style={FLEET_HEADER_ROW}>
+                    <div>Fleet</div>
+                    <div>Organization</div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, position: 'relative' }}>
+                      <span>Actor(s)</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowActorsTooltip((v) => !v)}
+                        aria-label="Actors column info"
+                        style={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: 999,
+                          border: `1px solid ${TOK.border}`,
+                          background: TOK.layer01,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 10,
+                          color: TOK.textSecondary,
+                          cursor: 'pointer',
+                          padding: 0,
+                          flexShrink: 0,
+                        }}
+                      >
+                        i
+                      </button>
+                      {showActorsTooltip ? (
+                        <div
+                          role="tooltip"
+                          style={{
+                            position: 'absolute',
+                            top: 20,
+                            right: 0,
+                            whiteSpace: 'nowrap',
+                            border: `1px solid ${TOK.border}`,
+                            borderRadius: 4,
+                            background: TOK.layer01,
+                            color: TOK.textPrimary,
+                            fontSize: 12,
+                            fontWeight: 400,
+                            padding: '5px 8px',
+                            zIndex: 4,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
+                          }}
+                        >
+                          Active/Inactive Actors
+                        </div>
+                      ) : null}
                     </div>
-                  ) : null}
-                </div>
-                <div style={{ marginTop: 6, fontSize: 12 }}>
-                  <strong>Resource:</strong>{' '}
-                  {recommendedResourceType}
-                  {recommendedConversionItem ? ` in ${recommendedConversionItem.organizationName}` : ''}
-                  {recommendedWorkspace ? ` / ${recommendedWorkspace}` : ''}
-                </div>
-                <div style={{ marginTop: 6, color: TOK.textSecondary, fontSize: 12 }}>
-                  <strong style={{ color: TOK.textPrimary }}>Risk:</strong>{' '}
-                  {recommendedConversionItem?.issueSummary ?? 'Unmanaged resources can bypass drift and policy controls.'}
-                </div>
-                <div style={{ marginTop: 6, color: TOK.textSecondary, fontSize: 12 }}>
-                  <strong style={{ color: TOK.textPrimary }}>Result:</strong>{' '}
-                  Enforce policy checks and drift detection through normal Terraform runs.
-                </div>
-                <div style={COVERAGE_CTA_ROW}>
-                  <button type="button" style={CTA_BUTTON}>Convert to Managed</button>
+                    <div>Agent Tasks</div>
+                    <div />
+                  </div>
+                  {model.fleetSnapshot.map((agent) => (
+                    <div key={agent.fleetId} style={FLEET_ROW}>
+                      <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{agent.fleetName}</div>
+                      <div style={{ fontSize: 12, fontWeight: 700 }}>
+                        <a
+                          href={organizationOverviewStoryHref(organizationOverviewStory, agent.organizationName)}
+                          target="_top"
+                          style={ORG_NAME_LINK}
+                        >
+                          {agent.organizationName}
+                        </a>
+                      </div>
+                      <div style={{ fontSize: 12 }}>
+                        {agent.activeAgentCount} Active / {agent.inactiveAgentCount} Inactive
+                      </div>
+                      <div style={{ fontSize: 12 }}>{agent.metricValue}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                        <span
+                          style={{ ...ACTION_LINK, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12 }}
+                        >
+                          <strong>View Fleet</strong>
+                          <span style={{ fontSize: 16 }}>→</span>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -537,52 +751,69 @@ function OrgPortfolioOverview({
 
           <section style={PANEL}>
             <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-              <span>Prioritized Remediation Queue</span>
+              <span>Visibility</span>
               <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                Highest-impact remediation work ranked by urgency.
+                Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.
               </span>
             </div>
-            <div style={TABLE_HEADER}>
-              <div>Severity</div>
-              <div>Organization</div>
-              <div>Workspaces</div>
-              <div>Issue</div>
-              <div>Blast</div>
-              <div>Age (m)</div>
-              <div>Actions</div>
-            </div>
-            {model.remediationQueue.queueItems.map((item) => (
-              <div key={item.queueItemId} style={TABLE_ROW}>
-                <div>{severityMark(item.severity)} {item.severity}</div>
-                <div>
-                  {enableOrganizationLinks ? (
-                    <a
-                      href={organizationOverviewStoryHref(
-                        organizationOverviewStory,
-                        organizationNameById[item.organizationId] ?? item.organizationName,
-                      )}
-                      target="_top"
-                      style={ORG_NAME_LINK}
-                    >
-                      {organizationNameById[item.organizationId] ?? item.organizationName}
-                    </a>
-                  ) : (
-                    organizationNameById[item.organizationId] ?? item.organizationName
-                  )}
+            <div style={VISIBILITY_SUMMARY_LAYOUT}>
+              <div style={VISIBILITY_QUERY_TILE}>
+                <div style={{ color: TOK.textSecondary, fontSize: 12, marginBottom: 8 }}>Build your Infragraph query</div>
+                <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                  <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>Clear query</button>
+                  <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>{'</>'}</button>
+                  <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>x</button>
                 </div>
-                <div>{item.affectedWorkspaceCount}</div>
-                <div>{item.issueSummary}</div>
-                <div>{item.blastRadiusScore}</div>
-                <div>{item.ageMinutes}</div>
-                <div>{nextActionLabel(item)}</div>
+                <button type="button" style={VISIBILITY_FIND_BUTTON}>
+                  Find...
+                </button>
               </div>
-            ))}
-            <div style={TABLE_PAGINATION}>
-              <a href="#" style={PAGE_LINK}>{'<'}</a>
-              <a href="#" style={PAGE_LINK}>1</a>
-              <span style={PAGE_ACTIVE}>[2]</span>
-              <a href="#" style={PAGE_LINK}>3</a>
-              <a href="#" style={PAGE_LINK}>{'>'}</a>
+              <div style={TILE}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
+                  <div style={{ ...VISIBILITY_TABS_ROW, flex: 1, marginBottom: 0 }}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveVisibilitySummaryTab('types')}
+                      style={activeVisibilitySummaryTab === 'types' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                    >
+                      Types and Use Cases
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveVisibilitySummaryTab('questions')}
+                      style={activeVisibilitySummaryTab === 'questions' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                    >
+                      Suggested Questions
+                    </button>
+                  </div>
+                  <span style={{ ...CTA_BUTTON, marginBottom: 6, display: 'inline-block', cursor: 'default' }}>Saved Views</span>
+                </div>
+                {activeVisibilitySummaryTab === 'types' ? (
+                  <div style={VISIBILITY_TYPES_GRID}>
+                    {visibilityTypeCards.slice(0, 5).map((typeLabel) => (
+                      <div key={typeLabel} style={VISIBILITY_TYPE_CARD}>
+                        <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                          <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                          <span style={{ fontSize: 12 }}>{typeLabel}</span>
+                        </span>
+                        <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    {visibilityGraphQuestions.slice(0, 5).map((question) => (
+                      <div key={question} style={VISIBILITY_TYPE_CARD}>
+                        <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                          <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                          <span style={{ fontSize: 12 }}>{question}</span>
+                        </span>
+                        <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </section>
 
