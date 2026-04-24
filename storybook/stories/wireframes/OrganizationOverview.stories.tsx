@@ -945,7 +945,7 @@ function OrganizationOverview({
                         position: 'absolute',
                         top: 30,
                         left: 0,
-                        minWidth: 230,
+                        width: 100,
                         border: `1px solid ${TOK.border}`,
                         borderRadius: 4,
                         background: TOK.layer01,
@@ -953,24 +953,31 @@ function OrganizationOverview({
                         zIndex: 2,
                       }}
                     >
-                      <div style={FILTER_PILL}>
+                      <div style={{ ...FILTER_PILL, border: 'none' }}>
                         <strong style={{ color: TOK.textPrimary }}>Project</strong>
-                        <span>all-projects</span>
                       </div>
-                      <div style={{ height: 6 }} />
-                      <div style={FILTER_PILL}>
+                      <div style={{ ...FILTER_PILL, border: 'none' }}>
                         <strong style={{ color: TOK.textPrimary }}>Workspace</strong>
-                        <span>all-workspaces</span>
                       </div>
-                      <div style={{ height: 6 }} />
-                      <div style={FILTER_PILL}>
+                      <div style={{ ...FILTER_PILL, border: 'none' }}>
                         <strong style={{ color: TOK.textPrimary }}>Agent status</strong>
-                        <span>all-statuses</span>
                       </div>
-                      <div style={{ height: 6 }} />
-                      <div style={FILTER_PILL}>
+                      <div style={{ ...FILTER_PILL, border: 'none' }}>
                         <strong style={{ color: TOK.textPrimary }}>Criticality</strong>
-                        <span>all-levels</span>
+                      </div>
+                      <div style={{ height: 1, background: TOK.border, margin: '8px -6px 6px' }} />
+                      <div style={{ ...FILTER_PILL, border: 'none' }}>
+                        <strong style={{ color: TOK.textPrimary }}>Agent Type:</strong>
+                      </div>
+                      <div style={{ display: 'grid', gap: 6, width: '100%' }}>
+                        {['Remediation', 'Upgrade', 'Drift', 'Plan Analyzer', 'FinOps'].map((agentName) => (
+                          <div
+                            key={agentName}
+                            style={{ ...FILTER_PILL, border: 'none', display: 'flex', width: '100%', boxSizing: 'border-box' }}
+                          >
+                            <span>{agentName}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ) : null}

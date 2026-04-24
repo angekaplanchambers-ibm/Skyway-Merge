@@ -484,7 +484,6 @@ const QUERY_MENU_PANEL: CSSProperties = {
   left: '12.5%',
   width: '75%',
   minWidth: 760,
-  height: 600,
   border: `1px solid ${TOK.border}`,
   borderRadius: 8,
   background: TOK.layer01,
@@ -497,7 +496,9 @@ const QUERY_MENU_SEARCH: CSSProperties = {
   height: 58,
   borderBottom: `1px solid ${TOK.border}`,
   background: TOK.layer01,
-  padding: 12,
+  padding: '0 12px',
+  display: 'flex',
+  alignItems: 'center',
 };
 
 const QUERY_MENU_SEARCH_INPUT: CSSProperties = {
@@ -515,7 +516,6 @@ const QUERY_MENU_SEARCH_INPUT: CSSProperties = {
 
 const QUERY_MENU_BODY: CSSProperties = {
   display: 'grid',
-  height: 'calc(100% - 58px)',
   background: '#ffffff',
 };
 
@@ -524,6 +524,7 @@ const QUERY_MENU_COLUMN: CSSProperties = {
   background: '#ffffff',
   padding: 12,
   overflowY: 'auto',
+  maxHeight: 480,
 };
 
 const QUERY_MENU_SECTION_LIST: CSSProperties = {
@@ -949,6 +950,7 @@ function VisibilityPage({
                       onClick={() => setSelectedQueryMenuSection(section.id)}
                       style={{
                         ...QUERY_MENU_SECTION_ITEM,
+                        padding: '5px 12px',
                         ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
                       }}
                     >

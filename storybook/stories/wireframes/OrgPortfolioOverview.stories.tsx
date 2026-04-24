@@ -576,6 +576,197 @@ const VISIBILITY_FIND_BUTTON: CSSProperties = {
   marginTop: 'auto',
 };
 
+const QUERY_MENU_WRAP: CSSProperties = {
+  position: 'relative',
+  width: '100%',
+};
+
+const QUERY_MENU_TRIGGER: CSSProperties = {
+  width: '100%',
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: 'var(--z-accent, #2563eb)',
+  color: '#fff',
+  fontSize: 12,
+  fontWeight: 600,
+  padding: '6px 10px',
+  textAlign: 'center',
+  cursor: 'pointer',
+};
+
+const QUERY_MENU_PANEL: CSSProperties = {
+  position: 'absolute',
+  top: 'calc(100% + 8px)',
+  left: '12.5%',
+  width: '75%',
+  minWidth: 760,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 8,
+  background: TOK.layer01,
+  boxShadow: '0 16px 32px rgba(0, 0, 0, 0.16)',
+  overflow: 'hidden',
+  zIndex: 8,
+};
+
+const QUERY_MENU_SEARCH: CSSProperties = {
+  height: 58,
+  borderBottom: `1px solid ${TOK.border}`,
+  background: TOK.layer01,
+  padding: '0 12px',
+  display: 'flex',
+  alignItems: 'center',
+};
+
+const QUERY_MENU_SEARCH_INPUT: CSSProperties = {
+  width: '100%',
+  height: 34,
+  border: '2px solid var(--z-accent, #2563eb)',
+  borderRadius: 8,
+  background: '#ffffff',
+  color: TOK.textPrimary,
+  fontSize: 12,
+  padding: '0 12px',
+  outline: 'none',
+  boxSizing: 'border-box',
+};
+
+const QUERY_MENU_BODY: CSSProperties = {
+  display: 'grid',
+  background: '#ffffff',
+};
+
+const QUERY_MENU_COLUMN: CSSProperties = {
+  borderRight: `1px solid ${TOK.border}`,
+  background: '#ffffff',
+  padding: 12,
+  overflowY: 'auto',
+  maxHeight: 480,
+};
+
+const QUERY_MENU_SECTION_LIST: CSSProperties = {
+  display: 'grid',
+  gap: 4,
+};
+
+const QUERY_MENU_SECTION_ITEM: CSSProperties = {
+  width: '100%',
+  border: 'none',
+  borderRadius: 6,
+  background: 'transparent',
+  color: TOK.textPrimary,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  padding: '10px 12px',
+  fontSize: 12,
+  textAlign: 'left',
+  cursor: 'pointer',
+};
+
+const QUERY_MENU_SECTION_ITEM_ACTIVE: CSSProperties = {
+  background: TOK.layer02,
+  color: 'var(--z-accent, #2563eb)',
+  fontWeight: 600,
+};
+
+const QUERY_MENU_DIVIDER: CSSProperties = {
+  height: 1,
+  background: TOK.border,
+  margin: '8px 0 12px',
+};
+
+const QUERY_MENU_COLUMN_TITLE: CSSProperties = {
+  fontSize: 12,
+  fontWeight: 700,
+  color: TOK.textPrimary,
+  marginBottom: 10,
+};
+
+const QUERY_MENU_SECTION_ITEM_STATIC: CSSProperties = {
+  width: '100%',
+  border: 'none',
+  background: 'transparent',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+  borderRadius: 6,
+  fontSize: 12,
+  fontWeight: 400,
+  color: TOK.textPrimary,
+  padding: '5px 12px',
+  textAlign: 'left',
+  cursor: 'pointer',
+};
+
+const QUERY_MENU_CARD_LIST: CSSProperties = {
+  display: 'grid',
+  gap: 8,
+};
+
+const QUERY_MENU_STACKED_CARD: CSSProperties = {
+  width: '100%',
+  border: 'none',
+  borderRadius: 0,
+  background: 'transparent',
+  padding: '6px 4px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  gap: 10,
+  textAlign: 'left',
+  boxSizing: 'border-box',
+};
+
+const QUERY_MENU_STACKED_CARD_LABEL: CSSProperties = {
+  color: TOK.textPrimary,
+  fontSize: 12,
+  textAlign: 'left',
+};
+
+const QUERY_MENU_RESOURCE_LIST: CSSProperties = {
+  display: 'grid',
+  gap: 6,
+};
+
+const QUERY_MENU_RESOURCE_ITEM: CSSProperties = {
+  width: '100%',
+  border: 'none',
+  background: 'transparent',
+  color: TOK.textPrimary,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 12,
+  padding: '6px 4px',
+  fontSize: 12,
+  textAlign: 'left',
+  cursor: 'pointer',
+};
+
+const QUERY_MENU_RESOURCE_LABEL: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  minWidth: 0,
+};
+
+const QUERY_MENU_COUNT: CSSProperties = {
+  minWidth: 28,
+  height: 20,
+  borderRadius: 999,
+  border: `1px solid #9ca3af`,
+  background: '#ffffff',
+  color: TOK.textSecondary,
+  fontSize: 12,
+  lineHeight: '18px',
+  textAlign: 'center',
+  padding: '0 6px',
+  boxSizing: 'border-box',
+};
+
+const QUERY_MENU_EMPTY: CSSProperties = {
+  background: '#ffffff',
+};
+
 const FOOTER: CSSProperties = {
   borderTop: `1px solid ${TOK.border}`,
   background: TOK.layer01,
@@ -728,6 +919,8 @@ function OrgPortfolioOverview({
   const [showQueueFilterMenu, setShowQueueFilterMenu] = useState(false);
   const [showQueueActionsMenu, setShowQueueActionsMenu] = useState(false);
   const [openInventoryMenuId, setOpenInventoryMenuId] = useState<string | null>(null);
+  const [queryMenuOpen, setQueryMenuOpen] = useState(false);
+  const [selectedQueryMenuSection, setSelectedQueryMenuSection] = useState('recommended');
   const allQueueItemIds = model.remediationQueue.queueItems.map((item) => item.queueItemId);
   const allQueueRowsSelected =
     allQueueItemIds.length > 0 && allQueueItemIds.every((id) => selectedQueueItemIds.includes(id));
@@ -747,6 +940,224 @@ function OrgPortfolioOverview({
     'Which resources are missing an Owner tag?',
     'Which of my VMs are using images not provisioned by Packer?',
   ];
+  const queryMenuSections = [
+    { id: 'all', label: 'All', icon: '≡' },
+    { id: 'recommended', label: 'Recommended', icon: '✦' },
+    { id: 'build-management', label: 'Build Management', icon: '⌁' },
+    { id: 'compute', label: 'Compute', icon: '☰' },
+    { id: 'infrastructure-as-code', label: 'Infrastructure as Code', icon: '</>' },
+    { id: 'identity', label: 'Identity', icon: '⌘' },
+    { id: 'management', label: 'Management', icon: '◍' },
+    { id: 'networking', label: 'Networking', icon: '⋄' },
+    { id: 'observability', label: 'Observability', icon: '◉' },
+    { id: 'security', label: 'Security', icon: '◌' },
+    { id: 'storage-data', label: 'Storage & Data', icon: '▤' },
+    { id: 'geography', label: 'Geography', icon: '◍' },
+  ];
+
+  const queryResourceTypesBySection: Record<string, Array<{ label: string; count: number }>> = {
+    all: [
+      { label: 'Hcp Terraform Workspace', count: 3 },
+      { label: 'Account', count: 1 },
+      { label: 'Region', count: 1 },
+      { label: 'Virtual Network', count: 2 },
+      { label: 'Virtual Machine', count: 4 },
+      { label: 'Virtual Machine Image', count: 1 },
+      { label: 'Volume', count: 2 },
+      { label: 'Packer Bucket', count: 1 },
+      { label: 'Packer Build', count: 1 },
+    ],
+    recommended: [
+      { label: 'Hcp Terraform Workspace', count: 3 },
+      { label: 'Account', count: 1 },
+      { label: 'Region', count: 0 },
+      { label: 'Virtual Network', count: 0 },
+      { label: 'Virtual Machine', count: 0 },
+      { label: 'Virtual Machine Image', count: 0 },
+      { label: 'Volume', count: 0 },
+      { label: 'Packer Bucket', count: 0 },
+      { label: 'Packer Build', count: 0 },
+    ],
+    'build-management': [
+      { label: 'Packer Bucket', count: 2 },
+      { label: 'Packer Build', count: 3 },
+      { label: 'Virtual Machine Image', count: 1 },
+    ],
+    compute: [
+      { label: 'Virtual Machine', count: 4 },
+      { label: 'Virtual Machine Image', count: 2 },
+      { label: 'Volume', count: 3 },
+    ],
+    'infrastructure-as-code': [
+      { label: 'Hcp Terraform Workspace', count: 3 },
+      { label: 'Packer Bucket', count: 1 },
+      { label: 'Packer Build', count: 1 },
+    ],
+    identity: [{ label: 'Account', count: 1 }],
+    management: [
+      { label: 'Account', count: 1 },
+      { label: 'Hcp Terraform Workspace', count: 2 },
+    ],
+    networking: [
+      { label: 'Virtual Network', count: 2 },
+      { label: 'Region', count: 1 },
+    ],
+    observability: [
+      { label: 'Hcp Terraform Workspace', count: 1 },
+      { label: 'Virtual Machine', count: 1 },
+    ],
+    security: [
+      { label: 'Account', count: 1 },
+      { label: 'Volume', count: 1 },
+    ],
+    'storage-data': [{ label: 'Volume', count: 3 }],
+    geography: [{ label: 'Region', count: 1 }],
+  };
+
+  const explorerTypeCards = ['Modules', 'Providers', 'Workspaces', 'Resources (Beta)', 'Terraform Versions'];
+  const explorerUseCases = [
+    'Workspaces with zero resources', 'Workspaces with the most resources',
+    'Resources by module name', 'Top module versions', 'Latest Terraform versions',
+    'Top provider versions', 'Workspaces without VCS', 'Workspace VCS source',
+    'Workspaces with failed checks', 'Drifted workspaces',
+    'All workspace versions', 'Workspaces by run status',
+  ];
+
+  const queryResourceTypes = queryResourceTypesBySection[selectedQueryMenuSection] ?? queryResourceTypesBySection.recommended;
+
+  function renderFindDropdown() {
+    const isStaticQuerySection =
+      selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static';
+    return (
+      <div style={QUERY_MENU_WRAP}>
+        <button
+          type="button"
+          onClick={() => setQueryMenuOpen((v) => !v)}
+          aria-haspopup="menu"
+          aria-expanded={queryMenuOpen}
+          style={QUERY_MENU_TRIGGER}
+        >
+          Find...
+        </button>
+        {queryMenuOpen ? (
+          <div role="menu" aria-label="Resource search menu" style={QUERY_MENU_PANEL}>
+            <div style={QUERY_MENU_SEARCH}>
+              <input type="text" value="Search" readOnly style={QUERY_MENU_SEARCH_INPUT} />
+            </div>
+            <div
+              style={{
+                ...QUERY_MENU_BODY,
+                gridTemplateColumns: isStaticQuerySection ? '310px 1fr' : '310px 310px 1fr',
+              }}
+            >
+              <div style={QUERY_MENU_COLUMN}>
+                <div style={QUERY_MENU_SECTION_LIST}>
+                  {queryMenuSections.slice(0, 2).map((section) => (
+                    <button
+                      key={section.id}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => setSelectedQueryMenuSection(section.id)}
+                      style={{
+                        ...QUERY_MENU_SECTION_ITEM,
+                        ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
+                      }}
+                    >
+                      <span>{section.icon}</span>
+                      <span>{section.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <div style={QUERY_MENU_DIVIDER} />
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => setSelectedQueryMenuSection('types-static')}
+                  style={{
+                    ...QUERY_MENU_SECTION_ITEM_STATIC,
+                    ...(selectedQueryMenuSection === 'types-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
+                  }}
+                >
+                  <span>○</span>
+                  <span>Types</span>
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => setSelectedQueryMenuSection('use-cases-static')}
+                  style={{
+                    ...QUERY_MENU_SECTION_ITEM_STATIC,
+                    ...(selectedQueryMenuSection === 'use-cases-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
+                  }}
+                >
+                  <span>○</span>
+                  <span>Use cases</span>
+                </button>
+                <div style={QUERY_MENU_DIVIDER} />
+                <div style={QUERY_MENU_SECTION_LIST}>
+                  {queryMenuSections.slice(2).map((section) => (
+                    <button
+                      key={section.id}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => setSelectedQueryMenuSection(section.id)}
+                      style={{
+                        ...QUERY_MENU_SECTION_ITEM,
+                        padding: '5px 12px',
+                        ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
+                      }}
+                    >
+                      <span>{section.icon}</span>
+                      <span>{section.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={QUERY_MENU_COLUMN}>
+                {selectedQueryMenuSection === 'types-static' ? (
+                  <>
+                    <div style={QUERY_MENU_COLUMN_TITLE}>Types</div>
+                    <div style={QUERY_MENU_CARD_LIST}>
+                      {explorerTypeCards.map((label) => (
+                        <div key={label} style={QUERY_MENU_STACKED_CARD}>
+                          <span style={QUERY_MENU_STACKED_CARD_LABEL}>{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : selectedQueryMenuSection === 'use-cases-static' ? (
+                  <>
+                    <div style={QUERY_MENU_COLUMN_TITLE}>Use cases</div>
+                    <div style={QUERY_MENU_CARD_LIST}>
+                      {explorerUseCases.map((label) => (
+                        <div key={label} style={QUERY_MENU_STACKED_CARD}>
+                          <span style={QUERY_MENU_STACKED_CARD_LABEL}>{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={QUERY_MENU_COLUMN_TITLE}>Resource types</div>
+                    <div style={QUERY_MENU_RESOURCE_LIST}>
+                      {queryResourceTypes.map((resourceType) => (
+                        <button key={resourceType.label} type="button" role="menuitem" style={QUERY_MENU_RESOURCE_ITEM}>
+                          <span style={QUERY_MENU_RESOURCE_LABEL}>{resourceType.label}</span>
+                          <span style={QUERY_MENU_COUNT}>{resourceType.count}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              {!isStaticQuerySection ? <div style={QUERY_MENU_EMPTY} /> : null}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   const infraStateTotal = INFRA_STATE_SEGMENTS.reduce((sum, segment) => sum + segment.value, 0);
   const infraStateGradient = (() => {
     let start = 0;
@@ -956,11 +1367,85 @@ function OrgPortfolioOverview({
           </section>
 
           <section style={PANEL}>
-            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-              <span>Visibility</span>
-              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.
-              </span>
+            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, position: 'relative' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                <span>Visibility</span>
+                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                  Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.
+                </span>
+              </div>
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                <button
+                  type="button"
+                  onClick={() => setQueryMenuOpen((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={queryMenuOpen}
+                  style={{ ...CTA_BUTTON, whiteSpace: 'nowrap' }}
+                >
+                  Resource Finder
+                </button>
+                {queryMenuOpen ? (
+                  <div role="menu" aria-label="Resource search menu" style={{ ...QUERY_MENU_PANEL, left: 'auto', right: 0, width: 900, minWidth: 760 }}>
+                    <div style={QUERY_MENU_SEARCH}>
+                      <input type="text" value="Search" readOnly style={QUERY_MENU_SEARCH_INPUT} />
+                    </div>
+                    <div style={{ ...QUERY_MENU_BODY, gridTemplateColumns: (selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static') ? '310px 1fr' : '310px 310px 1fr' }}>
+                      <div style={QUERY_MENU_COLUMN}>
+                        <div style={QUERY_MENU_SECTION_LIST}>
+                          {queryMenuSections.slice(0, 2).map((section) => (
+                            <button key={section.id} type="button" role="menuitem"
+                              onClick={() => setSelectedQueryMenuSection(section.id)}
+                              style={{ ...QUERY_MENU_SECTION_ITEM, ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
+                              <span>{section.icon}</span><span>{section.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                        <div style={QUERY_MENU_DIVIDER} />
+                        <button type="button" role="menuitem" onClick={() => setSelectedQueryMenuSection('types-static')}
+                          style={{ ...QUERY_MENU_SECTION_ITEM_STATIC, ...(selectedQueryMenuSection === 'types-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
+                          <span>○</span><span>Types</span>
+                        </button>
+                        <button type="button" role="menuitem" onClick={() => setSelectedQueryMenuSection('use-cases-static')}
+                          style={{ ...QUERY_MENU_SECTION_ITEM_STATIC, ...(selectedQueryMenuSection === 'use-cases-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
+                          <span>○</span><span>Use cases</span>
+                        </button>
+                        <div style={QUERY_MENU_DIVIDER} />
+                        <div style={QUERY_MENU_SECTION_LIST}>
+                          {queryMenuSections.slice(2).map((section) => (
+                            <button key={section.id} type="button" role="menuitem"
+                              onClick={() => setSelectedQueryMenuSection(section.id)}
+                              style={{ ...QUERY_MENU_SECTION_ITEM, padding: '5px 12px', ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
+                              <span>{section.icon}</span><span>{section.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={QUERY_MENU_COLUMN}>
+                        {selectedQueryMenuSection === 'types-static' ? (
+                          <><div style={QUERY_MENU_COLUMN_TITLE}>Types</div>
+                          <div style={QUERY_MENU_CARD_LIST}>{explorerTypeCards.map((label) => (
+                            <div key={label} style={QUERY_MENU_STACKED_CARD}><span style={QUERY_MENU_STACKED_CARD_LABEL}>{label}</span></div>
+                          ))}</div></>
+                        ) : selectedQueryMenuSection === 'use-cases-static' ? (
+                          <><div style={QUERY_MENU_COLUMN_TITLE}>Use cases</div>
+                          <div style={QUERY_MENU_CARD_LIST}>{explorerUseCases.map((label) => (
+                            <div key={label} style={QUERY_MENU_STACKED_CARD}><span style={QUERY_MENU_STACKED_CARD_LABEL}>{label}</span></div>
+                          ))}</div></>
+                        ) : (
+                          <><div style={QUERY_MENU_COLUMN_TITLE}>Resource types</div>
+                          <div style={QUERY_MENU_RESOURCE_LIST}>{queryResourceTypes.map((resourceType) => (
+                            <button key={resourceType.label} type="button" role="menuitem" style={QUERY_MENU_RESOURCE_ITEM}>
+                              <span style={QUERY_MENU_RESOURCE_LABEL}>{resourceType.label}</span>
+                              <span style={QUERY_MENU_COUNT}>{resourceType.count}</span>
+                            </button>
+                          ))}</div></>
+                        )}
+                      </div>
+                      {!(selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static') ? <div style={QUERY_MENU_EMPTY} /> : null}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
             </div>
             <div style={VISIBILITY_SUMMARY_LAYOUT}>
               <div style={VISIBILITY_QUERY_TILE}>
@@ -1034,17 +1519,6 @@ function OrgPortfolioOverview({
                       ))}
                     </div>
                   </div>
-                </div>
-                <div style={{ ...INFRA_STATE_BOX, marginBottom: 0 }}>
-                  <div style={{ ...INFRA_STATE_HEADER, marginBottom: 8 }}>Build your Infragraph query</div>
-                  <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-                    <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>Clear query</button>
-                    <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>{'</>'}</button>
-                    <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>x</button>
-                  </div>
-                  <button type="button" style={VISIBILITY_FIND_BUTTON}>
-                    Find...
-                  </button>
                 </div>
               </div>
               <div style={TILE}>
