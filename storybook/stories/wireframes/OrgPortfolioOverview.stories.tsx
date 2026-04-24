@@ -303,15 +303,208 @@ const FLEET_HEADER_ROW: CSSProperties = {
 const VISIBILITY_SUMMARY_LAYOUT: CSSProperties = {
   padding: 10,
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
+  gridTemplateColumns: '1fr',
   gap: 8,
 };
 
 const VISIBILITY_QUERY_TILE: CSSProperties = {
-  ...TILE,
-  display: 'flex',
-  flexDirection: 'column',
+  display: 'grid',
+  gap: 8,
 };
+
+const INFRA_STATE_BOX: CSSProperties = {
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 6,
+  background: 'rgb(255, 255, 255)',
+  padding: '10px 12px',
+  marginBottom: 0,
+};
+
+const INFRA_STATE_HEADER: CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: TOK.textPrimary,
+  marginBottom: 10,
+};
+
+const INFRA_STATE_SPLIT: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 16,
+  alignItems: 'stretch',
+};
+
+const INFRA_STATE_CHART_ROW: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '128px 1fr',
+  alignItems: 'center',
+  gap: 14,
+};
+
+const INFRA_STATE_DONUT: CSSProperties = {
+  width: 128,
+  height: 128,
+  borderRadius: 999,
+  display: 'grid',
+  placeItems: 'center',
+};
+
+const INFRA_STATE_DONUT_INNER: CSSProperties = {
+  width: 92,
+  height: 92,
+  borderRadius: 999,
+  background: TOK.layer01,
+  border: `1px solid ${TOK.border}`,
+  display: 'grid',
+  placeItems: 'center',
+  textAlign: 'center',
+};
+
+const INFRA_STATE_LEGEND: CSSProperties = {
+  display: 'grid',
+  gap: 10,
+};
+
+const INFRA_STATE_LEGEND_ROW: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '12px 1fr auto',
+  gap: 8,
+  alignItems: 'center',
+  fontSize: 12,
+};
+
+const INFRA_STATE_LEGEND_DOT: CSSProperties = {
+  width: 9,
+  height: 9,
+  borderRadius: 999,
+};
+
+const INFRA_STATE_ACTION_ROW: CSSProperties = {
+  marginTop: 'auto',
+  display: 'flex',
+  justifyContent: 'flex-end',
+  paddingTop: 10,
+};
+
+const INFRA_STATE_ACTION_BUTTON: CSSProperties = {
+  ...CTA_BUTTON,
+  fontSize: 11,
+  padding: '4px 10px',
+};
+
+const INFRA_INVENTORY_GRID: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  columnGap: 8,
+  rowGap: 8,
+};
+
+const INFRA_INVENTORY_ITEM: CSSProperties = {
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 4,
+  background: TOK.layer01,
+  padding: '8px 10px',
+  display: 'grid',
+  gridTemplateColumns: '30px 1fr auto',
+  gap: 8,
+  alignItems: 'center',
+};
+
+const INFRA_INVENTORY_ICON: CSSProperties = {
+  width: 30,
+  height: 30,
+  borderRadius: 4,
+  border: `1px solid ${TOK.border}`,
+  background: TOK.layer02,
+  display: 'grid',
+  placeItems: 'center',
+  fontSize: 9,
+  color: TOK.textSecondary,
+  fontWeight: 700,
+};
+
+const INFRA_INVENTORY_LABEL: CSSProperties = {
+  color: TOK.textSecondary,
+  fontSize: 12,
+  lineHeight: 1.2,
+  whiteSpace: 'nowrap',
+};
+
+const INFRA_INVENTORY_COUNT: CSSProperties = {
+  color: TOK.textPrimary,
+  fontSize: 14,
+  fontWeight: 600,
+  lineHeight: 1.15,
+};
+
+const INFRA_INVENTORY_TEXT_STACK: CSSProperties = {
+  display: 'grid',
+  gap: 2,
+};
+
+const INFRA_INVENTORY_MENU_WRAP: CSSProperties = {
+  position: 'relative',
+  justifySelf: 'end',
+  alignSelf: 'start',
+};
+
+const INFRA_INVENTORY_MENU_BUTTON: CSSProperties = {
+  width: 20,
+  height: 20,
+  borderRadius: 4,
+  border: 'none',
+  background: 'transparent',
+  color: TOK.textSecondary,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  fontSize: 16,
+  lineHeight: 1,
+  padding: 0,
+};
+
+const INFRA_INVENTORY_MENU: CSSProperties = {
+  position: 'absolute',
+  top: 28,
+  right: 0,
+  minWidth: 150,
+  border: `1px solid ${TOK.border}`,
+  borderRadius: 6,
+  background: TOK.layer01,
+  boxShadow: '0 8px 18px rgba(0, 0, 0, 0.14)',
+  padding: 4,
+  zIndex: 6,
+  display: 'grid',
+  gap: 2,
+};
+
+const INFRA_INVENTORY_MENU_ITEM: CSSProperties = {
+  border: 'none',
+  borderRadius: 4,
+  background: 'transparent',
+  color: TOK.textPrimary,
+  textAlign: 'left',
+  fontSize: 12,
+  padding: '6px 8px',
+  cursor: 'pointer',
+};
+
+const INFRA_STATE_SEGMENTS = [
+  { label: 'Managed', value: 2194, color: '#0b8f2d' },
+  { label: 'Unmanaged', value: 1256, color: '#f2a600' },
+  { label: 'Drifted', value: 74, color: '#e11d2e' },
+  { label: 'Ghosted', value: 25, color: '#6b7280' },
+] as const;
+
+const INFRA_INVENTORY_ITEMS = [
+  { id: 'aws', icon: 'aws', label: 'Amazon Web Services', count: 2195 },
+  { id: 'azure', icon: 'az', label: 'Azure', count: 351 },
+  { id: 'hcp-tf', icon: 'tf', label: 'HCP Terraform', count: 124 },
+  { id: 'tfe', icon: 'tf', label: 'Terraform Enterprise', count: 62 },
+  { id: 'packer', icon: 'pk', label: 'HCP Packer', count: 351 },
+  { id: 'github', icon: 'gh', label: 'GitHub', count: 68 },
+] as const;
 
 const VISIBILITY_TYPES_GRID: CSSProperties = {
   display: 'grid',
@@ -534,6 +727,7 @@ function OrgPortfolioOverview({
   const [selectedQueueItemIds, setSelectedQueueItemIds] = useState<string[]>([]);
   const [showQueueFilterMenu, setShowQueueFilterMenu] = useState(false);
   const [showQueueActionsMenu, setShowQueueActionsMenu] = useState(false);
+  const [openInventoryMenuId, setOpenInventoryMenuId] = useState<string | null>(null);
   const allQueueItemIds = model.remediationQueue.queueItems.map((item) => item.queueItemId);
   const allQueueRowsSelected =
     allQueueItemIds.length > 0 && allQueueItemIds.every((id) => selectedQueueItemIds.includes(id));
@@ -553,6 +747,18 @@ function OrgPortfolioOverview({
     'Which resources are missing an Owner tag?',
     'Which of my VMs are using images not provisioned by Packer?',
   ];
+  const infraStateTotal = INFRA_STATE_SEGMENTS.reduce((sum, segment) => sum + segment.value, 0);
+  const infraStateGradient = (() => {
+    let start = 0;
+    const slices = INFRA_STATE_SEGMENTS.map((segment) => {
+      const sweep = (segment.value / infraStateTotal) * 360;
+      const end = start + sweep;
+      const slice = `${segment.color} ${start}deg ${end}deg`;
+      start = end;
+      return slice;
+    });
+    return `conic-gradient(${slices.join(', ')})`;
+  })();
 
   return (
     <div style={SHELL}>
@@ -758,15 +964,88 @@ function OrgPortfolioOverview({
             </div>
             <div style={VISIBILITY_SUMMARY_LAYOUT}>
               <div style={VISIBILITY_QUERY_TILE}>
-                <div style={{ color: TOK.textSecondary, fontSize: 12, marginBottom: 8 }}>Build your Infragraph query</div>
-                <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-                  <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>Clear query</button>
-                  <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>{'</>'}</button>
-                  <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>x</button>
+                <div style={INFRA_STATE_SPLIT}>
+                  <div style={{ ...INFRA_STATE_BOX, display: 'flex', flexDirection: 'column' }}>
+                    <div style={INFRA_STATE_HEADER}>Infrastructure state</div>
+                    <div style={INFRA_STATE_CHART_ROW}>
+                      <div style={{ ...INFRA_STATE_DONUT, background: infraStateGradient }}>
+                        <div style={INFRA_STATE_DONUT_INNER}>
+                          <div>
+                            <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1 }}>{infraStateTotal}</div>
+                            <div style={{ color: TOK.textSecondary, fontSize: 11 }}>Total</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={INFRA_STATE_LEGEND}>
+                        {INFRA_STATE_SEGMENTS.map((segment) => (
+                          <div key={segment.label} style={INFRA_STATE_LEGEND_ROW}>
+                            <span style={{ ...INFRA_STATE_LEGEND_DOT, background: segment.color }} />
+                            <span style={{ color: TOK.textSecondary }}>{segment.label}</span>
+                            <span style={{ fontWeight: 600 }}>{segment.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={INFRA_STATE_ACTION_ROW}>
+                      <button type="button" style={INFRA_STATE_ACTION_BUTTON}>Agentic Workflows</button>
+                    </div>
+                  </div>
+                  <div style={INFRA_STATE_BOX}>
+                    <div style={{ ...INFRA_STATE_HEADER, marginBottom: 8 }}>Inventory</div>
+                    <div style={INFRA_INVENTORY_GRID}>
+                      {INFRA_INVENTORY_ITEMS.map((item) => (
+                        <div key={item.id} style={INFRA_INVENTORY_ITEM}>
+                          <span style={INFRA_INVENTORY_ICON}>{item.icon}</span>
+                          <span style={INFRA_INVENTORY_TEXT_STACK}>
+                            <span style={INFRA_INVENTORY_COUNT}>{item.count}</span>
+                            <span style={INFRA_INVENTORY_LABEL}>{item.label}</span>
+                          </span>
+                          <span style={INFRA_INVENTORY_MENU_WRAP}>
+                            <button
+                              type="button"
+                              style={INFRA_INVENTORY_MENU_BUTTON}
+                              aria-label={`${item.label} actions`}
+                              onClick={() =>
+                                setOpenInventoryMenuId((current) => (current === item.id ? null : item.id))
+                              }
+                            >
+                              ...
+                            </button>
+                            {openInventoryMenuId === item.id ? (
+                              <span style={INFRA_INVENTORY_MENU}>
+                                <button
+                                  type="button"
+                                  style={INFRA_INVENTORY_MENU_ITEM}
+                                  onClick={() => setOpenInventoryMenuId(null)}
+                                >
+                                  View Inventory
+                                </button>
+                                <button
+                                  type="button"
+                                  style={INFRA_INVENTORY_MENU_ITEM}
+                                  onClick={() => setOpenInventoryMenuId(null)}
+                                >
+                                  View Connections
+                                </button>
+                              </span>
+                            ) : null}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <button type="button" style={VISIBILITY_FIND_BUTTON}>
-                  Find...
-                </button>
+                <div style={{ ...INFRA_STATE_BOX, marginBottom: 0 }}>
+                  <div style={{ ...INFRA_STATE_HEADER, marginBottom: 8 }}>Build your Infragraph query</div>
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                    <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>Clear query</button>
+                    <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>{'</>'}</button>
+                    <button type="button" style={{ ...CTA_BUTTON, fontSize: 11, padding: '3px 8px' }}>x</button>
+                  </div>
+                  <button type="button" style={VISIBILITY_FIND_BUTTON}>
+                    Find...
+                  </button>
+                </div>
               </div>
               <div style={TILE}>
                 <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
