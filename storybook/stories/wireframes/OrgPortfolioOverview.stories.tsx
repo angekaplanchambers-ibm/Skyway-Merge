@@ -914,7 +914,9 @@ function OrgPortfolioOverview({
   organizationOverviewStory?: 'default' | 'high-risk';
 }) {
   const [showActorsTooltip, setShowActorsTooltip] = useState(false);
-  const [activeVisibilitySummaryTab, setActiveVisibilitySummaryTab] = useState<'types' | 'questions'>('types');
+  const [showPerformancePressureTooltip, setShowPerformancePressureTooltip] = useState(false);
+  const [openPerformanceInsightTooltip, setOpenPerformanceInsightTooltip] = useState<string | null>(null);
+  const [activeVisibilitySummaryTab, setActiveVisibilitySummaryTab] = useState<'core-queries' | 'types' | 'use-cases' | 'questions'>('core-queries');
   const [selectedQueueItemIds, setSelectedQueueItemIds] = useState<string[]>([]);
   const [showQueueFilterMenu, setShowQueueFilterMenu] = useState(false);
   const [showQueueActionsMenu, setShowQueueActionsMenu] = useState(false);
@@ -932,6 +934,41 @@ function OrgPortfolioOverview({
     ? workspaceFromRoute(recommendedConversionItem.nextActionRoute)
     : undefined;
   const visibilityTypeCards = ['Modules', 'Providers', 'Workspaces', 'Resources (Beta)', 'Terraform Versions'];
+  const visibilityTypeDistribution = [
+    { label: 'Terraform Versions', value: '7%', score: 14 },
+    { label: 'Providers', value: '10%', score: 20 },
+    { label: 'Modules', value: '18%', score: 36 },
+    { label: 'Workspaces', value: '25%', score: 50 },
+    { label: 'Resources', value: '40%', score: 72 },
+  ];
+  const visibilityCoreQueries = [
+    "Infrastructure that's publicly exposed",
+    'No active dependencies, attachment or operational purpose.',
+    'Drift between intended and actual across environments.',
+    'Highest-cost areas across Services',
+    'Components depending on a small set of critical infrastructure',
+  ];
+  const visibilityPerformanceInsights = [
+    { label: 'Stability', score: 75, status: 'Healthy' },
+    { label: 'Capacity Headroom', score: 65, status: 'Watch' },
+    { label: 'Utilization Balance', score: 70, status: 'Watch' },
+    { label: 'Dependency Concentration', score: 55, status: 'Attention' },
+    { label: 'Environmental Consistency', score: 80, status: 'Healthy' },
+  ];
+  const visibilityUseCases = [
+    'Workspaces with zero resources',
+    'Workspaces with the most resources',
+    'Resources by module name',
+    'Top module versions',
+    'Latest Terraform versions',
+    'Top provider versions',
+    'Workspaces without VCS',
+    'Workspace VCS source',
+    'Workspaces with failed checks',
+    'Drifted workspaces',
+    'All workspace versions',
+    'Workspaces by run status',
+  ];
   const visibilityGraphQuestions = [
     "Do I have any Virtual Machines that aren't managed by Terraform?",
     'Are any of my AWS resources provisioned by a non-current version of Terraform?',
@@ -940,6 +977,18 @@ function OrgPortfolioOverview({
     'Which resources are missing an Owner tag?',
     'Which of my VMs are using images not provisioned by Packer?',
   ];
+  const visibilityTargetedPerformanceInsights = [
+    { label: 'Terraform Version Drift', value: '15%', score: 38 },
+    { label: 'Infrastructure Age (Staleness)', value: '20%', score: 50 },
+    { label: 'Ownership & Accountability Gaps', value: '20%', score: 50 },
+    { label: 'Unmanaged Infrastructure', value: '25%', score: 62 },
+    { label: 'Security Configuration Gaps', value: '30%', score: 82 },
+  ];
+  const performanceInsightStatusHelp: Record<'Healthy' | 'Watch' | 'Attention', string> = {
+    Healthy: 'Performance posture is stable and well‑balanced',
+    Watch: 'Emerging pressure or inconsistency worth monitoring',
+    Attention: 'Likely requires investigation due to elevated risk',
+  };
   const queryMenuSections = [
     { id: 'all', label: 'All', icon: '≡' },
     { id: 'recommended', label: 'Recommended', icon: '✦' },
@@ -1522,50 +1571,387 @@ function OrgPortfolioOverview({
                 </div>
               </div>
               <div style={TILE}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
-                  <div style={{ ...VISIBILITY_TABS_ROW, flex: 1, marginBottom: 0 }}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveVisibilitySummaryTab('types')}
-                      style={activeVisibilitySummaryTab === 'types' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
-                    >
-                      Types and Use Cases
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveVisibilitySummaryTab('questions')}
-                      style={activeVisibilitySummaryTab === 'questions' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
-                    >
-                      Suggested Questions
-                    </button>
+                <div style={{ display: 'grid', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                    <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>DEEP DIVE</div>
+                    <span style={{ ...CTA_BUTTON, display: 'inline-block', cursor: 'default' }}>Saved Views</span>
                   </div>
-                  <span style={{ ...CTA_BUTTON, marginBottom: 6, display: 'inline-block', cursor: 'default' }}>Saved Views</span>
+                  <div style={{ ...VISIBILITY_TABS_ROW, marginBottom: 0 }}>
+                      <button
+                        type="button"
+                        onClick={() => setActiveVisibilitySummaryTab('core-queries')}
+                        style={activeVisibilitySummaryTab === 'core-queries' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                      >
+                        Core
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveVisibilitySummaryTab('questions')}
+                        style={activeVisibilitySummaryTab === 'questions' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                      >
+                        Targeted
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveVisibilitySummaryTab('types')}
+                        style={activeVisibilitySummaryTab === 'types' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                      >
+                        Types
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveVisibilitySummaryTab('use-cases')}
+                        style={activeVisibilitySummaryTab === 'use-cases' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                      >
+                        Use cases
+                      </button>
+                  </div>
                 </div>
-                {activeVisibilitySummaryTab === 'types' ? (
-                  <div style={VISIBILITY_TYPES_GRID}>
-                    {visibilityTypeCards.slice(0, 5).map((typeLabel) => (
-                      <div key={typeLabel} style={VISIBILITY_TYPE_CARD}>
+                <div style={{ marginTop: 8 }}>
+                {activeVisibilitySummaryTab === 'core-queries' ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gap: 8,
+                        height: '100%',
+                        gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))`,
+                      }}
+                    >
+                      {visibilityCoreQueries.map((query) => (
+                        <div key={query} style={VISIBILITY_TYPE_CARD}>
+                          <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                            <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                            <span style={{ fontSize: 12 }}>{query}</span>
+                          </span>
+                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gap: 8,
+                        background: '#ffffff',
+                        border: `1px solid ${TOK.border}`,
+                        borderRadius: 6,
+                        padding: 10,
+                      }}
+                    >
+                      <div style={{ display: 'grid', gap: 4 }}>
+                        <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Performance Posture Snapshot</div>
+                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>
+                          This scorecard summarizes how balanced, stable, and resilient system performance is across
+                          key dimensions.
+                        </div>
+                      </div>
+                      <div style={{ display: 'grid', gap: 12 }}>
+                        {visibilityPerformanceInsights.map((insight) => (
+                          <div
+                            key={insight.label}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '170px 1fr auto',
+                              alignItems: 'center',
+                              gap: 10,
+                            }}
+                          >
+                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.label}</span>
+                            <span
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: `${insight.score}fr ${100 - insight.score}fr`,
+                                alignItems: 'stretch',
+                                height: 12,
+                                minWidth: 0,
+                              }}
+                            >
+                              <span style={{ background: TOK.textPrimary }} />
+                              <span
+                                style={{
+                                  backgroundImage:
+                                    'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
+                                  backgroundColor: '#ffffff',
+                                  borderLeft: '1px solid #ffffff',
+                                }}
+                              />
+                            </span>
+                            <span style={{ position: 'relative', display: 'inline-flex', justifyContent: 'flex-end' }}>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setOpenPerformanceInsightTooltip((current) =>
+                                    current === insight.label ? null : insight.label,
+                                  )
+                                }
+                                aria-label={`${insight.status} status info`}
+                                style={{
+                                  fontSize: 11,
+                                  color: TOK.textPrimary,
+                                  textAlign: 'right',
+                                  border: `1px solid ${TOK.border}`,
+                                  borderRadius: 999,
+                                  padding: '2px 8px',
+                                  background:
+                                    insight.status === 'Healthy'
+                                      ? '#e8f5e9'
+                                      : insight.status === 'Watch'
+                                        ? '#fff7e6'
+                                        : '#fdecea',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                {insight.status}
+                              </button>
+                              {openPerformanceInsightTooltip === insight.label ? (
+                                <span
+                                  role="tooltip"
+                                  style={{
+                                    position: 'absolute',
+                                    top: 24,
+                                    right: 0,
+                                    width: 220,
+                                    border: `1px solid ${TOK.border}`,
+                                    borderRadius: 4,
+                                    background: TOK.layer01,
+                                    color: TOK.textPrimary,
+                                    fontSize: 12,
+                                    fontWeight: 400,
+                                    padding: '6px 8px',
+                                    zIndex: 4,
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
+                                    textAlign: 'left',
+                                  }}
+                                >
+                                  {performanceInsightStatusHelp[
+                                    insight.status as keyof typeof performanceInsightStatusHelp
+                                  ]}
+                                </span>
+                              ) : null}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : activeVisibilitySummaryTab === 'types' ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
+                    <div style={VISIBILITY_TYPES_GRID}>
+                      {visibilityTypeCards.slice(0, 5).map((typeLabel) => (
+                        <div key={typeLabel} style={VISIBILITY_TYPE_CARD}>
+                          <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                            <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                            <span style={{ fontSize: 12 }}>{typeLabel}</span>
+                          </span>
+                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 8,
+                        background: '#ffffff',
+                        border: `1px solid ${TOK.border}`,
+                        borderRadius: 6,
+                        padding: '10px 12px',
+                        height: '100%',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <div style={{ display: 'grid', gap: 2 }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, position: 'relative' }}>
+                          <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Performance Impact by Type</div>
+                          <button
+                            type="button"
+                            onClick={() => setShowPerformancePressureTooltip((value) => !value)}
+                            aria-label="Performance Pressure info"
+                            style={{
+                              width: 14,
+                              height: 14,
+                              borderRadius: 999,
+                              border: `1px solid ${TOK.border}`,
+                              background: TOK.layer01,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: 10,
+                              color: TOK.textSecondary,
+                              cursor: 'pointer',
+                              padding: 0,
+                              flexShrink: 0,
+                            }}
+                          >
+                            i
+                          </button>
+                          {showPerformancePressureTooltip ? (
+                            <div
+                              role="tooltip"
+                              style={{
+                                position: 'absolute',
+                                top: 20,
+                                left: 0,
+                                maxWidth: 260,
+                                border: `1px solid ${TOK.border}`,
+                                borderRadius: 4,
+                                background: TOK.layer01,
+                                color: TOK.textPrimary,
+                                fontSize: 12,
+                                fontWeight: 400,
+                                padding: '5px 8px',
+                                zIndex: 4,
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
+                              }}
+                            >
+                              How much a given layer contributes to observed performance stress or degradation.
+                            </div>
+                          ) : null}
+                        </div>
+                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>
+                          Distribution of performance impact across infrastructure layers (7d)
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gap: 6,
+                          gridTemplateRows: `repeat(${visibilityTypeDistribution.length}, minmax(0, 1fr))`,
+                          flex: 1,
+                          padding: '2px 0 6px 0',
+                          boxSizing: 'border-box',
+                        }}
+                      >
+                        {visibilityTypeDistribution.map((item) => (
+                          <div
+                            key={item.label}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '130px 1fr auto',
+                              alignItems: 'center',
+                              gap: 8,
+                              minHeight: 0,
+                            }}
+                          >
+                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{item.label}</span>
+                            <span
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: `${item.score}fr ${100 - item.score}fr`,
+                                alignItems: 'stretch',
+                                height: 12,
+                                minWidth: 0,
+                              }}
+                            >
+                              <span style={{ background: TOK.textPrimary }} />
+                              <span
+                                style={{
+                                  backgroundImage:
+                                    'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
+                                  backgroundColor: '#ffffff',
+                                  borderLeft: '1px solid #ffffff',
+                                }}
+                              />
+                            </span>
+                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{item.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : activeVisibilitySummaryTab === 'use-cases' ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    {visibilityUseCases.map((useCase) => (
+                      <div key={useCase} style={VISIBILITY_TYPE_CARD}>
                         <span style={VISIBILITY_TYPE_CARD_LEFT}>
                           <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                          <span style={{ fontSize: 12 }}>{typeLabel}</span>
+                          <span style={{ fontSize: 12 }}>{useCase}</span>
                         </span>
                         <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <div style={{ display: 'grid', gap: 8 }}>
-                    {visibilityGraphQuestions.slice(0, 5).map((question) => (
-                      <div key={question} style={VISIBILITY_TYPE_CARD}>
-                        <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                          <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                          <span style={{ fontSize: 12 }}>{question}</span>
-                        </span>
-                        <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                ) : activeVisibilitySummaryTab === 'questions' ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
+                    <div style={{ display: 'grid', gap: 8 }}>
+                      {visibilityGraphQuestions.slice(0, 5).map((question) => (
+                        <div key={question} style={VISIBILITY_TYPE_CARD}>
+                          <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                            <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                            <span style={{ fontSize: 12 }}>{question}</span>
+                          </span>
+                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 8,
+                        background: '#ffffff',
+                        border: `1px solid ${TOK.border}`,
+                        borderRadius: 6,
+                        padding: '10px 12px',
+                        boxSizing: 'border-box',
+                        height: '100%',
+                      }}
+                    >
+                      <div style={{ display: 'grid', gap: 2 }}>
+                        <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Targeted Performance Stressors</div>
+                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>
+                          How specific infrastructure conditions contribute to observed performance stress (7d)
+                        </div>
                       </div>
-                    ))}
+                      <div
+                        style={{
+                          display: 'grid',
+                          gap: 4,
+                          gridTemplateRows: `repeat(${visibilityTargetedPerformanceInsights.length}, minmax(0, 1fr))`,
+                          flex: 1,
+                          padding: '2px 0 4px 0',
+                          boxSizing: 'border-box',
+                        }}
+                      >
+                        {visibilityTargetedPerformanceInsights.map((insight) => (
+                          <div
+                            key={insight.label}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '130px 1fr auto',
+                              alignItems: 'center',
+                              gap: 8,
+                              minHeight: 0,
+                            }}
+                          >
+                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.label}</span>
+                            <span
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: `${insight.score}fr ${100 - insight.score}fr`,
+                                alignItems: 'stretch',
+                                height: 12,
+                                minWidth: 0,
+                              }}
+                            >
+                              <span style={{ background: TOK.textPrimary }} />
+                              <span
+                                style={{
+                                  backgroundImage:
+                                    'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
+                                  backgroundColor: '#ffffff',
+                                  borderLeft: '1px solid #ffffff',
+                                }}
+                              />
+                            </span>
+                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                )}
+                ) : null}
+                </div>
               </div>
             </div>
           </section>
