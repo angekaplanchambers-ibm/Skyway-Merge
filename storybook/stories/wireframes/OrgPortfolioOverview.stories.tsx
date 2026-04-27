@@ -507,6 +507,13 @@ const INFRA_INVENTORY_ITEMS = [
   { id: 'github', icon: 'gh', label: 'GitHub', count: 68 },
 ] as const;
 
+const AUTOMATION_OUTCOME_BARS = [
+  { label: 'Issues\nRemediated', level: 72, color: '#b56ae6' },
+  { label: 'Cost\nSavings', level: 62, color: '#24c300' },
+  { label: 'Critical\nResolutions', level: 85, color: '#f99628' },
+  { label: 'Workplace\nCoverage', level: 85, color: '#4a7be6' },
+] as const;
+
 const VISIBILITY_TYPES_GRID: CSSProperties = {
   display: 'grid',
   gridTemplateColumns: '1fr',
@@ -1352,6 +1359,106 @@ function OrgPortfolioOverview({
                       Export
                     </button>
                   </div>
+                </div>
+                <div style={{ padding: 10, paddingBottom: 12 }}>
+                  <div
+                    style={{
+                      position: 'relative',
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: '#ececec',
+                      padding: '12px 14px 10px',
+                      display: 'grid',
+                      gridTemplateColumns: '56px 1fr',
+                      gap: 10,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateRows: '176px 44px',
+                        color: '#8a8a8a',
+                        fontSize: 10,
+                        fontWeight: 500,
+                      }}
+                    >
+                      <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr 1fr', alignItems: 'center', height: '100%' }}>
+                        <span style={{ alignSelf: 'start' }}>High</span>
+                        <span style={{ alignSelf: 'center' }}>Medium</span>
+                        <span style={{ alignSelf: 'end' }}>Low</span>
+                      </div>
+                      <span aria-hidden />
+                    </div>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateRows: '176px 44px',
+                        gap: 8,
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: 66,
+                          right: 14,
+                          top: 12,
+                          height: 176,
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: 0, borderTop: '1px solid #d0d0d0' }} />
+                        <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: '50%', borderTop: '1px solid #d0d0d0' }} />
+                        <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderTop: '1px solid #d0d0d0' }} />
+                      </div>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                          gap: 16,
+                          alignItems: 'end',
+                          padding: '0 8px',
+                          height: 176,
+                          zIndex: 1,
+                        }}
+                      >
+                        {AUTOMATION_OUTCOME_BARS.map((bar) => (
+                          <div key={bar.label} style={{ display: 'grid', justifyItems: 'center', height: '100%' }}>
+                            <div
+                              style={{
+                                width: '76%',
+                                minWidth: 38,
+                                height: `${bar.level}%`,
+                                background: bar.color,
+                                borderRadius: '8px 8px 0 0',
+                                alignSelf: 'end',
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                          gap: 16,
+                          alignItems: 'start',
+                          padding: '0 8px',
+                        }}
+                      >
+                        {AUTOMATION_OUTCOME_BARS.map((bar) => (
+                          <span key={`${bar.label}-label`} style={{ fontSize: 10, lineHeight: 1.2, textAlign: 'center', color: '#3d3d3d', whiteSpace: 'pre-line' }}>
+                            {bar.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                  <span>Automation Impact</span>
+                  <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                    Tracking posture impact metrics across key automation.
+                  </span>
                 </div>
                 <div style={KPI_GRID}>
                   {model.postureKpiCards
