@@ -1364,15 +1364,34 @@ function OrgPortfolioOverview({
                   <div
                     style={{
                       position: 'relative',
-                      border: `1px solid ${TOK.border}`,
+                      border: 'none',
                       borderRadius: 6,
-                      background: '#ececec',
-                      padding: '12px 14px 10px',
+                      background: '#ffffff',
+                      padding: '54px 14px 10px',
                       display: 'grid',
                       gridTemplateColumns: '56px 1fr',
                       gap: 10,
                     }}
                   >
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: 10,
+                        left: 14,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        gap: 2,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: TOK.textPrimary,
+                      }}
+                    >
+                      <span>Automation impact</span>
+                      <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                        Tracking posture impact metrics across key automation.
+                      </span>
+                    </span>
                     <div
                       style={{
                         display: 'grid',
@@ -1401,12 +1420,12 @@ function OrgPortfolioOverview({
                           position: 'absolute',
                           left: 66,
                           right: 14,
-                          top: 12,
+                          top: 54,
                           height: 176,
                           pointerEvents: 'none',
                         }}
                       >
-                        <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: 0, borderTop: '1px solid #d0d0d0' }} />
+                        <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: 3, borderTop: '1px solid #d0d0d0' }} />
                         <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: '50%', borderTop: '1px solid #d0d0d0' }} />
                         <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0, borderTop: '1px solid #d0d0d0' }} />
                       </div>
@@ -1453,12 +1472,6 @@ function OrgPortfolioOverview({
                       </div>
                     </div>
                   </div>
-                </div>
-                <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-                  <span>Automation Impact</span>
-                  <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                    Tracking posture impact metrics across key automation.
-                  </span>
                 </div>
                 <div style={KPI_GRID}>
                   {model.postureKpiCards
