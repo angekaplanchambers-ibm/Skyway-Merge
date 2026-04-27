@@ -562,6 +562,23 @@ const VISIBILITY_TAB_ACTIVE: CSSProperties = {
   borderBottom: '2px solid var(--z-accent, #2563eb)',
 };
 
+const PORTFOLIO_STANDALONE_TABS_ROW: CSSProperties = {
+  ...VISIBILITY_TABS_ROW,
+  marginBottom: 0,
+};
+
+const PORTFOLIO_STANDALONE_TAB: CSSProperties = {
+  ...VISIBILITY_TAB,
+  fontSize: 14,
+  fontWeight: 700,
+};
+
+const PORTFOLIO_STANDALONE_TAB_ACTIVE: CSSProperties = {
+  ...VISIBILITY_TAB_ACTIVE,
+  fontSize: 14,
+  fontWeight: 700,
+};
+
 const VISIBILITY_FIND_BUTTON: CSSProperties = {
   width: '100%',
   border: `1px solid ${TOK.border}`,
@@ -914,6 +931,7 @@ function OrgPortfolioOverview({
   organizationOverviewStory?: 'default' | 'high-risk';
 }) {
   const [showActorsTooltip, setShowActorsTooltip] = useState(false);
+  const [activePortfolioTab, setActivePortfolioTab] = useState<'automation' | 'monitoring'>('automation');
   const [showPerformancePressureTooltip, setShowPerformancePressureTooltip] = useState(false);
   const [openPerformanceInsightTooltip, setOpenPerformanceInsightTooltip] = useState<string | null>(null);
   const [activeVisibilitySummaryTab, setActiveVisibilitySummaryTab] = useState<'core-queries' | 'types' | 'use-cases' | 'questions'>('core-queries');
@@ -1287,486 +1305,90 @@ function OrgPortfolioOverview({
             </div>
           </section>
 
-          <section style={PANEL}>
-            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-              <span>Global Posture Summary</span>
-              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                Portfolio-level posture metrics across organizations.
-              </span>
-            </div>
-            <div style={KPI_GRID}>
-              {model.postureKpiCards
-                .filter((card) => card.id !== 'accessibleOrganizations')
-                .map((card) => (
-                <div key={card.id} style={TILE}>
-                  <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{card.label}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                    <div style={{ fontSize: 22, fontWeight: 700 }}>{formatKpiValue(card)}</div>
-                    {card.id === 'criticalDriftOrganizations' ? (
-                      <div style={{ color: '#15803d', fontSize: 18, fontWeight: 700 }} aria-label="Savings trending down">
-                        ↓
-                      </div>
-                    ) : null}
-                  </div>
-                  <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
-                    7d: {card.delta7d ?? 0} ({card.trendDirection ?? 'flat'}) | Goal: {kpi7dGoal(card.id)}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div
-              style={{
-                borderTop: `1px solid ${TOK.border}`,
-                margin: '2px 18px 8px',
-              }}
-            />
-            <div style={{ ...FLEET_SNAPSHOT_PANEL, paddingTop: 0 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, marginBottom: 8 }}>
-                <span style={{ fontWeight: 600, fontSize: 12, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-                  Agentic Fleet Snapshot
-                </span>
-                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400 }}>
-                  Multi-fleet activity across organizations.
-                </span>
-              </div>
-              <div style={{ ...TILE, background: TOK.layer02 }}>
-                <div style={{ display: 'grid', gap: 10 }}>
-                  <div style={FLEET_HEADER_ROW}>
-                    <div>Fleet</div>
-                    <div>Organization</div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, position: 'relative' }}>
-                      <span>Actor(s)</span>
-                      <button
-                        type="button"
-                        onClick={() => setShowActorsTooltip((v) => !v)}
-                        aria-label="Actors column info"
-                        style={{
-                          width: 14,
-                          height: 14,
-                          borderRadius: 999,
-                          border: `1px solid ${TOK.border}`,
-                          background: TOK.layer01,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 10,
-                          color: TOK.textSecondary,
-                          cursor: 'pointer',
-                          padding: 0,
-                          flexShrink: 0,
-                        }}
-                      >
-                        i
-                      </button>
-                      {showActorsTooltip ? (
-                        <div
-                          role="tooltip"
-                          style={{
-                            position: 'absolute',
-                            top: 20,
-                            right: 0,
-                            whiteSpace: 'nowrap',
-                            border: `1px solid ${TOK.border}`,
-                            borderRadius: 4,
-                            background: TOK.layer01,
-                            color: TOK.textPrimary,
-                            fontSize: 12,
-                            fontWeight: 400,
-                            padding: '5px 8px',
-                            zIndex: 4,
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
-                          }}
-                        >
-                          Active/Inactive Actors
-                        </div>
-                      ) : null}
-                    </div>
-                    <div>Agent Tasks</div>
-                    <div />
-                  </div>
-                  {model.fleetSnapshot.map((agent) => (
-                    <div key={agent.fleetId} style={FLEET_ROW}>
-                      <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{agent.fleetName}</div>
-                      <div style={{ fontSize: 12, fontWeight: 700 }}>
-                        <a
-                          href={organizationOverviewStoryHref(organizationOverviewStory, agent.organizationName)}
-                          target="_top"
-                          style={ORG_NAME_LINK}
-                        >
-                          {agent.organizationName}
-                        </a>
-                      </div>
-                      <div style={{ fontSize: 12 }}>
-                        {agent.activeAgentCount} Active / {agent.inactiveAgentCount} Inactive
-                      </div>
-                      <div style={{ fontSize: 12 }}>{agent.metricValue}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
-                        <span
-                          style={{ ...ACTION_LINK, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12 }}
-                        >
-                          <strong>View Fleet</strong>
-                          <span style={{ fontSize: 16 }}>→</span>
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <section style={{ padding: '0 2px', marginBottom: -8 }}>
+            <div style={PORTFOLIO_STANDALONE_TABS_ROW}>
+              <button
+                type="button"
+                onClick={() => setActivePortfolioTab('automation')}
+                style={activePortfolioTab === 'automation' ? PORTFOLIO_STANDALONE_TAB_ACTIVE : PORTFOLIO_STANDALONE_TAB}
+              >
+                Automation
+              </button>
+              <button
+                type="button"
+                onClick={() => setActivePortfolioTab('monitoring')}
+                style={activePortfolioTab === 'monitoring' ? PORTFOLIO_STANDALONE_TAB_ACTIVE : PORTFOLIO_STANDALONE_TAB}
+              >
+                Monitoring and Observability
+              </button>
             </div>
           </section>
 
           <section style={PANEL}>
-            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, position: 'relative' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-                <span>Visibility</span>
-                <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                  Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.
-                </span>
-              </div>
-              <div style={{ position: 'relative', flexShrink: 0 }}>
-                <button
-                  type="button"
-                  onClick={() => setQueryMenuOpen((v) => !v)}
-                  aria-haspopup="menu"
-                  aria-expanded={queryMenuOpen}
-                  style={{ ...CTA_BUTTON, whiteSpace: 'nowrap' }}
-                >
-                  Resource Finder
-                </button>
-                {queryMenuOpen ? (
-                  <div role="menu" aria-label="Resource search menu" style={{ ...QUERY_MENU_PANEL, left: 'auto', right: 0, width: 900, minWidth: 760 }}>
-                    <div style={QUERY_MENU_SEARCH}>
-                      <input type="text" value="Search" readOnly style={QUERY_MENU_SEARCH_INPUT} />
+            {activePortfolioTab === 'automation' ? (
+              <>
+                <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                  <div style={{ width: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                      <span>Global Posture Summary</span>
+                      <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                        Portfolio-level posture metrics across organizations.
+                      </span>
                     </div>
-                    <div style={{ ...QUERY_MENU_BODY, gridTemplateColumns: (selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static') ? '310px 1fr' : '310px 310px 1fr' }}>
-                      <div style={QUERY_MENU_COLUMN}>
-                        <div style={QUERY_MENU_SECTION_LIST}>
-                          {queryMenuSections.slice(0, 2).map((section) => (
-                            <button key={section.id} type="button" role="menuitem"
-                              onClick={() => setSelectedQueryMenuSection(section.id)}
-                              style={{ ...QUERY_MENU_SECTION_ITEM, ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
-                              <span>{section.icon}</span><span>{section.label}</span>
-                            </button>
-                          ))}
-                        </div>
-                        <div style={QUERY_MENU_DIVIDER} />
-                        <button type="button" role="menuitem" onClick={() => setSelectedQueryMenuSection('types-static')}
-                          style={{ ...QUERY_MENU_SECTION_ITEM_STATIC, ...(selectedQueryMenuSection === 'types-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
-                          <span>○</span><span>Types</span>
-                        </button>
-                        <button type="button" role="menuitem" onClick={() => setSelectedQueryMenuSection('use-cases-static')}
-                          style={{ ...QUERY_MENU_SECTION_ITEM_STATIC, ...(selectedQueryMenuSection === 'use-cases-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
-                          <span>○</span><span>Use cases</span>
-                        </button>
-                        <div style={QUERY_MENU_DIVIDER} />
-                        <div style={QUERY_MENU_SECTION_LIST}>
-                          {queryMenuSections.slice(2).map((section) => (
-                            <button key={section.id} type="button" role="menuitem"
-                              onClick={() => setSelectedQueryMenuSection(section.id)}
-                              style={{ ...QUERY_MENU_SECTION_ITEM, padding: '5px 12px', ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
-                              <span>{section.icon}</span><span>{section.label}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div style={QUERY_MENU_COLUMN}>
-                        {selectedQueryMenuSection === 'types-static' ? (
-                          <><div style={QUERY_MENU_COLUMN_TITLE}>Types</div>
-                          <div style={QUERY_MENU_CARD_LIST}>{explorerTypeCards.map((label) => (
-                            <div key={label} style={QUERY_MENU_STACKED_CARD}><span style={QUERY_MENU_STACKED_CARD_LABEL}>{label}</span></div>
-                          ))}</div></>
-                        ) : selectedQueryMenuSection === 'use-cases-static' ? (
-                          <><div style={QUERY_MENU_COLUMN_TITLE}>Use cases</div>
-                          <div style={QUERY_MENU_CARD_LIST}>{explorerUseCases.map((label) => (
-                            <div key={label} style={QUERY_MENU_STACKED_CARD}><span style={QUERY_MENU_STACKED_CARD_LABEL}>{label}</span></div>
-                          ))}</div></>
-                        ) : (
-                          <><div style={QUERY_MENU_COLUMN_TITLE}>Resource types</div>
-                          <div style={QUERY_MENU_RESOURCE_LIST}>{queryResourceTypes.map((resourceType) => (
-                            <button key={resourceType.label} type="button" role="menuitem" style={QUERY_MENU_RESOURCE_ITEM}>
-                              <span style={QUERY_MENU_RESOURCE_LABEL}>{resourceType.label}</span>
-                              <span style={QUERY_MENU_COUNT}>{resourceType.count}</span>
-                            </button>
-                          ))}</div></>
-                        )}
-                      </div>
-                      {!(selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static') ? <div style={QUERY_MENU_EMPTY} /> : null}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-            <div style={VISIBILITY_SUMMARY_LAYOUT}>
-              <div style={VISIBILITY_QUERY_TILE}>
-                <div style={INFRA_STATE_SPLIT}>
-                  <div style={{ ...INFRA_STATE_BOX, display: 'flex', flexDirection: 'column' }}>
-                    <div style={INFRA_STATE_HEADER}>Infrastructure state</div>
-                    <div style={INFRA_STATE_CHART_ROW}>
-                      <div style={{ ...INFRA_STATE_DONUT, background: infraStateGradient }}>
-                        <div style={INFRA_STATE_DONUT_INNER}>
-                          <div>
-                            <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1 }}>{infraStateTotal}</div>
-                            <div style={{ color: TOK.textSecondary, fontSize: 11 }}>Total</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div style={INFRA_STATE_LEGEND}>
-                        {INFRA_STATE_SEGMENTS.map((segment) => (
-                          <div key={segment.label} style={INFRA_STATE_LEGEND_ROW}>
-                            <span style={{ ...INFRA_STATE_LEGEND_DOT, background: segment.color }} />
-                            <span style={{ color: TOK.textSecondary }}>{segment.label}</span>
-                            <span style={{ fontWeight: 600 }}>{segment.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={INFRA_STATE_ACTION_ROW}>
-                      <button type="button" style={INFRA_STATE_ACTION_BUTTON}>Agentic Workflows</button>
-                    </div>
-                  </div>
-                  <div style={INFRA_STATE_BOX}>
-                    <div style={{ ...INFRA_STATE_HEADER, marginBottom: 8 }}>Inventory</div>
-                    <div style={INFRA_INVENTORY_GRID}>
-                      {INFRA_INVENTORY_ITEMS.map((item) => (
-                        <div key={item.id} style={INFRA_INVENTORY_ITEM}>
-                          <span style={INFRA_INVENTORY_ICON}>{item.icon}</span>
-                          <span style={INFRA_INVENTORY_TEXT_STACK}>
-                            <span style={INFRA_INVENTORY_COUNT}>{item.count}</span>
-                            <span style={INFRA_INVENTORY_LABEL}>{item.label}</span>
-                          </span>
-                          <span style={INFRA_INVENTORY_MENU_WRAP}>
-                            <button
-                              type="button"
-                              style={INFRA_INVENTORY_MENU_BUTTON}
-                              aria-label={`${item.label} actions`}
-                              onClick={() =>
-                                setOpenInventoryMenuId((current) => (current === item.id ? null : item.id))
-                              }
-                            >
-                              ...
-                            </button>
-                            {openInventoryMenuId === item.id ? (
-                              <span style={INFRA_INVENTORY_MENU}>
-                                <button
-                                  type="button"
-                                  style={INFRA_INVENTORY_MENU_ITEM}
-                                  onClick={() => setOpenInventoryMenuId(null)}
-                                >
-                                  View Inventory
-                                </button>
-                                <button
-                                  type="button"
-                                  style={INFRA_INVENTORY_MENU_ITEM}
-                                  onClick={() => setOpenInventoryMenuId(null)}
-                                >
-                                  View Connections
-                                </button>
-                              </span>
-                            ) : null}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    <button
+                      type="button"
+                      style={{ ...CTA_BUTTON, whiteSpace: 'nowrap' }}
+                    >
+                      Export
+                    </button>
                   </div>
                 </div>
-              </div>
-              <div style={TILE}>
-                <div style={{ display: 'grid', gap: 8 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                    <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>DEEP DIVE</div>
-                    <span style={{ ...CTA_BUTTON, display: 'inline-block', cursor: 'default' }}>Saved Views</span>
-                  </div>
-                  <div style={{ ...VISIBILITY_TABS_ROW, marginBottom: 0 }}>
-                      <button
-                        type="button"
-                        onClick={() => setActiveVisibilitySummaryTab('core-queries')}
-                        style={activeVisibilitySummaryTab === 'core-queries' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
-                      >
-                        Core
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActiveVisibilitySummaryTab('questions')}
-                        style={activeVisibilitySummaryTab === 'questions' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
-                      >
-                        Targeted
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActiveVisibilitySummaryTab('types')}
-                        style={activeVisibilitySummaryTab === 'types' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
-                      >
-                        Types
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setActiveVisibilitySummaryTab('use-cases')}
-                        style={activeVisibilitySummaryTab === 'use-cases' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
-                      >
-                        Use cases
-                      </button>
-                  </div>
-                </div>
-                <div style={{ marginTop: 8 }}>
-                {activeVisibilitySummaryTab === 'core-queries' ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
-                    <div
-                      style={{
-                        display: 'grid',
-                        gap: 8,
-                        height: '100%',
-                        gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))`,
-                      }}
-                    >
-                      {visibilityCoreQueries.map((query) => (
-                        <div key={query} style={VISIBILITY_TYPE_CARD}>
-                          <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                            <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                            <span style={{ fontSize: 12 }}>{query}</span>
-                          </span>
-                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div
-                      style={{
-                        display: 'grid',
-                        gap: 8,
-                        background: '#ffffff',
-                        border: `1px solid ${TOK.border}`,
-                        borderRadius: 6,
-                        padding: 10,
-                      }}
-                    >
-                      <div style={{ display: 'grid', gap: 4 }}>
-                        <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Performance Posture Snapshot</div>
-                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>
-                          This scorecard summarizes how balanced, stable, and resilient system performance is across
-                          key dimensions.
-                        </div>
-                      </div>
-                      <div style={{ display: 'grid', gap: 12 }}>
-                        {visibilityPerformanceInsights.map((insight) => (
-                          <div
-                            key={insight.label}
-                            style={{
-                              display: 'grid',
-                              gridTemplateColumns: '170px 1fr auto',
-                              alignItems: 'center',
-                              gap: 10,
-                            }}
-                          >
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.label}</span>
-                            <span
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: `${insight.score}fr ${100 - insight.score}fr`,
-                                alignItems: 'stretch',
-                                height: 12,
-                                minWidth: 0,
-                              }}
-                            >
-                              <span style={{ background: TOK.textPrimary }} />
-                              <span
-                                style={{
-                                  backgroundImage:
-                                    'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
-                                  backgroundColor: '#ffffff',
-                                  borderLeft: '1px solid #ffffff',
-                                }}
-                              />
-                            </span>
-                            <span style={{ position: 'relative', display: 'inline-flex', justifyContent: 'flex-end' }}>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setOpenPerformanceInsightTooltip((current) =>
-                                    current === insight.label ? null : insight.label,
-                                  )
-                                }
-                                aria-label={`${insight.status} status info`}
-                                style={{
-                                  fontSize: 11,
-                                  color: TOK.textPrimary,
-                                  textAlign: 'right',
-                                  border: `1px solid ${TOK.border}`,
-                                  borderRadius: 999,
-                                  padding: '2px 8px',
-                                  background:
-                                    insight.status === 'Healthy'
-                                      ? '#e8f5e9'
-                                      : insight.status === 'Watch'
-                                        ? '#fff7e6'
-                                        : '#fdecea',
-                                  cursor: 'pointer',
-                                }}
-                              >
-                                {insight.status}
-                              </button>
-                              {openPerformanceInsightTooltip === insight.label ? (
-                                <span
-                                  role="tooltip"
-                                  style={{
-                                    position: 'absolute',
-                                    top: 24,
-                                    right: 0,
-                                    width: 220,
-                                    border: `1px solid ${TOK.border}`,
-                                    borderRadius: 4,
-                                    background: TOK.layer01,
-                                    color: TOK.textPrimary,
-                                    fontSize: 12,
-                                    fontWeight: 400,
-                                    padding: '6px 8px',
-                                    zIndex: 4,
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
-                                    textAlign: 'left',
-                                  }}
-                                >
-                                  {performanceInsightStatusHelp[
-                                    insight.status as keyof typeof performanceInsightStatusHelp
-                                  ]}
-                                </span>
-                              ) : null}
-                            </span>
+                <div style={KPI_GRID}>
+                  {model.postureKpiCards
+                    .filter((card) => card.id !== 'accessibleOrganizations')
+                    .map((card) => (
+                    <div key={card.id} style={TILE}>
+                      <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{card.label}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                        <div style={{ fontSize: 22, fontWeight: 700 }}>{formatKpiValue(card)}</div>
+                        {card.id === 'criticalDriftOrganizations' ? (
+                          <div style={{ color: '#15803d', fontSize: 18, fontWeight: 700 }} aria-label="Savings trending down">
+                            ↓
                           </div>
-                        ))}
+                        ) : null}
+                      </div>
+                      <div style={{ color: TOK.textPlaceholder, fontSize: 12 }}>
+                        7d: {card.delta7d ?? 0} ({card.trendDirection ?? 'flat'}) | Goal: {kpi7dGoal(card.id)}
                       </div>
                     </div>
+                  ))}
+                </div>
+                <div
+                  style={{
+                    borderTop: `1px solid ${TOK.border}`,
+                    margin: '2px 18px 8px',
+                  }}
+                />
+                <div style={{ ...FLEET_SNAPSHOT_PANEL, paddingTop: 0 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, marginBottom: 8 }}>
+                    <span style={{ fontWeight: 600, fontSize: 12, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                      Agentic Fleet Snapshot
+                    </span>
+                    <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400 }}>
+                      Multi-fleet activity across organizations.
+                    </span>
                   </div>
-                ) : activeVisibilitySummaryTab === 'types' ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
-                    <div style={VISIBILITY_TYPES_GRID}>
-                      {visibilityTypeCards.slice(0, 5).map((typeLabel) => (
-                        <div key={typeLabel} style={VISIBILITY_TYPE_CARD}>
-                          <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                            <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                            <span style={{ fontSize: 12 }}>{typeLabel}</span>
-                          </span>
-                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 8,
-                        background: '#ffffff',
-                        border: `1px solid ${TOK.border}`,
-                        borderRadius: 6,
-                        padding: '10px 12px',
-                        height: '100%',
-                        boxSizing: 'border-box',
-                      }}
-                    >
-                      <div style={{ display: 'grid', gap: 2 }}>
+                  <div style={{ ...TILE, background: TOK.layer02 }}>
+                    <div style={{ display: 'grid', gap: 10 }}>
+                      <div style={FLEET_HEADER_ROW}>
+                        <div>Fleet</div>
+                        <div>Organization</div>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, position: 'relative' }}>
-                          <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Performance Impact by Type</div>
+                          <span>Actor(s)</span>
                           <button
                             type="button"
-                            onClick={() => setShowPerformancePressureTooltip((value) => !value)}
-                            aria-label="Performance Pressure info"
+                            onClick={() => setShowActorsTooltip((v) => !v)}
+                            aria-label="Actors column info"
                             style={{
                               width: 14,
                               height: 14,
@@ -1785,14 +1407,14 @@ function OrgPortfolioOverview({
                           >
                             i
                           </button>
-                          {showPerformancePressureTooltip ? (
+                          {showActorsTooltip ? (
                             <div
                               role="tooltip"
                               style={{
                                 position: 'absolute',
                                 top: 20,
-                                left: 0,
-                                maxWidth: 260,
+                                right: 0,
+                                whiteSpace: 'nowrap',
                                 border: `1px solid ${TOK.border}`,
                                 borderRadius: 4,
                                 background: TOK.layer01,
@@ -1804,156 +1426,593 @@ function OrgPortfolioOverview({
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
                               }}
                             >
-                              How much a given layer contributes to observed performance stress or degradation.
+                              Active/Inactive Actors
                             </div>
                           ) : null}
                         </div>
-                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>
-                          Distribution of performance impact across infrastructure layers (7d)
-                        </div>
+                        <div>Agent Tasks</div>
+                        <div />
                       </div>
-                      <div
-                        style={{
-                          display: 'grid',
-                          gap: 6,
-                          gridTemplateRows: `repeat(${visibilityTypeDistribution.length}, minmax(0, 1fr))`,
-                          flex: 1,
-                          padding: '2px 0 6px 0',
-                          boxSizing: 'border-box',
-                        }}
-                      >
-                        {visibilityTypeDistribution.map((item) => (
-                          <div
-                            key={item.label}
-                            style={{
-                              display: 'grid',
-                              gridTemplateColumns: '130px 1fr auto',
-                              alignItems: 'center',
-                              gap: 8,
-                              minHeight: 0,
-                            }}
-                          >
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{item.label}</span>
-                            <span
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: `${item.score}fr ${100 - item.score}fr`,
-                                alignItems: 'stretch',
-                                height: 12,
-                                minWidth: 0,
-                              }}
+                      {model.fleetSnapshot.map((agent) => (
+                        <div key={agent.fleetId} style={FLEET_ROW}>
+                          <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{agent.fleetName}</div>
+                          <div style={{ fontSize: 12, fontWeight: 700 }}>
+                            <a
+                              href={organizationOverviewStoryHref(organizationOverviewStory, agent.organizationName)}
+                              target="_top"
+                              style={ORG_NAME_LINK}
                             >
-                              <span style={{ background: TOK.textPrimary }} />
-                              <span
-                                style={{
-                                  backgroundImage:
-                                    'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
-                                  backgroundColor: '#ffffff',
-                                  borderLeft: '1px solid #ffffff',
-                                }}
-                              />
-                            </span>
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{item.value}</span>
+                              {agent.organizationName}
+                            </a>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : activeVisibilitySummaryTab === 'use-cases' ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                    {visibilityUseCases.map((useCase) => (
-                      <div key={useCase} style={VISIBILITY_TYPE_CARD}>
-                        <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                          <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                          <span style={{ fontSize: 12 }}>{useCase}</span>
-                        </span>
-                        <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : activeVisibilitySummaryTab === 'questions' ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {visibilityGraphQuestions.slice(0, 5).map((question) => (
-                        <div key={question} style={VISIBILITY_TYPE_CARD}>
-                          <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                            <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                            <span style={{ fontSize: 12 }}>{question}</span>
-                          </span>
-                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                          <div style={{ fontSize: 12 }}>
+                            {agent.activeAgentCount} Active / {agent.inactiveAgentCount} Inactive
+                          </div>
+                          <div style={{ fontSize: 12 }}>{agent.metricValue}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                            <span
+                              style={{ ...ACTION_LINK, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12 }}
+                            >
+                              <strong>View Fleet</strong>
+                              <span style={{ fontSize: 16 }}>→</span>
+                            </span>
+                          </div>
                         </div>
                       ))}
                     </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 8,
-                        background: '#ffffff',
-                        border: `1px solid ${TOK.border}`,
-                        borderRadius: 6,
-                        padding: '10px 12px',
-                        boxSizing: 'border-box',
-                        height: '100%',
-                      }}
+                  </div>
+                </div>
+              </>
+            ) : null}
+
+            {activePortfolioTab === 'monitoring' ? (
+              <>
+                <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, position: 'relative' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                    <span>Visibility</span>
+                    <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                      Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.
+                    </span>
+                  </div>
+                    <div style={{ position: 'relative', flexShrink: 0, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                      <button
+                        type="button"
+                        style={{ ...CTA_BUTTON, whiteSpace: 'nowrap' }}
+                      >
+                        Export
+                      </button>
+                    <button
+                      type="button"
+                      onClick={() => setQueryMenuOpen((v) => !v)}
+                      aria-haspopup="menu"
+                      aria-expanded={queryMenuOpen}
+                      style={{ ...CTA_BUTTON, whiteSpace: 'nowrap' }}
                     >
-                      <div style={{ display: 'grid', gap: 2 }}>
-                        <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Targeted Performance Stressors</div>
-                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>
-                          How specific infrastructure conditions contribute to observed performance stress (7d)
+                      Resource Finder
+                    </button>
+                    {queryMenuOpen ? (
+                      <div role="menu" aria-label="Resource search menu" style={{ ...QUERY_MENU_PANEL, left: 'auto', right: 0, width: 900, minWidth: 760 }}>
+                        <div style={QUERY_MENU_SEARCH}>
+                          <input type="text" value="Search" readOnly style={QUERY_MENU_SEARCH_INPUT} />
+                        </div>
+                        <div style={{ ...QUERY_MENU_BODY, gridTemplateColumns: (selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static') ? '310px 1fr' : '310px 310px 1fr' }}>
+                          <div style={QUERY_MENU_COLUMN}>
+                            <div style={QUERY_MENU_SECTION_LIST}>
+                              {queryMenuSections.slice(0, 2).map((section) => (
+                                <button key={section.id} type="button" role="menuitem"
+                                  onClick={() => setSelectedQueryMenuSection(section.id)}
+                                  style={{ ...QUERY_MENU_SECTION_ITEM, ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
+                                  <span>{section.icon}</span><span>{section.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                            <div style={QUERY_MENU_DIVIDER} />
+                            <button type="button" role="menuitem" onClick={() => setSelectedQueryMenuSection('types-static')}
+                              style={{ ...QUERY_MENU_SECTION_ITEM_STATIC, ...(selectedQueryMenuSection === 'types-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
+                              <span>○</span><span>Types</span>
+                            </button>
+                            <button type="button" role="menuitem" onClick={() => setSelectedQueryMenuSection('use-cases-static')}
+                              style={{ ...QUERY_MENU_SECTION_ITEM_STATIC, ...(selectedQueryMenuSection === 'use-cases-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
+                              <span>○</span><span>Use cases</span>
+                            </button>
+                            <div style={QUERY_MENU_DIVIDER} />
+                            <div style={QUERY_MENU_SECTION_LIST}>
+                              {queryMenuSections.slice(2).map((section) => (
+                                <button key={section.id} type="button" role="menuitem"
+                                  onClick={() => setSelectedQueryMenuSection(section.id)}
+                                  style={{ ...QUERY_MENU_SECTION_ITEM, padding: '5px 12px', ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
+                                  <span>{section.icon}</span><span>{section.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div style={QUERY_MENU_COLUMN}>
+                            {selectedQueryMenuSection === 'types-static' ? (
+                              <><div style={QUERY_MENU_COLUMN_TITLE}>Types</div>
+                              <div style={QUERY_MENU_CARD_LIST}>{explorerTypeCards.map((label) => (
+                                <div key={label} style={QUERY_MENU_STACKED_CARD}><span style={QUERY_MENU_STACKED_CARD_LABEL}>{label}</span></div>
+                              ))}</div></>
+                            ) : selectedQueryMenuSection === 'use-cases-static' ? (
+                              <><div style={QUERY_MENU_COLUMN_TITLE}>Use cases</div>
+                              <div style={QUERY_MENU_CARD_LIST}>{explorerUseCases.map((label) => (
+                                <div key={label} style={QUERY_MENU_STACKED_CARD}><span style={QUERY_MENU_STACKED_CARD_LABEL}>{label}</span></div>
+                              ))}</div></>
+                            ) : (
+                              <><div style={QUERY_MENU_COLUMN_TITLE}>Resource types</div>
+                              <div style={QUERY_MENU_RESOURCE_LIST}>{queryResourceTypes.map((resourceType) => (
+                                <button key={resourceType.label} type="button" role="menuitem" style={QUERY_MENU_RESOURCE_ITEM}>
+                                  <span style={QUERY_MENU_RESOURCE_LABEL}>{resourceType.label}</span>
+                                  <span style={QUERY_MENU_COUNT}>{resourceType.count}</span>
+                                </button>
+                              ))}</div></>
+                            )}
+                          </div>
+                          {!(selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static') ? <div style={QUERY_MENU_EMPTY} /> : null}
                         </div>
                       </div>
-                      <div
-                        style={{
-                          display: 'grid',
-                          gap: 4,
-                          gridTemplateRows: `repeat(${visibilityTargetedPerformanceInsights.length}, minmax(0, 1fr))`,
-                          flex: 1,
-                          padding: '2px 0 4px 0',
-                          boxSizing: 'border-box',
-                        }}
-                      >
-                        {visibilityTargetedPerformanceInsights.map((insight) => (
-                          <div
-                            key={insight.label}
-                            style={{
-                              display: 'grid',
-                              gridTemplateColumns: '130px 1fr auto',
-                              alignItems: 'center',
-                              gap: 8,
-                              minHeight: 0,
-                            }}
-                          >
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.label}</span>
-                            <span
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: `${insight.score}fr ${100 - insight.score}fr`,
-                                alignItems: 'stretch',
-                                height: 12,
-                                minWidth: 0,
-                              }}
-                            >
-                              <span style={{ background: TOK.textPrimary }} />
-                              <span
-                                style={{
-                                  backgroundImage:
-                                    'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
-                                  backgroundColor: '#ffffff',
-                                  borderLeft: '1px solid #ffffff',
-                                }}
-                              />
-                            </span>
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.value}</span>
+                    ) : null}
+                  </div>
+                </div>
+                <div style={VISIBILITY_SUMMARY_LAYOUT}>
+                  <div style={VISIBILITY_QUERY_TILE}>
+                    <div style={INFRA_STATE_SPLIT}>
+                      <div style={{ ...INFRA_STATE_BOX, display: 'flex', flexDirection: 'column' }}>
+                        <div style={INFRA_STATE_HEADER}>Infrastructure state</div>
+                        <div style={INFRA_STATE_CHART_ROW}>
+                          <div style={{ ...INFRA_STATE_DONUT, background: infraStateGradient }}>
+                            <div style={INFRA_STATE_DONUT_INNER}>
+                              <div>
+                                <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1 }}>{infraStateTotal}</div>
+                                <div style={{ color: TOK.textSecondary, fontSize: 11 }}>Total</div>
+                              </div>
+                            </div>
                           </div>
-                        ))}
+                          <div style={INFRA_STATE_LEGEND}>
+                            {INFRA_STATE_SEGMENTS.map((segment) => (
+                              <div key={segment.label} style={INFRA_STATE_LEGEND_ROW}>
+                                <span style={{ ...INFRA_STATE_LEGEND_DOT, background: segment.color }} />
+                                <span style={{ color: TOK.textSecondary }}>{segment.label}</span>
+                                <span style={{ fontWeight: 600 }}>{segment.value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div style={INFRA_STATE_ACTION_ROW}>
+                          <button type="button" style={INFRA_STATE_ACTION_BUTTON}>Agentic Workflows</button>
+                        </div>
+                      </div>
+                      <div style={INFRA_STATE_BOX}>
+                        <div style={{ ...INFRA_STATE_HEADER, marginBottom: 8 }}>Inventory</div>
+                        <div style={INFRA_INVENTORY_GRID}>
+                          {INFRA_INVENTORY_ITEMS.map((item) => (
+                            <div key={item.id} style={INFRA_INVENTORY_ITEM}>
+                              <span style={INFRA_INVENTORY_ICON}>{item.icon}</span>
+                              <span style={INFRA_INVENTORY_TEXT_STACK}>
+                                <span style={INFRA_INVENTORY_COUNT}>{item.count}</span>
+                                <span style={INFRA_INVENTORY_LABEL}>{item.label}</span>
+                              </span>
+                              <span style={INFRA_INVENTORY_MENU_WRAP}>
+                                <button
+                                  type="button"
+                                  style={INFRA_INVENTORY_MENU_BUTTON}
+                                  aria-label={`${item.label} actions`}
+                                  onClick={() =>
+                                    setOpenInventoryMenuId((current) => (current === item.id ? null : item.id))
+                                  }
+                                >
+                                  ...
+                                </button>
+                                {openInventoryMenuId === item.id ? (
+                                  <span style={INFRA_INVENTORY_MENU}>
+                                    <button
+                                      type="button"
+                                      style={INFRA_INVENTORY_MENU_ITEM}
+                                      onClick={() => setOpenInventoryMenuId(null)}
+                                    >
+                                      View Inventory
+                                    </button>
+                                    <button
+                                      type="button"
+                                      style={INFRA_INVENTORY_MENU_ITEM}
+                                      onClick={() => setOpenInventoryMenuId(null)}
+                                    >
+                                      View Connections
+                                    </button>
+                                  </span>
+                                ) : null}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                ) : null}
+                  <div style={TILE}>
+                    <div style={{ display: 'grid', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                        <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>DEEP DIVE</div>
+                        <span style={{ ...CTA_BUTTON, display: 'inline-block', cursor: 'default' }}>Saved Views</span>
+                      </div>
+                      <div style={{ ...VISIBILITY_TABS_ROW, marginBottom: 0 }}>
+                        <button
+                          type="button"
+                          onClick={() => setActiveVisibilitySummaryTab('core-queries')}
+                          style={activeVisibilitySummaryTab === 'core-queries' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                        >
+                          Core
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActiveVisibilitySummaryTab('questions')}
+                          style={activeVisibilitySummaryTab === 'questions' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                        >
+                          Targeted
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActiveVisibilitySummaryTab('types')}
+                          style={activeVisibilitySummaryTab === 'types' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                        >
+                          Types
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActiveVisibilitySummaryTab('use-cases')}
+                          style={activeVisibilitySummaryTab === 'use-cases' ? VISIBILITY_TAB_ACTIVE : VISIBILITY_TAB}
+                        >
+                          Use cases
+                        </button>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: 8 }}>
+                      {activeVisibilitySummaryTab === 'core-queries' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
+                          <div
+                            style={{
+                              display: 'grid',
+                              gap: 8,
+                              height: '100%',
+                              gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))`,
+                            }}
+                          >
+                            {visibilityCoreQueries.map((query) => (
+                              <div key={query} style={VISIBILITY_TYPE_CARD}>
+                                <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                  <span style={{ fontSize: 12 }}>{query}</span>
+                                </span>
+                                <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div
+                            style={{
+                              display: 'grid',
+                              gap: 8,
+                              background: '#ffffff',
+                              border: `1px solid ${TOK.border}`,
+                              borderRadius: 6,
+                              padding: 10,
+                            }}
+                          >
+                            <div style={{ display: 'grid', gap: 4 }}>
+                              <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Performance Posture Snapshot</div>
+                              <div style={{ fontSize: 11, color: TOK.textSecondary }}>
+                                This scorecard summarizes how balanced, stable, and resilient system performance is across
+                                key dimensions.
+                              </div>
+                            </div>
+                            <div style={{ display: 'grid', gap: 12 }}>
+                              {visibilityPerformanceInsights.map((insight) => (
+                                <div
+                                  key={insight.label}
+                                  style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '170px 1fr auto',
+                                    alignItems: 'center',
+                                    gap: 10,
+                                  }}
+                                >
+                                  <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.label}</span>
+                                  <span
+                                    style={{
+                                      display: 'grid',
+                                      gridTemplateColumns: `${insight.score}fr ${100 - insight.score}fr`,
+                                      alignItems: 'stretch',
+                                      height: 12,
+                                      minWidth: 0,
+                                    }}
+                                  >
+                                    <span style={{ background: TOK.textPrimary }} />
+                                    <span
+                                      style={{
+                                        backgroundImage:
+                                          'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
+                                        backgroundColor: '#ffffff',
+                                        borderLeft: '1px solid #ffffff',
+                                      }}
+                                    />
+                                  </span>
+                                  <span style={{ position: 'relative', display: 'inline-flex', justifyContent: 'flex-end' }}>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setOpenPerformanceInsightTooltip((current) =>
+                                          current === insight.label ? null : insight.label,
+                                        )
+                                      }
+                                      aria-label={`${insight.status} status info`}
+                                      style={{
+                                        fontSize: 11,
+                                        color: TOK.textPrimary,
+                                        textAlign: 'right',
+                                        border: `1px solid ${TOK.border}`,
+                                        borderRadius: 999,
+                                        padding: '2px 8px',
+                                        background:
+                                          insight.status === 'Healthy'
+                                            ? '#e8f5e9'
+                                            : insight.status === 'Watch'
+                                              ? '#fff7e6'
+                                              : '#fdecea',
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      {insight.status}
+                                    </button>
+                                    {openPerformanceInsightTooltip === insight.label ? (
+                                      <span
+                                        role="tooltip"
+                                        style={{
+                                          position: 'absolute',
+                                          top: 24,
+                                          right: 0,
+                                          width: 220,
+                                          border: `1px solid ${TOK.border}`,
+                                          borderRadius: 4,
+                                          background: TOK.layer01,
+                                          color: TOK.textPrimary,
+                                          fontSize: 12,
+                                          fontWeight: 400,
+                                          padding: '6px 8px',
+                                          zIndex: 4,
+                                          boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
+                                          textAlign: 'left',
+                                        }}
+                                      >
+                                        {performanceInsightStatusHelp[
+                                          insight.status as keyof typeof performanceInsightStatusHelp
+                                        ]}
+                                      </span>
+                                    ) : null}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : activeVisibilitySummaryTab === 'types' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
+                          <div style={VISIBILITY_TYPES_GRID}>
+                            {visibilityTypeCards.slice(0, 5).map((typeLabel) => (
+                              <div key={typeLabel} style={VISIBILITY_TYPE_CARD}>
+                                <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                  <span style={{ fontSize: 12 }}>{typeLabel}</span>
+                                </span>
+                                <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 8,
+                              background: '#ffffff',
+                              border: `1px solid ${TOK.border}`,
+                              borderRadius: 6,
+                              padding: '10px 12px',
+                              height: '100%',
+                              boxSizing: 'border-box',
+                            }}
+                          >
+                            <div style={{ display: 'grid', gap: 2 }}>
+                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, position: 'relative' }}>
+                                <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Performance Impact by Type</div>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPerformancePressureTooltip((value) => !value)}
+                                  aria-label="Performance Pressure info"
+                                  style={{
+                                    width: 14,
+                                    height: 14,
+                                    borderRadius: 999,
+                                    border: `1px solid ${TOK.border}`,
+                                    background: TOK.layer01,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 10,
+                                    color: TOK.textSecondary,
+                                    cursor: 'pointer',
+                                    padding: 0,
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  i
+                                </button>
+                                {showPerformancePressureTooltip ? (
+                                  <div
+                                    role="tooltip"
+                                    style={{
+                                      position: 'absolute',
+                                      top: 20,
+                                      left: 0,
+                                      maxWidth: 260,
+                                      border: `1px solid ${TOK.border}`,
+                                      borderRadius: 4,
+                                      background: TOK.layer01,
+                                      color: TOK.textPrimary,
+                                      fontSize: 12,
+                                      fontWeight: 400,
+                                      padding: '5px 8px',
+                                      zIndex: 4,
+                                      boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
+                                    }}
+                                  >
+                                    How much a given layer contributes to observed performance stress or degradation.
+                                  </div>
+                                ) : null}
+                              </div>
+                              <div style={{ fontSize: 11, color: TOK.textSecondary }}>
+                                Distribution of performance impact across infrastructure layers (7d)
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                display: 'grid',
+                                gap: 6,
+                                gridTemplateRows: `repeat(${visibilityTypeDistribution.length}, minmax(0, 1fr))`,
+                                flex: 1,
+                                padding: '2px 0 6px 0',
+                                boxSizing: 'border-box',
+                              }}
+                            >
+                              {visibilityTypeDistribution.map((item) => (
+                                <div
+                                  key={item.label}
+                                  style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '130px 1fr auto',
+                                    alignItems: 'center',
+                                    gap: 8,
+                                    minHeight: 0,
+                                  }}
+                                >
+                                  <span style={{ fontSize: 12, color: TOK.textPrimary }}>{item.label}</span>
+                                  <span
+                                    style={{
+                                      display: 'grid',
+                                      gridTemplateColumns: `${item.score}fr ${100 - item.score}fr`,
+                                      alignItems: 'stretch',
+                                      height: 12,
+                                      minWidth: 0,
+                                    }}
+                                  >
+                                    <span style={{ background: TOK.textPrimary }} />
+                                    <span
+                                      style={{
+                                        backgroundImage:
+                                          'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
+                                        backgroundColor: '#ffffff',
+                                        borderLeft: '1px solid #ffffff',
+                                      }}
+                                    />
+                                  </span>
+                                  <span style={{ fontSize: 12, color: TOK.textPrimary }}>{item.value}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : activeVisibilitySummaryTab === 'use-cases' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                          {visibilityUseCases.map((useCase) => (
+                            <div key={useCase} style={VISIBILITY_TYPE_CARD}>
+                              <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                                <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                <span style={{ fontSize: 12 }}>{useCase}</span>
+                              </span>
+                              <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : activeVisibilitySummaryTab === 'questions' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
+                          <div style={{ display: 'grid', gap: 8 }}>
+                            {visibilityGraphQuestions.slice(0, 5).map((question) => (
+                              <div key={question} style={VISIBILITY_TYPE_CARD}>
+                                <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                  <span style={{ fontSize: 12 }}>{question}</span>
+                                </span>
+                                <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 8,
+                              background: '#ffffff',
+                              border: `1px solid ${TOK.border}`,
+                              borderRadius: 6,
+                              padding: '10px 12px',
+                              boxSizing: 'border-box',
+                              height: '100%',
+                            }}
+                          >
+                            <div style={{ display: 'grid', gap: 2 }}>
+                              <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>Targeted Performance Stressors</div>
+                              <div style={{ fontSize: 11, color: TOK.textSecondary }}>
+                                How specific infrastructure conditions contribute to observed performance stress (7d)
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                display: 'grid',
+                                gap: 4,
+                                gridTemplateRows: `repeat(${visibilityTargetedPerformanceInsights.length}, minmax(0, 1fr))`,
+                                flex: 1,
+                                padding: '2px 0 4px 0',
+                                boxSizing: 'border-box',
+                              }}
+                            >
+                              {visibilityTargetedPerformanceInsights.map((insight) => (
+                                <div
+                                  key={insight.label}
+                                  style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '130px 1fr auto',
+                                    alignItems: 'center',
+                                    gap: 8,
+                                    minHeight: 0,
+                                  }}
+                                >
+                                  <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.label}</span>
+                                  <span
+                                    style={{
+                                      display: 'grid',
+                                      gridTemplateColumns: `${insight.score}fr ${100 - insight.score}fr`,
+                                      alignItems: 'stretch',
+                                      height: 12,
+                                      minWidth: 0,
+                                    }}
+                                  >
+                                    <span style={{ background: TOK.textPrimary }} />
+                                    <span
+                                      style={{
+                                        backgroundImage:
+                                          'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)',
+                                        backgroundColor: '#ffffff',
+                                        borderLeft: '1px solid #ffffff',
+                                      }}
+                                    />
+                                  </span>
+                                  <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.value}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </>
+            ) : null}
           </section>
 
         </main>
