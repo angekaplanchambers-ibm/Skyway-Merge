@@ -781,17 +781,6 @@ function OrganizationOverview({
             </div>
           ) : null}
         </div>
-        <span style={{ color: TOK.textSecondary }}>
-          {enablePortfolioBreadcrumbLink && portfolioHref ? (
-            <>
-              <a href={portfolioHref} target="_top" style={BREADCRUMB_LINK}>Organizations Portfolio</a>
-              {' / '}
-              {model.organizationName}
-            </>
-          ) : (
-            <>Organizations Portfolio / {model.organizationName}</>
-          )}
-        </span>
         <span style={{ marginLeft: 'auto', color: TOK.textSecondary }}>
           Deploy mode: {model.deploymentMode}
         </span>
@@ -801,6 +790,17 @@ function OrganizationOverview({
         <SideNav portfolioHref={portfolioHref} />
 
         <main style={MAIN}>
+          <div style={{ color: TOK.textSecondary, textAlign: 'left' }}>
+            {enablePortfolioBreadcrumbLink && portfolioHref ? (
+              <>
+                <a href={portfolioHref} target="_top" style={BREADCRUMB_LINK}>Organizations Portfolio</a>
+                {' / '}
+                Organization Overview
+              </>
+            ) : (
+              <>Organizations Portfolio / Organization Overview</>
+            )}
+          </div>
           <section style={PANEL}>
           <div style={{ ...PANEL_HEADER, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span>Organization Overview</span>

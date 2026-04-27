@@ -67,6 +67,7 @@ const MAIN: CSSProperties = {
   display: 'grid',
   gridTemplateRows: 'auto auto auto auto auto auto',
   gap: 12,
+  alignContent: 'start',
 };
 
 const PANEL: CSSProperties = {
@@ -931,7 +932,7 @@ function OrgPortfolioOverview({
   organizationOverviewStory?: 'default' | 'high-risk';
 }) {
   const [showActorsTooltip, setShowActorsTooltip] = useState(false);
-  const [activePortfolioTab, setActivePortfolioTab] = useState<'automation' | 'monitoring'>('automation');
+  const [activePortfolioTab, setActivePortfolioTab] = useState<'automation' | 'monitoring' | 'organizations'>('automation');
   const [showPerformancePressureTooltip, setShowPerformancePressureTooltip] = useState(false);
   const [openPerformanceInsightTooltip, setOpenPerformanceInsightTooltip] = useState<string | null>(null);
   const [activeVisibilitySummaryTab, setActiveVisibilitySummaryTab] = useState<'core-queries' | 'types' | 'use-cases' | 'questions'>('core-queries');
@@ -1259,52 +1260,6 @@ function OrgPortfolioOverview({
         </aside>
 
         <main style={MAIN}>
-          <section style={PANEL}>
-            <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-              <span>Organizations Portfolio</span>
-              <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
-                Organization inventory and current posture by account.
-              </span>
-            </div>
-            <div style={ORG_TABLE_HEADER}>
-              <div>Name</div>
-              <div>Type</div>
-              <div>Deploy</div>
-              <div>Health</div>
-              <div style={{ textAlign: 'right' }}>Resources</div>
-            </div>
-            {model.organizationsTable.organizations.map((org) => (
-              <div key={org.organizationId} style={ORG_TABLE_ROW}>
-                <div>
-                  {enableOrganizationLinks ? (
-                    <a
-                      href={organizationOverviewStoryHref(organizationOverviewStory, org.organizationName)}
-                      target="_top"
-                      style={ORG_NAME_LINK}
-                    >
-                      {org.organizationName}
-                    </a>
-                  ) : (
-                    org.organizationName
-                  )}
-                </div>
-                <div>{org.organizationType}</div>
-                <div>{org.deploymentMode}</div>
-                <div>{healthMark(org.overallHealth)}</div>
-                <div style={{ textAlign: 'right' }}>
-                  {org.managedResourceCount} Managed / {org.unmanagedResourceCount} Unmanaged
-                </div>
-              </div>
-            ))}
-            <div style={TABLE_PAGINATION}>
-              <a href="#" style={PAGE_LINK}>{'<'}</a>
-              <a href="#" style={PAGE_LINK}>1</a>
-              <span style={PAGE_ACTIVE}>[2]</span>
-              <a href="#" style={PAGE_LINK}>3</a>
-              <a href="#" style={PAGE_LINK}>{'>'}</a>
-            </div>
-          </section>
-
           <section style={{ padding: '0 2px', marginBottom: -8 }}>
             <div style={PORTFOLIO_STANDALONE_TABS_ROW}>
               <button
@@ -1321,10 +1276,65 @@ function OrgPortfolioOverview({
               >
                 Monitoring and Observability
               </button>
+              <button
+                type="button"
+                onClick={() => setActivePortfolioTab('organizations')}
+                style={activePortfolioTab === 'organizations' ? PORTFOLIO_STANDALONE_TAB_ACTIVE : PORTFOLIO_STANDALONE_TAB}
+              >
+                Organizations Directory
+              </button>
             </div>
           </section>
 
-          <section style={PANEL}>
+          <section style={{ ...PANEL, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch' }}>
+            {activePortfolioTab === 'organizations' ? (
+              <>
+                <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                  <span>Organizations Directory</span>
+                  <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
+                    Organization inventory and current posture by account.
+                  </span>
+                </div>
+                <div style={ORG_TABLE_HEADER}>
+                  <div>Name</div>
+                  <div>Type</div>
+                  <div>Deploy</div>
+                  <div>Health</div>
+                  <div style={{ textAlign: 'right' }}>Resources</div>
+                </div>
+                {model.organizationsTable.organizations.map((org) => (
+                  <div key={org.organizationId} style={ORG_TABLE_ROW}>
+                    <div>
+                      {enableOrganizationLinks ? (
+                        <a
+                          href={organizationOverviewStoryHref(organizationOverviewStory, org.organizationName)}
+                          target="_top"
+                          style={ORG_NAME_LINK}
+                        >
+                          {org.organizationName}
+                        </a>
+                      ) : (
+                        org.organizationName
+                      )}
+                    </div>
+                    <div>{org.organizationType}</div>
+                    <div>{org.deploymentMode}</div>
+                    <div>{healthMark(org.overallHealth)}</div>
+                    <div style={{ textAlign: 'right' }}>
+                      {org.managedResourceCount} Managed / {org.unmanagedResourceCount} Unmanaged
+                    </div>
+                  </div>
+                ))}
+                <div style={TABLE_PAGINATION}>
+                  <a href="#" style={PAGE_LINK}>{'<'}</a>
+                  <a href="#" style={PAGE_LINK}>1</a>
+                  <span style={PAGE_ACTIVE}>[2]</span>
+                  <a href="#" style={PAGE_LINK}>3</a>
+                  <a href="#" style={PAGE_LINK}>{'>'}</a>
+                </div>
+              </>
+            ) : null}
+
             {activePortfolioTab === 'automation' ? (
               <>
                 <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>

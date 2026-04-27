@@ -652,7 +652,7 @@ const QUERY_MENU_EMPTY: CSSProperties = {
 };
 
 function organizationOverviewHref(): string {
-  return '?path=/story/wireframes-organizationoverview--default';
+  return '?path=/story/wireframes-orgportfoliooverview--default';
 }
 
 function visibilityStoryHref(variant: 'a' | 'b'): string {
@@ -1049,7 +1049,7 @@ function VisibilityPage({
             aria-expanded={showOrganizationMenu}
             style={HEADER_DROPDOWN_TRIGGER}
           >
-            <span>Organizations</span>
+            <span>{selectedOrganization}</span>
             {showOrganizationMenu ? (
               <IconChevronUp16 aria-hidden />
             ) : (
@@ -1086,15 +1086,6 @@ function VisibilityPage({
             </div>
           ) : null}
         </div>
-        <span style={{ color: TOK.textSecondary }}>
-          <a href={organizationOverviewHref()} target="_top" style={BREADCRUMB_LINK}>Organizations Portfolio</a>
-          {' / '}
-          <a href={organizationOverviewForOrgHref(selectedOrganization)} target="_top" style={BREADCRUMB_LINK}>
-            {selectedOrganization}
-          </a>
-          {' / '}
-          {pageLabel}
-        </span>
         <span style={{ marginLeft: 'auto', color: TOK.textSecondary }}>Deploy mode: tfe_on_prem</span>
       </header>
 
@@ -1149,6 +1140,15 @@ function VisibilityPage({
         </aside>
 
         <main style={MAIN}>
+          <div style={{ color: TOK.textSecondary, textAlign: 'left' }}>
+            <a href={organizationOverviewHref()} target="_top" style={BREADCRUMB_LINK}>Organizations Portfolio</a>
+            {' / '}
+            <a href={organizationOverviewForOrgHref(selectedOrganization)} target="_top" style={BREADCRUMB_LINK}>
+              Organization Overview
+            </a>
+            {' / '}
+            {pageLabel}
+          </div>
           <section style={{ padding: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div>
