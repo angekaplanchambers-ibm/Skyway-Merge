@@ -918,13 +918,19 @@ function OrgPortfolioOverview({
   const [queryMenuOpen, setQueryMenuOpen] = useState(false);
   const [selectedQueryMenuSection, setSelectedQueryMenuSection] = useState('recommended');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isChatExpanded, setIsChatExpanded] = useState(false);
   const [activitySortBy, setActivitySortBy] = useState<'date-newest' | 'date-oldest'>('date-newest');
   const [selectedActivityLog, setSelectedActivityLog] = useState<
     { title: string; time: string; detail: string } | null
   >(null);
+  const [isChatHistoryView, setIsChatHistoryView] = useState(false);
+  const [chatCenterTab, setChatCenterTab] = useState<'chat-history' | 'bookmarks'>('chat-history');
   const [thinkingDotIndex, setThinkingDotIndex] = useState(0);
   const [thinkingStatusText, setThinkingStatusText] = useState('');
   const [thinkingSummaryBullets, setThinkingSummaryBullets] = useState<string[]>([]);
+  const chatDetailBlockWidth = isChatExpanded ? '50%' : '100%';
+  const chatDetailBlockOffset = isChatExpanded ? 'auto' : 0;
+  const chatDetailBlockPadding = '8px 10px';
   const allQueueItemIds = model.remediationQueue.queueItems.map((item) => item.queueItemId);
   const allQueueRowsSelected =
     allQueueItemIds.length > 0 && allQueueItemIds.every((id) => selectedQueueItemIds.includes(id));
@@ -936,6 +942,10 @@ function OrgPortfolioOverview({
     ? workspaceFromRoute(recommendedConversionItem.nextActionRoute)
     : undefined;
   const visibilityTypeCards = ['Modules', 'Providers', 'Workspaces', 'Resources (Beta)', 'Terraform Versions'];
+  const chatHistoryItems = [
+    { title: 'Unmanaged AWS resources - triage plan', time: '10:42 AM' },
+    { title: 'Workspace drift detection follow-up', time: '9:18 AM' },
+  ];
   const visibilityTypeDistribution = [
     { label: 'Terraform Versions', value: '7%', score: 14 },
     { label: 'Providers', value: '10%', score: 20 },
@@ -1146,9 +1156,12 @@ function OrgPortfolioOverview({
         `This log details ${selectedActivityLog.title.toLowerCase()} activity requiring follow-up review.`,
       );
       setThinkingSummaryBullets([
-        `Event: ${selectedActivityLog.title}`,
+        `Event detected: ${selectedActivityLog.title}`,
         `Time observed: ${selectedActivityLog.time}`,
-        `Focus: ${selectedActivityLog.detail}`,
+        `What happened: ${selectedActivityLog.detail}`,
+        'Operational impact: this may affect workspace consistency and can delay safe automation rollouts if unresolved.',
+        'Risk context: similar patterns often indicate drift, policy gaps, or stale configuration paths that need owner validation.',
+        'Recommended next step: open a change request, assign an owner, and trace this event to related workspaces before applying remediation.',
       ]);
     }, 8000);
 
@@ -2264,6 +2277,7 @@ function OrgPortfolioOverview({
                               time: entry.time,
                               detail: entry.detail,
                             });
+                            setIsChatHistoryView(false);
                             setIsChatOpen(true);
                           }}
                           style={{
@@ -2322,7 +2336,7 @@ function OrgPortfolioOverview({
             right: 0,
             top: 98,
             bottom: 49,
-            width: '50%',
+            width: isChatExpanded ? '100%' : '50%',
             border: `1px solid ${TOK.border}`,
             borderRadius: '8px 8px 0 0',
             background: TOK.layer01,
@@ -2351,7 +2365,11 @@ function OrgPortfolioOverview({
             <button
               type="button"
               aria-label="Collapse chat"
-              onClick={() => setIsChatOpen(false)}
+              onClick={() => {
+                setIsChatOpen(false);
+                setIsChatExpanded(false);
+                setIsChatHistoryView(false);
+              }}
               style={{
                 border: 'none',
                 background: 'transparent',
@@ -2367,205 +2385,492 @@ function OrgPortfolioOverview({
 
           <div style={{ padding: 10, display: 'grid', alignContent: 'start', gap: 8, overflowY: 'auto' }}>
             {selectedActivityLog ? (
-              <span style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
-                <button
-                  type="button"
-                  aria-label="Log timeline"
-                  style={{
-                    border: `1px solid ${TOK.border}`,
-                    borderRadius: 6,
-                    background: TOK.layer01,
-                    color: TOK.textPrimary,
-                    width: 24,
-                    height: 24,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    fontSize: 12,
-                    lineHeight: 1,
-                  }}
-                >
-                  🕒
-                </button>
-                <button
-                  type="button"
-                  aria-label="Expand log details"
-                  style={{
-                    border: `1px solid ${TOK.border}`,
-                    borderRadius: 6,
-                    background: TOK.layer01,
-                    color: TOK.textPrimary,
-                    width: 24,
-                    height: 24,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    fontSize: 12,
-                    lineHeight: 1,
-                  }}
-                >
-                  ⤢
-                </button>
-                <button
-                  type="button"
-                  aria-label="Edit note"
-                  style={{
-                    border: `1px solid ${TOK.border}`,
-                    borderRadius: 6,
-                    background: TOK.layer01,
-                    color: TOK.textPrimary,
-                    width: 24,
-                    height: 24,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    fontSize: 12,
-                    lineHeight: 1,
-                  }}
-                >
-                  ✎
-                </button>
-                <button
-                  type="button"
-                  aria-label="More log actions"
-                  style={{
-                    border: `1px solid ${TOK.border}`,
-                    borderRadius: 6,
-                    background: TOK.layer01,
-                    color: TOK.textPrimary,
-                    width: 24,
-                    height: 24,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    fontSize: 14,
-                    lineHeight: 1,
-                  }}
-                >
-                  ⋯
-                </button>
+              <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+                {isChatHistoryView ? (
+                  <span style={{ display: 'inline-flex', gap: 6 }}>
+                    <button
+                      type="button"
+                      aria-label="Close tabbed chat view"
+                      onClick={() => setIsChatHistoryView(false)}
+                      style={{
+                        border: `1px solid ${TOK.border}`,
+                        borderRadius: 6,
+                        background: TOK.layer01,
+                        color: TOK.textPrimary,
+                        width: 24,
+                        height: 24,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        fontSize: 13,
+                        lineHeight: 1,
+                      }}
+                    >
+                      ✕
+                    </button>
+                    {isChatExpanded ? (
+                      <button
+                        type="button"
+                        aria-label="Restore chat width"
+                        onClick={() => setIsChatExpanded(false)}
+                        style={{
+                          border: `1px solid ${TOK.border}`,
+                          borderRadius: 6,
+                          background: TOK.layer01,
+                          color: TOK.textPrimary,
+                          width: 24,
+                          height: 24,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          fontSize: 13,
+                          lineHeight: 1,
+                        }}
+                      >
+                        →
+                      </button>
+                    ) : null}
+                  </span>
+                ) : isChatExpanded ? (
+                  <button
+                    type="button"
+                    aria-label="Restore chat width"
+                    onClick={() => setIsChatExpanded(false)}
+                    style={{
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: TOK.layer01,
+                      color: TOK.textPrimary,
+                      width: 24,
+                      height: 24,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: 13,
+                      lineHeight: 1,
+                    }}
+                  >
+                    →
+                  </button>
+                ) : (
+                  <span />
+                )}
+
+                <span style={{ display: 'inline-flex', gap: 6 }}>
+                  <button
+                    type="button"
+                    aria-label="Log timeline"
+                    onClick={() => {
+                      setIsChatHistoryView(true);
+                      setChatCenterTab('chat-history');
+                    }}
+                    style={{
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: TOK.layer01,
+                      color: TOK.textPrimary,
+                      width: 24,
+                      height: 24,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: 12,
+                      lineHeight: 1,
+                    }}
+                  >
+                    🕒
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Expand chat"
+                    onClick={() => setIsChatExpanded((prev) => !prev)}
+                    style={{
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: TOK.layer01,
+                      color: TOK.textPrimary,
+                      width: 24,
+                      height: 24,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: 12,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ⤢
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Edit note"
+                    style={{
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: TOK.layer01,
+                      color: TOK.textPrimary,
+                      width: 24,
+                      height: 24,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: 12,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ✎
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="More log actions"
+                    style={{
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: TOK.layer01,
+                      color: TOK.textPrimary,
+                      width: 24,
+                      height: 24,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ⋯
+                  </button>
+                </span>
               </span>
             ) : null}
-            <div
-              style={{
-                border: `1px solid ${TOK.border}`,
-                borderRadius: 6,
-                background: TOK.layer02,
-                padding: '8px 10px',
-                fontSize: 12,
-                color: TOK.textPrimary,
-              }}
-            >
-              {selectedActivityLog ? (
-                <span style={{ display: 'grid', gap: 6 }}>
-                  <span style={{ fontWeight: 600 }}>{selectedActivityLog.title}</span>
-                  <span style={{ color: TOK.textSecondary }}>{selectedActivityLog.time}</span>
-                  <span>{selectedActivityLog.detail}</span>
-                </span>
-              ) : (
-                'Ask anything about activity, organizations, automation, or monitoring.'
-              )}
-            </div>
-            {selectedActivityLog ? (
+            {isChatHistoryView ? (
               <div
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '2px 2px 0',
-                  fontSize: 12,
-                  fontWeight: 700,
+                  width: isChatExpanded ? '100%' : chatDetailBlockWidth,
+                  marginLeft: isChatExpanded ? 0 : chatDetailBlockOffset,
+                  boxSizing: 'border-box',
+                  display: 'grid',
+                  gap: 10,
                 }}
               >
-                <span style={{ letterSpacing: '0.04em' }}>THINKING</span>
-                <span style={{ display: 'inline-flex', gap: 4 }} aria-label="Thinking animation">
-                  {[0, 1, 2].map((dotIndex) => (
-                    <span
-                      key={dotIndex}
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    borderBottom: `1px solid ${TOK.border}`,
+                    width: '100%',
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setChatCenterTab('chat-history')}
+                    style={{
+                      border: 'none',
+                      borderBottom: chatCenterTab === 'chat-history' ? '2px solid var(--z-accent, #2563eb)' : '2px solid transparent',
+                      background: 'transparent',
+                      color: chatCenterTab === 'chat-history' ? TOK.textPrimary : TOK.textSecondary,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      padding: '6px 8px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Chat History
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChatCenterTab('bookmarks')}
+                    style={{
+                      border: 'none',
+                      borderBottom: chatCenterTab === 'bookmarks' ? '2px solid var(--z-accent, #2563eb)' : '2px solid transparent',
+                      background: 'transparent',
+                      color: chatCenterTab === 'bookmarks' ? TOK.textPrimary : TOK.textSecondary,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      padding: '6px 8px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Bookmarks
+                  </button>
+                </div>
+
+                {chatCenterTab === 'chat-history' ? (
+                  <div style={{ display: 'grid', gap: 10, width: '100%' }}>
+                    <input
+                      type="search"
+                      aria-label="Search chat history"
+                      placeholder="Search chats"
                       style={{
-                        width: 4,
-                        height: 4,
-                        borderRadius: 999,
-                        background: TOK.textSecondary,
-                        opacity: thinkingDotIndex === dotIndex ? 1 : 0.15,
-                        transition: 'opacity 0.18s ease-in-out',
+                        width: '100%',
+                        border: `1px solid ${TOK.border}`,
+                        borderRadius: 6,
+                        background: TOK.layer01,
+                        color: TOK.textPrimary,
+                        fontSize: 12,
+                        padding: '8px 10px',
+                        boxSizing: 'border-box',
                       }}
                     />
-                  ))}
-                </span>
-              </div>
-            ) : null}
-            {selectedActivityLog && thinkingStatusText ? (
-              <div
-                style={{
-                  color: TOK.textSecondary,
-                  fontSize: 12,
-                  lineHeight: 1.35,
-                  maxWidth: '95%',
-                }}
-              >
-                {thinkingStatusText}
-                {thinkingSummaryBullets.length > 0 ? (
-                  <div style={{ display: 'grid', gap: 10, marginTop: 8 }}>
-                    <ul style={{ margin: 0, paddingLeft: 16, display: 'grid', gap: 4 }}>
-                      {thinkingSummaryBullets.map((item) => (
-                        <li key={item}>{item}</li>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: TOK.textSecondary }}>Today</div>
+                    <div style={{ display: 'grid', gap: 8, width: '100%' }}>
+                      {chatHistoryItems.map((item) => (
+                        <div
+                          key={`${item.title}-${item.time}`}
+                          style={{
+                            border: `1px solid ${TOK.border}`,
+                            borderRadius: 6,
+                            background: TOK.layer01,
+                            padding: '8px 10px',
+                            display: 'grid',
+                            gridTemplateColumns: '1fr auto',
+                            alignItems: 'start',
+                            columnGap: 10,
+                            width: '100%',
+                            boxSizing: 'border-box',
+                          }}
+                        >
+                          <div style={{ display: 'grid', gap: 4 }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>{item.title}</div>
+                            <div style={{ fontSize: 11, color: TOK.textSecondary }}>{item.time}</div>
+                          </div>
+                          <span style={{ display: 'inline-flex', gap: 6 }}>
+                            <button
+                              type="button"
+                              aria-label="More chat actions"
+                              style={{
+                                border: `1px solid ${TOK.border}`,
+                                borderRadius: 6,
+                                background: TOK.layer01,
+                                color: TOK.textPrimary,
+                                width: 24,
+                                height: 24,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: 14,
+                                lineHeight: 1,
+                              }}
+                            >
+                              ⋯
+                            </button>
+                            <button
+                              type="button"
+                              aria-label="Bookmark chat"
+                              style={{
+                                border: `1px solid ${TOK.border}`,
+                                borderRadius: 6,
+                                background: TOK.layer01,
+                                color: TOK.textPrimary,
+                                width: 24,
+                                height: 24,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: 12,
+                                lineHeight: 1,
+                              }}
+                            >
+                              🔖
+                            </button>
+                          </span>
+                        </div>
                       ))}
-                    </ul>
-
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      <div
-                        style={{
-                          border: `1px solid ${TOK.border}`,
-                          borderRadius: 6,
-                          background: TOK.layer01,
-                          padding: '8px 10px',
-                          display: 'grid',
-                          gridTemplateColumns: '16px 1fr',
-                          alignItems: 'start',
-                          columnGap: 8,
-                        }}
-                      >
-                        <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
-                        <a
-                          href="/app/change-requests/new?source=activity-log"
-                          target="_top"
-                          style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
-                        >
-                          Create a Change Request for this log and assign an owner
-                        </a>
-                      </div>
-
-                      <div
-                        style={{
-                          border: `1px solid ${TOK.border}`,
-                          borderRadius: 6,
-                          background: TOK.layer01,
-                          padding: '8px 10px',
-                          display: 'grid',
-                          gridTemplateColumns: '16px 1fr',
-                          alignItems: 'start',
-                          columnGap: 8,
-                        }}
-                      >
-                        <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
-                        <a
-                          href="/app/workspaces?intent=remediate-from-log"
-                          target="_top"
-                          style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
-                        >
-                          Open related Workspaces and create an Agent workflow to remediate
-                        </a>
-                      </div>
                     </div>
                   </div>
-                ) : null}
+                ) : (
+                  <div
+                    style={{
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: TOK.layer01,
+                      padding: '10px 12px',
+                      fontSize: 12,
+                      color: TOK.textSecondary,
+                    }}
+                  >
+                    You haven't bookmarked any conversations yet. Click the bookmark to save chats that you want to revisit.
+                  </div>
+                )}
               </div>
-            ) : null}
+            ) : (
+              <>
+                <div
+                  style={{
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 6,
+                    background: TOK.layer02,
+                    padding: chatDetailBlockPadding,
+                    fontSize: 12,
+                    color: TOK.textPrimary,
+                    boxSizing: 'border-box',
+                    width: chatDetailBlockWidth,
+                    marginLeft: chatDetailBlockOffset,
+                  }}
+                >
+                  {selectedActivityLog ? (
+                    <span style={{ display: 'grid', gap: 6 }}>
+                      <span style={{ fontWeight: 600 }}>{selectedActivityLog.title}</span>
+                      <span style={{ color: TOK.textSecondary }}>{selectedActivityLog.time}</span>
+                      <span>{selectedActivityLog.detail}</span>
+                    </span>
+                  ) : (
+                    'Ask anything about activity, organizations, automation, or monitoring.'
+                  )}
+                </div>
+                {selectedActivityLog ? (
+                  <div
+                    style={{
+                      width: isChatExpanded ? '100%' : chatDetailBlockWidth,
+                      marginLeft: isChatExpanded ? 0 : chatDetailBlockOffset,
+                      padding: chatDetailBlockPadding,
+                      boxSizing: 'border-box',
+                      textAlign: 'left',
+                      display: 'grid',
+                      gap: 8,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: 0,
+                        fontSize: 12,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {thinkingSummaryBullets.length > 0 ? (
+                        <span style={{ letterSpacing: '0.01em' }}>Thought for 8 seconds</span>
+                      ) : (
+                        <>
+                          <span style={{ letterSpacing: '0.04em' }}>THINKING</span>
+                          <span style={{ display: 'inline-flex', gap: 4 }} aria-label="Thinking animation">
+                            {[0, 1, 2].map((dotIndex) => (
+                              <span
+                                key={dotIndex}
+                                style={{
+                                  width: 4,
+                                  height: 4,
+                                  borderRadius: 999,
+                                  background: TOK.textSecondary,
+                                  opacity: thinkingDotIndex === dotIndex ? 1 : 0.15,
+                                  transition: 'opacity 0.18s ease-in-out',
+                                }}
+                              />
+                            ))}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {thinkingStatusText ? (
+                      <div
+                        style={{
+                          color: TOK.textSecondary,
+                          fontSize: 12,
+                          lineHeight: 1.35,
+                        }}
+                      >
+                        {thinkingStatusText}
+                        {thinkingSummaryBullets.length > 0 ? (
+                          <div style={{ display: 'grid', gap: 10, marginTop: 8 }}>
+                            <ul
+                              style={{
+                                margin: 0,
+                                paddingLeft: 16,
+                                display: 'grid',
+                                gap: 4,
+                              }}
+                            >
+                              {thinkingSummaryBullets.map((item) => (
+                                <li key={item}>{item}</li>
+                              ))}
+                            </ul>
+
+                            <div style={{ display: 'grid', gap: 8 }}>
+                              <div
+                                style={{
+                                  border: `1px solid ${TOK.border}`,
+                                  borderRadius: 6,
+                                  background: TOK.layer01,
+                                  padding: '8px 10px',
+                                  display: 'grid',
+                                  gridTemplateColumns: '16px 1fr',
+                                  alignItems: 'start',
+                                  columnGap: 8,
+                                }}
+                              >
+                                <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                                <a
+                                  href="/app/change-requests/new?source=activity-log"
+                                  target="_top"
+                                  style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                                >
+                                  Create a Change Request for this log and assign an owner
+                                </a>
+                              </div>
+
+                              <div
+                                style={{
+                                  border: `1px solid ${TOK.border}`,
+                                  borderRadius: 6,
+                                  background: TOK.layer01,
+                                  padding: '8px 10px',
+                                  display: 'grid',
+                                  gridTemplateColumns: '16px 1fr',
+                                  alignItems: 'start',
+                                  columnGap: 8,
+                                }}
+                              >
+                                <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                                <a
+                                  href="/app/workspaces?intent=remediate-from-log"
+                                  target="_top"
+                                  style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                                >
+                                  Open related Workspaces and create an Agent workflow to remediate
+                                </a>
+                              </div>
+
+                              <div
+                                style={{
+                                  border: `1px solid ${TOK.border}`,
+                                  borderRadius: 6,
+                                  background: TOK.layer01,
+                                  padding: '8px 10px',
+                                  display: 'grid',
+                                  gridTemplateColumns: '16px 1fr',
+                                  alignItems: 'start',
+                                  columnGap: 8,
+                                }}
+                              >
+                                <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                                <a
+                                  href="/app/agents/remediation/new?source=activity-log"
+                                  target="_top"
+                                  style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                                >
+                                  Assign the [type] remediation Agent to create a change request in GitHub repo [repo-name], assign owner and trace this event to related workspaces before applying remediation.
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+              </>
+            )}
           </div>
 
           <div
@@ -2656,9 +2961,13 @@ function OrgPortfolioOverview({
           onClick={() => {
             if (isChatOpen) {
               setIsChatOpen(false);
+              setIsChatExpanded(false);
+              setIsChatHistoryView(false);
               return;
             }
             setSelectedActivityLog(null);
+            setIsChatExpanded(false);
+            setIsChatHistoryView(false);
             setIsChatOpen(true);
           }}
           style={{
