@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   orgPortfolioDefaultFixture,
@@ -32,7 +32,7 @@ const SHELL: CSSProperties = {
   position: 'absolute',
   inset: 0,
   display: 'grid',
-  gridTemplateRows: '48px 1fr 28px',
+  gridTemplateRows: '48px 1fr 50px',
   background: TOK.bg,
   color: TOK.textPrimary,
   fontFamily: 'system-ui, sans-serif',
@@ -792,6 +792,7 @@ const FOOTER: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+  height: 50,
   padding: '0 12px',
   color: TOK.textPlaceholder,
   fontSize: 12,
@@ -931,6 +932,7 @@ function OrgPortfolioOverview({
   const [selectedActivityLog, setSelectedActivityLog] = useState<
     { title: string; time: string; detail: string } | null
   >(null);
+  const [thinkingDotIndex, setThinkingDotIndex] = useState(0);
   const allQueueItemIds = model.remediationQueue.queueItems.map((item) => item.queueItemId);
   const allQueueRowsSelected =
     allQueueItemIds.length > 0 && allQueueItemIds.every((id) => selectedQueueItemIds.includes(id));
@@ -1108,6 +1110,21 @@ function OrgPortfolioOverview({
   ];
 
   const queryResourceTypes = queryResourceTypesBySection[selectedQueryMenuSection] ?? queryResourceTypesBySection.recommended;
+
+  useEffect(() => {
+    if (!isChatOpen || !selectedActivityLog) {
+      setThinkingDotIndex(0);
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setThinkingDotIndex((current) => (current + 1) % 3);
+    }, 350);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [isChatOpen, selectedActivityLog]);
 
   function renderFindDropdown() {
     const isStaticQuerySection =
@@ -2238,48 +2255,19 @@ function OrgPortfolioOverview({
         </main>
       </div>
 
-      <button
-        type="button"
-        aria-label="AI assistant"
-        onClick={() => {
-          setSelectedActivityLog(null);
-          setIsChatOpen(true);
-        }}
-        style={{
-          position: 'absolute',
-          right: 12,
-          bottom: 36,
-          width: 36,
-          height: 36,
-          border: `1px solid ${TOK.border}`,
-          borderRadius: 8,
-          background: TOK.layer01,
-          color: TOK.textPrimary,
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 18,
-          lineHeight: 1,
-          cursor: 'pointer',
-          zIndex: 2,
-        }}
-      >
-        ✦
-      </button>
-
       {isChatOpen ? (
         <div
           style={{
             position: 'absolute',
-            right: 12,
-            bottom: 78,
-            width: 340,
-            height: 290,
+            right: 0,
+            top: 98,
+            bottom: 49,
+            width: '50%',
             border: `1px solid ${TOK.border}`,
-            borderRadius: 8,
+            borderRadius: '8px 8px 0 0',
             background: TOK.layer01,
             display: 'grid',
-            gridTemplateRows: '40px 1fr 52px',
+            gridTemplateRows: '40px 1fr 116px',
             boxShadow: '0 12px 28px rgba(0, 0, 0, 0.18)',
             zIndex: 3,
             overflow: 'hidden',
@@ -2298,11 +2286,11 @@ function OrgPortfolioOverview({
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <span aria-hidden>✦</span>
-              AI Assistant
+              Analyzing Log...
             </span>
             <button
               type="button"
-              aria-label="Close chat"
+              aria-label="Collapse chat"
               onClick={() => setIsChatOpen(false)}
               style={{
                 border: 'none',
@@ -2313,11 +2301,95 @@ function OrgPortfolioOverview({
                 lineHeight: 1,
               }}
             >
-              ×
+              ▾
             </button>
           </div>
 
           <div style={{ padding: 10, display: 'grid', alignContent: 'start', gap: 8, overflowY: 'auto' }}>
+            {selectedActivityLog ? (
+              <span style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
+                <button
+                  type="button"
+                  aria-label="Log timeline"
+                  style={{
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 6,
+                    background: TOK.layer01,
+                    color: TOK.textPrimary,
+                    width: 24,
+                    height: 24,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    lineHeight: 1,
+                  }}
+                >
+                  🕒
+                </button>
+                <button
+                  type="button"
+                  aria-label="Expand log details"
+                  style={{
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 6,
+                    background: TOK.layer01,
+                    color: TOK.textPrimary,
+                    width: 24,
+                    height: 24,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    lineHeight: 1,
+                  }}
+                >
+                  ⤢
+                </button>
+                <button
+                  type="button"
+                  aria-label="Edit note"
+                  style={{
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 6,
+                    background: TOK.layer01,
+                    color: TOK.textPrimary,
+                    width: 24,
+                    height: 24,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    lineHeight: 1,
+                  }}
+                >
+                  ✎
+                </button>
+                <button
+                  type="button"
+                  aria-label="More log actions"
+                  style={{
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 6,
+                    background: TOK.layer01,
+                    color: TOK.textPrimary,
+                    width: 24,
+                    height: 24,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    lineHeight: 1,
+                  }}
+                >
+                  ⋯
+                </button>
+              </span>
+            ) : null}
             <div
               style={{
                 border: `1px solid ${TOK.border}`,
@@ -2339,52 +2411,147 @@ function OrgPortfolioOverview({
                 'Ask anything about activity, organizations, automation, or monitoring.'
               )}
             </div>
+            {selectedActivityLog ? (
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '2px 2px 0',
+                  fontSize: 12,
+                  fontWeight: 700,
+                }}
+              >
+                <span style={{ letterSpacing: '0.04em' }}>THINKING</span>
+                <span style={{ display: 'inline-flex', gap: 4 }} aria-label="Thinking animation">
+                  {[0, 1, 2].map((dotIndex) => (
+                    <span
+                      key={dotIndex}
+                      style={{
+                        width: 4,
+                        height: 4,
+                        borderRadius: 999,
+                        background: TOK.textSecondary,
+                        opacity: thinkingDotIndex === dotIndex ? 1 : 0.15,
+                        transition: 'opacity 0.18s ease-in-out',
+                      }}
+                    />
+                  ))}
+                </span>
+              </div>
+            ) : null}
           </div>
 
           <div
             style={{
               borderTop: `1px solid ${TOK.border}`,
               padding: 8,
-              display: 'grid',
-              gridTemplateColumns: '1fr auto',
-              gap: 8,
-              alignItems: 'center',
+              display: 'block',
             }}
           >
-            <input
-              type="text"
-              value=""
-              readOnly
-              aria-label="Chat input"
-              placeholder="Ask AI..."
-              style={{
-                width: '100%',
-                height: 34,
-                border: `1px solid ${TOK.border}`,
-                borderRadius: 6,
-                background: '#fff',
-                color: TOK.textPlaceholder,
-                padding: '0 10px',
-                fontSize: 12,
-              }}
-            />
-            <button
-              type="button"
-              style={{
-                ...CTA_BUTTON,
-                height: 34,
-                padding: '0 12px',
-              }}
-            >
-              Send
-            </button>
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                aria-label="Attach"
+                style={{
+                  position: 'absolute',
+                  left: 4,
+                  bottom: 8,
+                  width: 26,
+                  height: 26,
+                  border: `1px solid ${TOK.border}`,
+                  borderRadius: 4,
+                  background: TOK.layer01,
+                  color: TOK.textPrimary,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 13,
+                  lineHeight: 1,
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                📎
+              </button>
+              <textarea
+                value=""
+                readOnly
+                aria-label="Chat input"
+                placeholder="I want to.."
+                style={{
+                  width: '100%',
+                  height: 100,
+                  border: `1px solid ${TOK.border}`,
+                  borderRadius: 6,
+                  background: '#fff',
+                  color: TOK.textPlaceholder,
+                  padding: '8px 44px 8px 10px',
+                  fontSize: 12,
+                  boxSizing: 'border-box',
+                  resize: 'none',
+                  lineHeight: 1.35,
+                }}
+              />
+              <button
+                type="button"
+                aria-label="Send"
+                style={{
+                  position: 'absolute',
+                  right: 4,
+                  bottom: 8,
+                  width: 26,
+                  height: 26,
+                  border: `1px solid ${TOK.border}`,
+                  borderRadius: 4,
+                  background: TOK.layer01,
+                  color: TOK.textPrimary,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 14,
+                  lineHeight: 1,
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                ✓
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
 
       <footer style={FOOTER}>
         <span>Org Portfolio Wireframe</span>
-        <span>Route: /app/organizations</span>
+        <button
+          type="button"
+          aria-label="AI assistant"
+          onClick={() => {
+            if (isChatOpen) {
+              setIsChatOpen(false);
+              return;
+            }
+            setSelectedActivityLog(null);
+            setIsChatOpen(true);
+          }}
+          style={{
+            width: 24,
+            height: 24,
+            border: `1px solid ${TOK.border}`,
+            borderRadius: 6,
+            background: TOK.layer01,
+            color: TOK.textPrimary,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 14,
+            lineHeight: 1,
+            cursor: 'pointer',
+          }}
+        >
+          ✦
+        </button>
       </footer>
     </div>
   );
