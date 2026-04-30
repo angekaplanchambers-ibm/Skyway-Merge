@@ -719,6 +719,7 @@ function OrganizationOverview({
   const [showQueueFilterMenu, setShowQueueFilterMenu] = useState(false);
   const [showQueueActionsMenu, setShowQueueActionsMenu] = useState(false);
   const [resourceStatusPriority, setResourceStatusPriority] = useState<'managed' | 'unmanaged' | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const organizationOptions = organizationsRowsFixture.map((org) => org.organizationName);
   const handleOverviewViewClick = () => {};
   const allQueueItemIds = model.remediationQueue.map((item) => item.queueItemId);
@@ -1243,9 +1244,174 @@ function OrganizationOverview({
         </main>
       </div>
 
+      {isChatOpen ? (
+        <div
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 98,
+            bottom: 49,
+            width: '50%',
+            border: `1px solid ${TOK.border}`,
+            borderRadius: '8px 8px 0 0',
+            background: TOK.layer01,
+            display: 'grid',
+            gridTemplateRows: '40px 1fr 116px',
+            boxShadow: '0 12px 28px rgba(0, 0, 0, 0.18)',
+            zIndex: 3,
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              borderBottom: `1px solid ${TOK.border}`,
+              padding: '0 10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span aria-hidden>✦</span>
+              Agent Assistant
+            </span>
+            <button
+              type="button"
+              aria-label="Collapse chat"
+              onClick={() => setIsChatOpen(false)}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                color: TOK.textSecondary,
+                fontSize: 16,
+                cursor: 'pointer',
+                lineHeight: 1,
+              }}
+            >
+              ▾
+            </button>
+          </div>
+
+          <div style={{ padding: 10, display: 'grid', alignContent: 'start', gap: 8, overflowY: 'auto' }}>
+            <div
+              style={{
+                border: `1px solid ${TOK.border}`,
+                borderRadius: 6,
+                background: TOK.layer02,
+                padding: '8px 10px',
+                fontSize: 12,
+                color: TOK.textPrimary,
+              }}
+            >
+              Ask anything about this organization, remediation, workspace health, or visibility posture.
+            </div>
+          </div>
+
+          <div
+            style={{
+              borderTop: `1px solid ${TOK.border}`,
+              padding: 8,
+              display: 'block',
+            }}
+          >
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                aria-label="Attach"
+                style={{
+                  position: 'absolute',
+                  left: 4,
+                  bottom: 8,
+                  width: 26,
+                  height: 26,
+                  border: `1px solid ${TOK.border}`,
+                  borderRadius: 4,
+                  background: TOK.layer01,
+                  color: TOK.textPrimary,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 13,
+                  lineHeight: 1,
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                📎
+              </button>
+              <textarea
+                value=""
+                readOnly
+                aria-label="Chat input"
+                placeholder="I want to.."
+                style={{
+                  width: '100%',
+                  height: 100,
+                  border: `1px solid ${TOK.border}`,
+                  borderRadius: 6,
+                  background: '#fff',
+                  color: TOK.textPlaceholder,
+                  padding: '8px 44px 8px 10px',
+                  fontSize: 12,
+                  boxSizing: 'border-box',
+                  resize: 'none',
+                  lineHeight: 1.35,
+                }}
+              />
+              <button
+                type="button"
+                aria-label="Send"
+                style={{
+                  position: 'absolute',
+                  right: 4,
+                  bottom: 8,
+                  width: 26,
+                  height: 26,
+                  border: `1px solid ${TOK.border}`,
+                  borderRadius: 4,
+                  background: TOK.layer01,
+                  color: TOK.textPrimary,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 14,
+                  lineHeight: 1,
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                ✓
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <footer style={FOOTER}>
         <span>Organization Overview Wireframe</span>
-        <span>Route: /app/organizations/{'{org}'}</span>
+        <button
+          type="button"
+          aria-label="AI assistant"
+          onClick={() => setIsChatOpen((value) => !value)}
+          style={{
+            width: 24,
+            height: 24,
+            border: `1px solid ${TOK.border}`,
+            borderRadius: 6,
+            background: TOK.layer01,
+            color: TOK.textPrimary,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 14,
+            lineHeight: 1,
+            cursor: 'pointer',
+          }}
+        >
+          ✦
+        </button>
       </footer>
     </div>
   );
