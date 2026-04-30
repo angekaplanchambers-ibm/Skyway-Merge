@@ -929,6 +929,7 @@ function OrgPortfolioOverview({
   const [queryMenuOpen, setQueryMenuOpen] = useState(false);
   const [selectedQueryMenuSection, setSelectedQueryMenuSection] = useState('recommended');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [activitySortBy, setActivitySortBy] = useState<'date-newest' | 'date-oldest'>('date-newest');
   const [selectedActivityLog, setSelectedActivityLog] = useState<
     { title: string; time: string; detail: string } | null
   >(null);
@@ -1110,6 +1111,15 @@ function OrgPortfolioOverview({
   ];
 
   const queryResourceTypes = queryResourceTypesBySection[selectedQueryMenuSection] ?? queryResourceTypesBySection.recommended;
+  const sortedActivityLogEntries = (() => {
+    const entries = [...activityLogEntries];
+
+    if (activitySortBy === 'date-oldest') {
+      return entries.reverse();
+    }
+
+    return entries;
+  })();
 
   useEffect(() => {
     if (!isChatOpen || !selectedActivityLog) {
@@ -2176,7 +2186,35 @@ function OrgPortfolioOverview({
 
           {activePortfolioTab === 'activity' ? (
             <div style={{ display: 'grid', gap: 10, padding: '0 10px 10px' }}>
-              {activityLogEntries.map((entry) => (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <label htmlFor="activity-sort" style={{ color: TOK.textSecondary, fontSize: 12, fontWeight: 600 }}>
+                  Sort By
+                </label>
+                <select
+                  id="activity-sort"
+                  value={activitySortBy}
+                  onChange={(event) => setActivitySortBy(event.target.value as typeof activitySortBy)}
+                  style={{
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 6,
+                    background: TOK.layer01,
+                    color: TOK.textPrimary,
+                    fontSize: 12,
+                    padding: '5px 8px',
+                  }}
+                >
+                  <option value="date-newest">Date: Newest to Oldest</option>
+                  <option value="date-oldest">Date: Oldest to Newest</option>
+                </select>
+              </div>
+              {sortedActivityLogEntries.map((entry) => (
                 <div
                   key={`${entry.time}-${entry.title}`}
                   style={{
