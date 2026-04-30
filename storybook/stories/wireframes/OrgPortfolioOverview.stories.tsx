@@ -17,17 +17,6 @@ const TOK = {
   border: 'var(--z-border-subtle)',
 };
 
-          <div
-            style={{
-              fontSize: 30,
-              fontWeight: 700,
-              letterSpacing: '0.03em',
-              color: TOK.textPrimary,
-              marginBottom: 4,
-            }}
-          >
-            Organizations Portfolio
-          </div>
 const SHELL: CSSProperties = {
   position: 'absolute',
   inset: 0,
@@ -934,6 +923,8 @@ function OrgPortfolioOverview({
     { title: string; time: string; detail: string } | null
   >(null);
   const [thinkingDotIndex, setThinkingDotIndex] = useState(0);
+  const [thinkingStatusText, setThinkingStatusText] = useState('');
+  const [thinkingSummaryBullets, setThinkingSummaryBullets] = useState<string[]>([]);
   const allQueueItemIds = model.remediationQueue.queueItems.map((item) => item.queueItemId);
   const allQueueRowsSelected =
     allQueueItemIds.length > 0 && allQueueItemIds.every((id) => selectedQueueItemIds.includes(id));
@@ -1133,6 +1124,37 @@ function OrgPortfolioOverview({
 
     return () => {
       window.clearInterval(timer);
+    };
+  }, [isChatOpen, selectedActivityLog]);
+
+  useEffect(() => {
+    if (!isChatOpen || !selectedActivityLog) {
+      setThinkingStatusText('');
+      setThinkingSummaryBullets([]);
+      return;
+    }
+
+    setThinkingStatusText('');
+    setThinkingSummaryBullets([]);
+
+    const fetchingTimer = window.setTimeout(() => {
+      setThinkingStatusText('Fetching content from the specific log to understand its details');
+    }, 4000);
+
+    const summaryTimer = window.setTimeout(() => {
+      setThinkingStatusText(
+        `This log details ${selectedActivityLog.title.toLowerCase()} activity requiring follow-up review.`,
+      );
+      setThinkingSummaryBullets([
+        `Event: ${selectedActivityLog.title}`,
+        `Time observed: ${selectedActivityLog.time}`,
+        `Focus: ${selectedActivityLog.detail}`,
+      ]);
+    }, 8000);
+
+    return () => {
+      window.clearTimeout(fetchingTimer);
+      window.clearTimeout(summaryTimer);
     };
   }, [isChatOpen, selectedActivityLog]);
 
@@ -2324,7 +2346,7 @@ function OrgPortfolioOverview({
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <span aria-hidden>✦</span>
-              Analyzing Log...
+              {selectedActivityLog ? 'Analyzing Log...' : 'Agent Assistant'}
             </span>
             <button
               type="button"
@@ -2440,7 +2462,6 @@ function OrgPortfolioOverview({
             >
               {selectedActivityLog ? (
                 <span style={{ display: 'grid', gap: 6 }}>
-                  <span style={{ fontWeight: 700 }}>Selected activity log</span>
                   <span style={{ fontWeight: 600 }}>{selectedActivityLog.title}</span>
                   <span style={{ color: TOK.textSecondary }}>{selectedActivityLog.time}</span>
                   <span>{selectedActivityLog.detail}</span>
@@ -2476,6 +2497,73 @@ function OrgPortfolioOverview({
                     />
                   ))}
                 </span>
+              </div>
+            ) : null}
+            {selectedActivityLog && thinkingStatusText ? (
+              <div
+                style={{
+                  color: TOK.textSecondary,
+                  fontSize: 12,
+                  lineHeight: 1.35,
+                  maxWidth: '95%',
+                }}
+              >
+                {thinkingStatusText}
+                {thinkingSummaryBullets.length > 0 ? (
+                  <div style={{ display: 'grid', gap: 10, marginTop: 8 }}>
+                    <ul style={{ margin: 0, paddingLeft: 16, display: 'grid', gap: 4 }}>
+                      {thinkingSummaryBullets.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+
+                    <div style={{ display: 'grid', gap: 8 }}>
+                      <div
+                        style={{
+                          border: `1px solid ${TOK.border}`,
+                          borderRadius: 6,
+                          background: TOK.layer01,
+                          padding: '8px 10px',
+                          display: 'grid',
+                          gridTemplateColumns: '16px 1fr',
+                          alignItems: 'start',
+                          columnGap: 8,
+                        }}
+                      >
+                        <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                        <a
+                          href="/app/change-requests/new?source=activity-log"
+                          target="_top"
+                          style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          Create a Change Request for this log and assign an owner
+                        </a>
+                      </div>
+
+                      <div
+                        style={{
+                          border: `1px solid ${TOK.border}`,
+                          borderRadius: 6,
+                          background: TOK.layer01,
+                          padding: '8px 10px',
+                          display: 'grid',
+                          gridTemplateColumns: '16px 1fr',
+                          alignItems: 'start',
+                          columnGap: 8,
+                        }}
+                      >
+                        <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                        <a
+                          href="/app/workspaces?intent=remediate-from-log"
+                          target="_top"
+                          style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          Open related Workspaces and create an Agent workflow to remediate
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>
