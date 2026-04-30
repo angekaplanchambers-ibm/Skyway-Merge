@@ -17,6 +17,17 @@ const TOK = {
   border: 'var(--z-border-subtle)',
 };
 
+          <div
+            style={{
+              fontSize: 30,
+              fontWeight: 700,
+              letterSpacing: '0.03em',
+              color: TOK.textPrimary,
+              marginBottom: 4,
+            }}
+          >
+            Organizations Portfolio
+          </div>
 const SHELL: CSSProperties = {
   position: 'absolute',
   inset: 0,
@@ -39,25 +50,8 @@ const TOPBAR: CSSProperties = {
 
 const BODY: CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '210px 1fr',
+  gridTemplateColumns: '1fr',
   minHeight: 0,
-};
-
-const SIDEBAR: CSSProperties = {
-  borderRight: `1px solid ${TOK.border}`,
-  background: TOK.layer01,
-  padding: 12,
-  overflowY: 'auto',
-};
-
-const NAV_SINGLE_ITEM: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 10,
-  padding: '9px 6px',
-  color: TOK.textSecondary,
-  fontSize: 12,
-  fontWeight: 500,
 };
 
 const MAIN: CSSProperties = {
@@ -913,22 +907,6 @@ function visibilityStoryHref(): string {
   return '?path=/story/wireframes-visibility--visibility-a';
 }
 
-function NavGlyph() {
-  return (
-    <span
-      aria-hidden
-      style={{
-        width: 14,
-        height: 14,
-        border: `2px solid ${TOK.textSecondary}`,
-        borderRadius: 999,
-        display: 'inline-block',
-        opacity: 0.85,
-      }}
-    />
-  );
-}
-
 function OrgPortfolioOverview({
   model,
   enableOrganizationLinks = false,
@@ -939,7 +917,7 @@ function OrgPortfolioOverview({
   organizationOverviewStory?: 'default' | 'high-risk';
 }) {
   const [showActorsTooltip, setShowActorsTooltip] = useState(false);
-  const [activePortfolioTab, setActivePortfolioTab] = useState<'automation' | 'monitoring' | 'organizations'>('automation');
+  const [activePortfolioTab, setActivePortfolioTab] = useState<'activity' | 'automation' | 'monitoring' | 'organizations'>('activity');
   const [showPerformancePressureTooltip, setShowPerformancePressureTooltip] = useState(false);
   const [openPerformanceInsightTooltip, setOpenPerformanceInsightTooltip] = useState<string | null>(null);
   const [activeVisibilitySummaryTab, setActiveVisibilitySummaryTab] = useState<'core-queries' | 'types' | 'use-cases' | 'questions'>('core-queries');
@@ -949,6 +927,10 @@ function OrgPortfolioOverview({
   const [openInventoryMenuId, setOpenInventoryMenuId] = useState<string | null>(null);
   const [queryMenuOpen, setQueryMenuOpen] = useState(false);
   const [selectedQueryMenuSection, setSelectedQueryMenuSection] = useState('recommended');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [selectedActivityLog, setSelectedActivityLog] = useState<
+    { title: string; time: string; detail: string } | null
+  >(null);
   const allQueueItemIds = model.remediationQueue.queueItems.map((item) => item.queueItemId);
   const allQueueRowsSelected =
     allQueueItemIds.length > 0 && allQueueItemIds.every((id) => selectedQueueItemIds.includes(id));
@@ -994,6 +976,33 @@ function OrgPortfolioOverview({
     'Drifted workspaces',
     'All workspace versions',
     'Workspaces by run status',
+  ];
+  const activityLogEntries = [
+    {
+      time: '2 min ago',
+      title: 'Workspace run failed',
+      detail: 'aws-config run #4821 failed policy checks in prod-eu.',
+    },
+    {
+      time: '9 min ago',
+      title: 'Unmanaged resource detected',
+      detail: 'New EC2 instance found outside Terraform state in bm-workspace.',
+    },
+    {
+      time: '18 min ago',
+      title: 'Drift detected',
+      detail: 'azure-provider drift detected on network security group rules.',
+    },
+    {
+      time: '34 min ago',
+      title: 'Cost anomaly alert',
+      detail: 'ps-workspace spend rose 17% over 24h baseline.',
+    },
+    {
+      time: '1 hr ago',
+      title: 'Import completed',
+      detail: 'Terraform import completed for 12 unmanaged S3 buckets.',
+    },
   ];
   const visibilityGraphQuestions = [
     "Do I have any Virtual Machines that aren't managed by Terraform?",
@@ -1250,7 +1259,7 @@ function OrgPortfolioOverview({
     <div style={SHELL}>
       <header style={TOPBAR}>
         <strong>HCP Terraform</strong>
-        <span style={{ color: TOK.textSecondary }}>All accessible orgs</span>
+        <span style={{ color: TOK.textSecondary }}>Organizations Portfolio</span>
         <span style={{ color: TOK.textPlaceholder }}>|</span>
         <span style={{ color: TOK.textSecondary }}>Time range: {model.global.timeRange}</span>
         <div style={{ marginLeft: 'auto', color: TOK.textSecondary }}>
@@ -1259,16 +1268,16 @@ function OrgPortfolioOverview({
       </header>
 
       <div style={BODY}>
-        <aside style={SIDEBAR}>
-          <div style={NAV_SINGLE_ITEM}>
-            <NavGlyph />
-            <span>Organizations Portfolio</span>
-          </div>
-        </aside>
-
         <main style={MAIN}>
           <section style={{ padding: '0 2px', marginBottom: -8 }}>
             <div style={PORTFOLIO_STANDALONE_TABS_ROW}>
+              <button
+                type="button"
+                onClick={() => setActivePortfolioTab('activity')}
+                style={activePortfolioTab === 'activity' ? PORTFOLIO_STANDALONE_TAB_ACTIVE : PORTFOLIO_STANDALONE_TAB}
+              >
+                Activity
+              </button>
               <button
                 type="button"
                 onClick={() => setActivePortfolioTab('automation')}
@@ -1293,7 +1302,9 @@ function OrgPortfolioOverview({
             </div>
           </section>
 
-          <section style={{ ...PANEL, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch' }}>
+          {activePortfolioTab !== 'activity' ? (
+            <section style={{ ...PANEL, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch' }}>
+
             {activePortfolioTab === 'organizations' ? (
               <>
                 <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
@@ -2143,10 +2154,233 @@ function OrgPortfolioOverview({
                 </div>
               </>
             ) : null}
-          </section>
+            </section>
+          ) : null}
+
+          {activePortfolioTab === 'activity' ? (
+            <div style={{ display: 'grid', gap: 10, padding: '0 10px 10px' }}>
+              {activityLogEntries.map((entry) => (
+                <div
+                  key={`${entry.time}-${entry.title}`}
+                  style={{
+                    ...TILE,
+                    background: TOK.layer01,
+                    borderRadius: 8,
+                    padding: '10px 12px',
+                    display: 'grid',
+                    gap: 4,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                    <span style={{ display: 'grid', gap: 4 }}>
+                      <span style={{ fontWeight: 600, fontSize: 13 }}>{entry.title}</span>
+                      <span style={{ color: TOK.textSecondary, fontSize: 11, whiteSpace: 'nowrap' }}>{entry.time}</span>
+                    </span>
+                    <span style={{ display: 'grid', justifyItems: 'end', gap: 6 }}>
+                      <span style={{ display: 'inline-flex', gap: 8 }}>
+                        <button
+                          type="button"
+                          aria-label="AI actions"
+                          onClick={() => {
+                            setSelectedActivityLog({
+                              title: entry.title,
+                              time: entry.time,
+                              detail: entry.detail,
+                            });
+                            setIsChatOpen(true);
+                          }}
+                          style={{
+                            border: `1px solid ${TOK.border}`,
+                            borderRadius: 6,
+                            background: TOK.layer01,
+                            color: TOK.textPrimary,
+                            width: 28,
+                            height: 28,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: 14,
+                            lineHeight: 1,
+                          }}
+                        >
+                          ✦
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="More activity options"
+                          style={{
+                            border: `1px solid ${TOK.border}`,
+                            borderRadius: 6,
+                            background: TOK.layer01,
+                            color: TOK.textPrimary,
+                            width: 28,
+                            height: 28,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontSize: 16,
+                            lineHeight: 1,
+                          }}
+                        >
+                          ⋯
+                        </button>
+                      </span>
+                    </span>
+                  </div>
+                  <div style={{ color: TOK.textSecondary, fontSize: 12 }}>{entry.detail}</div>
+                </div>
+              ))}
+            </div>
+          ) : null}
 
         </main>
       </div>
+
+      <button
+        type="button"
+        aria-label="AI assistant"
+        onClick={() => {
+          setSelectedActivityLog(null);
+          setIsChatOpen(true);
+        }}
+        style={{
+          position: 'absolute',
+          right: 12,
+          bottom: 36,
+          width: 36,
+          height: 36,
+          border: `1px solid ${TOK.border}`,
+          borderRadius: 8,
+          background: TOK.layer01,
+          color: TOK.textPrimary,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 18,
+          lineHeight: 1,
+          cursor: 'pointer',
+          zIndex: 2,
+        }}
+      >
+        ✦
+      </button>
+
+      {isChatOpen ? (
+        <div
+          style={{
+            position: 'absolute',
+            right: 12,
+            bottom: 78,
+            width: 340,
+            height: 290,
+            border: `1px solid ${TOK.border}`,
+            borderRadius: 8,
+            background: TOK.layer01,
+            display: 'grid',
+            gridTemplateRows: '40px 1fr 52px',
+            boxShadow: '0 12px 28px rgba(0, 0, 0, 0.18)',
+            zIndex: 3,
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              borderBottom: `1px solid ${TOK.border}`,
+              padding: '0 10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span aria-hidden>✦</span>
+              AI Assistant
+            </span>
+            <button
+              type="button"
+              aria-label="Close chat"
+              onClick={() => setIsChatOpen(false)}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                color: TOK.textSecondary,
+                fontSize: 16,
+                cursor: 'pointer',
+                lineHeight: 1,
+              }}
+            >
+              ×
+            </button>
+          </div>
+
+          <div style={{ padding: 10, display: 'grid', alignContent: 'start', gap: 8, overflowY: 'auto' }}>
+            <div
+              style={{
+                border: `1px solid ${TOK.border}`,
+                borderRadius: 6,
+                background: TOK.layer02,
+                padding: '8px 10px',
+                fontSize: 12,
+                color: TOK.textPrimary,
+              }}
+            >
+              {selectedActivityLog ? (
+                <span style={{ display: 'grid', gap: 6 }}>
+                  <span style={{ fontWeight: 700 }}>Selected activity log</span>
+                  <span style={{ fontWeight: 600 }}>{selectedActivityLog.title}</span>
+                  <span style={{ color: TOK.textSecondary }}>{selectedActivityLog.time}</span>
+                  <span>{selectedActivityLog.detail}</span>
+                </span>
+              ) : (
+                'Ask anything about activity, organizations, automation, or monitoring.'
+              )}
+            </div>
+          </div>
+
+          <div
+            style={{
+              borderTop: `1px solid ${TOK.border}`,
+              padding: 8,
+              display: 'grid',
+              gridTemplateColumns: '1fr auto',
+              gap: 8,
+              alignItems: 'center',
+            }}
+          >
+            <input
+              type="text"
+              value=""
+              readOnly
+              aria-label="Chat input"
+              placeholder="Ask AI..."
+              style={{
+                width: '100%',
+                height: 34,
+                border: `1px solid ${TOK.border}`,
+                borderRadius: 6,
+                background: '#fff',
+                color: TOK.textPlaceholder,
+                padding: '0 10px',
+                fontSize: 12,
+              }}
+            />
+            <button
+              type="button"
+              style={{
+                ...CTA_BUTTON,
+                height: 34,
+                padding: '0 12px',
+              }}
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <footer style={FOOTER}>
         <span>Org Portfolio Wireframe</span>
