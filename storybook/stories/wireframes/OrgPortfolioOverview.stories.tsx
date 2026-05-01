@@ -1352,7 +1352,7 @@ function OrgPortfolioOverview({
                 onClick={() => setActivePortfolioTab('monitoring')}
                 style={activePortfolioTab === 'monitoring' ? PORTFOLIO_STANDALONE_TAB_ACTIVE : PORTFOLIO_STANDALONE_TAB}
               >
-                Monitoring and Observability
+                Visibility
               </button>
             </div>
           </section>
@@ -1617,7 +1617,7 @@ function OrgPortfolioOverview({
               <>
                 <div style={{ ...PANEL_HEADER, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, position: 'relative' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-                    <span>Visibility</span>
+                    <span>Exploration</span>
                     <span style={{ color: TOK.textSecondary, fontSize: 10, fontWeight: 400, textTransform: 'none', letterSpacing: 'normal' }}>
                       Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.
                     </span>
@@ -1778,7 +1778,12 @@ function OrgPortfolioOverview({
                   <div style={TILE}>
                     <div style={{ display: 'grid', gap: 8 }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                        <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>DEEP DIVE</div>
+                        <div style={{ display: 'grid', gap: 2 }}>
+                          <div style={{ ...INFRA_STATE_HEADER, marginBottom: 0 }}>DEEP DIVE</div>
+                          <div style={{ fontSize: 11, color: TOK.textSecondary }}>
+                            Inspect targeted queries, type-level patterns, and saved exploration views.
+                          </div>
+                        </div>
                         <span style={{ ...CTA_BUTTON, display: 'inline-block', cursor: 'default' }}>Saved Views</span>
                       </div>
                       <div style={{ ...VISIBILITY_TABS_ROW, marginBottom: 0 }}>
