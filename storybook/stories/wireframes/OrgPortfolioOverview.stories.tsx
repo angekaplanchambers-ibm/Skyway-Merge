@@ -17,6 +17,8 @@ const TOK = {
   border: 'var(--z-border-subtle)',
 };
 
+const landscapeIcon = new URL('../../../output/figma/landscape-icon.png', import.meta.url).href;
+
 const SHELL: CSSProperties = {
   position: 'absolute',
   inset: 0,
@@ -521,10 +523,10 @@ const VISIBILITY_TYPE_CARD_LEFT: CSSProperties = {
 };
 
 const VISIBILITY_TYPE_CARD_CIRCLE: CSSProperties = {
-  width: 12,
-  height: 12,
-  borderRadius: 999,
-  border: `1px solid ${TOK.textSecondary}`,
+  width: 14,
+  height: 14,
+  objectFit: 'contain',
+  display: 'block',
   flex: '0 0 auto',
 };
 
@@ -897,6 +899,18 @@ function visibilityStoryHref(): string {
   return '?path=/story/wireframes-visibility--visibility-a';
 }
 
+function LandscapeIcon({ size = 12 }: { size?: number }) {
+  return <img src={landscapeIcon} alt="" aria-hidden style={{ width: size, height: size, objectFit: 'contain', display: 'block', flex: '0 0 auto' }} />;
+}
+
+function renderMenuIcon(icon: string) {
+  if (icon === 'landscape-icon.png') {
+    return <LandscapeIcon />;
+  }
+
+  return <span>{icon}</span>;
+}
+
 function OrgPortfolioOverview({
   model,
   enableOrganizationLinks = false,
@@ -1035,12 +1049,12 @@ function OrgPortfolioOverview({
     { id: 'compute', label: 'Compute', icon: '☰' },
     { id: 'infrastructure-as-code', label: 'Infrastructure as Code', icon: '</>' },
     { id: 'identity', label: 'Identity', icon: '⌘' },
-    { id: 'management', label: 'Management', icon: '◍' },
+    { id: 'management', label: 'Management', icon: 'landscape-icon.png' },
     { id: 'networking', label: 'Networking', icon: '⋄' },
-    { id: 'observability', label: 'Observability', icon: '◉' },
-    { id: 'security', label: 'Security', icon: '◌' },
+    { id: 'observability', label: 'Observability', icon: 'landscape-icon.png' },
+    { id: 'security', label: 'Security', icon: 'landscape-icon.png' },
     { id: 'storage-data', label: 'Storage & Data', icon: '▤' },
-    { id: 'geography', label: 'Geography', icon: '◍' },
+    { id: 'geography', label: 'Geography', icon: 'landscape-icon.png' },
   ];
 
   const queryResourceTypesBySection: Record<string, Array<{ label: string; count: number }>> = {
@@ -1209,7 +1223,7 @@ function OrgPortfolioOverview({
                         ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
                       }}
                     >
-                      <span>{section.icon}</span>
+                      {renderMenuIcon(section.icon)}
                       <span>{section.label}</span>
                     </button>
                   ))}
@@ -1224,7 +1238,7 @@ function OrgPortfolioOverview({
                     ...(selectedQueryMenuSection === 'types-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
                   }}
                 >
-                  <span>○</span>
+                  <LandscapeIcon />
                   <span>Types</span>
                 </button>
                 <button
@@ -1236,7 +1250,7 @@ function OrgPortfolioOverview({
                     ...(selectedQueryMenuSection === 'use-cases-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
                   }}
                 >
-                  <span>○</span>
+                  <LandscapeIcon />
                   <span>Use cases</span>
                 </button>
                 <div style={QUERY_MENU_DIVIDER} />
@@ -1650,18 +1664,18 @@ function OrgPortfolioOverview({
                                 <button key={section.id} type="button" role="menuitem"
                                   onClick={() => setSelectedQueryMenuSection(section.id)}
                                   style={{ ...QUERY_MENU_SECTION_ITEM, ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
-                                  <span>{section.icon}</span><span>{section.label}</span>
+                                  {renderMenuIcon(section.icon)}<span>{section.label}</span>
                                 </button>
                               ))}
                             </div>
                             <div style={QUERY_MENU_DIVIDER} />
                             <button type="button" role="menuitem" onClick={() => setSelectedQueryMenuSection('types-static')}
                               style={{ ...QUERY_MENU_SECTION_ITEM_STATIC, ...(selectedQueryMenuSection === 'types-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
-                              <span>○</span><span>Types</span>
+                              <LandscapeIcon /><span>Types</span>
                             </button>
                             <button type="button" role="menuitem" onClick={() => setSelectedQueryMenuSection('use-cases-static')}
                               style={{ ...QUERY_MENU_SECTION_ITEM_STATIC, ...(selectedQueryMenuSection === 'use-cases-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
-                              <span>○</span><span>Use cases</span>
+                              <LandscapeIcon /><span>Use cases</span>
                             </button>
                             <div style={QUERY_MENU_DIVIDER} />
                             <div style={QUERY_MENU_SECTION_LIST}>
@@ -1669,7 +1683,7 @@ function OrgPortfolioOverview({
                                 <button key={section.id} type="button" role="menuitem"
                                   onClick={() => setSelectedQueryMenuSection(section.id)}
                                   style={{ ...QUERY_MENU_SECTION_ITEM, padding: '5px 12px', ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null) }}>
-                                  <span>{section.icon}</span><span>{section.label}</span>
+                                  {renderMenuIcon(section.icon)}<span>{section.label}</span>
                                 </button>
                               ))}
                             </div>
@@ -1936,7 +1950,7 @@ function OrgPortfolioOverview({
                             {visibilityCoreQueries.map((query) => (
                               <div key={query} style={VISIBILITY_TYPE_CARD}>
                                 <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                  <img src={landscapeIcon} alt="" aria-hidden style={VISIBILITY_TYPE_CARD_CIRCLE} />
                                   <span style={{ fontSize: 12 }}>{query}</span>
                                 </span>
                                 <span style={{ color: TOK.textSecondary }}>{'>'}</span>
@@ -2061,7 +2075,7 @@ function OrgPortfolioOverview({
                             {visibilityTypeCards.slice(0, 5).map((typeLabel) => (
                               <div key={typeLabel} style={VISIBILITY_TYPE_CARD}>
                                 <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                  <img src={landscapeIcon} alt="" aria-hidden style={VISIBILITY_TYPE_CARD_CIRCLE} />
                                   <span style={{ fontSize: 12 }}>{typeLabel}</span>
                                 </span>
                                 <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
@@ -2074,7 +2088,7 @@ function OrgPortfolioOverview({
                           {visibilityUseCases.map((useCase) => (
                             <div key={useCase} style={VISIBILITY_TYPE_CARD}>
                               <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                                <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                <img src={landscapeIcon} alt="" aria-hidden style={VISIBILITY_TYPE_CARD_CIRCLE} />
                                 <span style={{ fontSize: 12 }}>{useCase}</span>
                               </span>
                               <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
@@ -2152,7 +2166,7 @@ function OrgPortfolioOverview({
                             {visibilityGraphQuestions.slice(0, 5).map((question) => (
                               <div key={question} style={VISIBILITY_TYPE_CARD}>
                                 <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                  <img src={landscapeIcon} alt="" aria-hidden style={VISIBILITY_TYPE_CARD_CIRCLE} />
                                   <span style={{ fontSize: 12 }}>{question}</span>
                                 </span>
                                 <span style={{ color: TOK.textSecondary }}>{'>'}</span>

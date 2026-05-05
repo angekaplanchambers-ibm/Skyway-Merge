@@ -14,6 +14,8 @@ const TOK = {
   border: 'var(--z-border-subtle)',
 };
 
+const landscapeIcon = new URL('../../../output/figma/landscape-icon.png', import.meta.url).href;
+
 const SHELL: CSSProperties = {
   position: 'absolute',
   inset: 0,
@@ -201,10 +203,10 @@ const CARD_LEFT_WITH_CIRCLE: CSSProperties = {
 };
 
 const CARD_CIRCLE_ICON: CSSProperties = {
-  width: 12,
-  height: 12,
-  borderRadius: 999,
-  border: `1px solid ${TOK.textSecondary}`,
+  width: 14,
+  height: 14,
+  objectFit: 'contain',
+  display: 'block',
   flex: '0 0 auto',
 };
 
@@ -665,16 +667,29 @@ function organizationOverviewForOrgHref(organizationName: string): string {
   return `?path=/story/wireframes-organizationoverview--default&args=model.organizationName:${encodeURIComponent(organizationName)}`;
 }
 
+function LandscapeIcon({ size = 12 }: { size?: number }) {
+  return <img src={landscapeIcon} alt="" aria-hidden style={{ width: size, height: size, objectFit: 'contain', display: 'block', flex: '0 0 auto' }} />;
+}
+
+function renderMenuIcon(icon: string) {
+  if (icon === 'landscape-icon.png') {
+    return <LandscapeIcon />;
+  }
+
+  return <span>{icon}</span>;
+}
+
 function NavGlyph() {
   return (
-    <span
+    <img
+      src={landscapeIcon}
+      alt=""
       aria-hidden
       style={{
         width: 14,
         height: 14,
-        border: `2px solid ${TOK.textSecondary}`,
-        borderRadius: 999,
-        display: 'inline-block',
+        objectFit: 'contain',
+        display: 'block',
         opacity: 0.85,
       }}
     />
@@ -811,12 +826,12 @@ function VisibilityPage({
     { id: 'compute', label: 'Compute', icon: '☰' },
     { id: 'infrastructure-as-code', label: 'Infrastructure as Code', icon: '</>' },
     { id: 'identity', label: 'Identity', icon: '⌘' },
-    { id: 'management', label: 'Management', icon: '◍' },
+    { id: 'management', label: 'Management', icon: 'landscape-icon.png' },
     { id: 'networking', label: 'Networking', icon: '⋄' },
-    { id: 'observability', label: 'Observability', icon: '◉' },
-    { id: 'security', label: 'Security', icon: '◌' },
+    { id: 'observability', label: 'Observability', icon: 'landscape-icon.png' },
+    { id: 'security', label: 'Security', icon: 'landscape-icon.png' },
     { id: 'storage-data', label: 'Storage & Data', icon: '▤' },
-    { id: 'geography', label: 'Geography', icon: '◍' },
+    { id: 'geography', label: 'Geography', icon: 'landscape-icon.png' },
   ];
 
   const queryResourceTypesBySection: Record<string, Array<{ label: string; count: number }>> = {
@@ -943,7 +958,7 @@ function VisibilityPage({
                         ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
                       }}
                     >
-                      <span>{section.icon}</span>
+                      {renderMenuIcon(section.icon)}
                       <span>{section.label}</span>
                     </button>
                   ))}
@@ -958,7 +973,7 @@ function VisibilityPage({
                     ...(selectedQueryMenuSection === 'types-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
                   }}
                 >
-                  <span>○</span>
+                  <LandscapeIcon />
                   <span>Types</span>
                 </button>
                 <button
@@ -970,7 +985,7 @@ function VisibilityPage({
                     ...(selectedQueryMenuSection === 'use-cases-static' ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
                   }}
                 >
-                  <span>○</span>
+                  <LandscapeIcon />
                   <span>Use cases</span>
                 </button>
                 <div style={QUERY_MENU_DIVIDER} />
@@ -987,7 +1002,7 @@ function VisibilityPage({
                         ...(selectedQueryMenuSection === section.id ? QUERY_MENU_SECTION_ITEM_ACTIVE : null),
                       }}
                     >
-                      <span>{section.icon}</span>
+                      {renderMenuIcon(section.icon)}
                       <span>{section.label}</span>
                     </button>
                   ))}
@@ -1221,7 +1236,7 @@ function VisibilityPage({
                     <div style={{ display: 'grid', gap: 8, height: '100%', gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))` }}>
                       {visibilityCoreQueries.map((query) => (
                         <div key={query} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
                           <span style={{ color: TOK.textSecondary }}>{'>'}</span>
                         </div>
                       ))}
@@ -1252,7 +1267,7 @@ function VisibilityPage({
                     <div style={{ display: 'grid', gap: 8 }}>
                       {graphQuestions.map((question) => (
                         <div key={question} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
                           <span style={{ color: TOK.textSecondary }}>{'>'}</span>
                         </div>
                       ))}
@@ -1291,7 +1306,7 @@ function VisibilityPage({
                     <div style={{ display: 'grid', gap: 8 }}>
                       {explorerTypeCards.map((label) => (
                         <div key={label} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
                           <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
                         </div>
                       ))}
@@ -1303,7 +1318,7 @@ function VisibilityPage({
                   <div style={{ ...CARD_GRID, marginTop: 12, direction: 'rtl' }}>
                     {explorerUseCases.map((label) => (
                       <div key={label} style={{ ...CARD, direction: 'ltr' }}>
-                        <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
+                        <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
                         <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
                       </div>
                     ))}
@@ -1493,7 +1508,7 @@ function VisibilityPage({
                     <div style={{ display: 'grid', gap: 8, height: '100%', gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))` }}>
                       {visibilityCoreQueries.map((query) => (
                         <div key={query} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
                           <span style={{ color: TOK.textSecondary }}>{'>'}</span>
                         </div>
                       ))}
@@ -1524,7 +1539,7 @@ function VisibilityPage({
                     <div style={{ display: 'grid', gap: 8 }}>
                       {graphQuestions.map((question) => (
                         <div key={question} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
                           <span style={{ color: TOK.textSecondary }}>{'>'}</span>
                         </div>
                       ))}
@@ -1563,7 +1578,7 @@ function VisibilityPage({
                     <div style={{ display: 'grid', gap: 8 }}>
                       {explorerTypeCards.map((label) => (
                         <div key={label} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
                           <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
                         </div>
                       ))}
@@ -1575,7 +1590,7 @@ function VisibilityPage({
                   <div style={{ ...CARD_GRID, marginTop: 12, direction: 'rtl' }}>
                     {explorerUseCases.map((label) => (
                       <div key={label} style={{ ...CARD, direction: 'ltr' }}>
-                        <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
+                        <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
                         <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
                       </div>
                     ))}

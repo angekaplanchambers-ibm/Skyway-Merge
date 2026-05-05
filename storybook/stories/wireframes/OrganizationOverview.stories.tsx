@@ -20,6 +20,8 @@ const TOK = {
   border: 'var(--z-border-subtle)',
 };
 
+const landscapeIcon = new URL('../../../output/figma/landscape-icon.png', import.meta.url).href;
+
 const SHELL: CSSProperties = {
   position: 'absolute',
   inset: 0,
@@ -622,14 +624,15 @@ function nextActionLabel(item: OrganizationOverviewData['remediationQueue'][numb
 
 function NavGlyph() {
   return (
-    <span
+    <img
+      src={landscapeIcon}
+      alt=""
       aria-hidden
       style={{
         width: 14,
         height: 14,
-        border: `2px solid ${TOK.textSecondary}`,
-        borderRadius: 999,
-        display: 'inline-block',
+        objectFit: 'contain',
+        display: 'block',
         opacity: 0.85,
       }}
     />
