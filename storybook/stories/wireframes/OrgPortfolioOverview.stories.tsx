@@ -1824,24 +1824,6 @@ function OrgPortfolioOverview({
                             style={{
                               display: 'grid',
                               gap: 8,
-                              height: '100%',
-                              gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))`,
-                            }}
-                          >
-                            {visibilityCoreQueries.map((query) => (
-                              <div key={query} style={VISIBILITY_TYPE_CARD}>
-                                <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                                  <span style={{ fontSize: 12 }}>{query}</span>
-                                </span>
-                                <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                              </div>
-                            ))}
-                          </div>
-                          <div
-                            style={{
-                              display: 'grid',
-                              gap: 8,
                               background: '#ffffff',
                               border: `1px solid ${TOK.border}`,
                               borderRadius: 6,
@@ -1943,20 +1925,27 @@ function OrgPortfolioOverview({
                               ))}
                             </div>
                           </div>
-                        </div>
-                      ) : activeVisibilitySummaryTab === 'types' ? (
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
-                          <div style={VISIBILITY_TYPES_GRID}>
-                            {visibilityTypeCards.slice(0, 5).map((typeLabel) => (
-                              <div key={typeLabel} style={VISIBILITY_TYPE_CARD}>
+                          <div
+                            style={{
+                              display: 'grid',
+                              gap: 8,
+                              height: '100%',
+                              gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))`,
+                            }}
+                          >
+                            {visibilityCoreQueries.map((query) => (
+                              <div key={query} style={VISIBILITY_TYPE_CARD}>
                                 <span style={VISIBILITY_TYPE_CARD_LEFT}>
                                   <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                                  <span style={{ fontSize: 12 }}>{typeLabel}</span>
+                                  <span style={{ fontSize: 12 }}>{query}</span>
                                 </span>
-                                <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                                <span style={{ color: TOK.textSecondary }}>{'>'}</span>
                               </div>
                             ))}
                           </div>
+                        </div>
+                      ) : activeVisibilitySummaryTab === 'types' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
                           <div
                             style={{
                               display: 'flex',
@@ -2068,6 +2057,17 @@ function OrgPortfolioOverview({
                               ))}
                             </div>
                           </div>
+                          <div style={VISIBILITY_TYPES_GRID}>
+                            {visibilityTypeCards.slice(0, 5).map((typeLabel) => (
+                              <div key={typeLabel} style={VISIBILITY_TYPE_CARD}>
+                                <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                  <span style={{ fontSize: 12 }}>{typeLabel}</span>
+                                </span>
+                                <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       ) : activeVisibilitySummaryTab === 'use-cases' ? (
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -2083,17 +2083,6 @@ function OrgPortfolioOverview({
                         </div>
                       ) : activeVisibilitySummaryTab === 'questions' ? (
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch' }}>
-                          <div style={{ display: 'grid', gap: 8 }}>
-                            {visibilityGraphQuestions.slice(0, 5).map((question) => (
-                              <div key={question} style={VISIBILITY_TYPE_CARD}>
-                                <span style={VISIBILITY_TYPE_CARD_LEFT}>
-                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
-                                  <span style={{ fontSize: 12 }}>{question}</span>
-                                </span>
-                                <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                              </div>
-                            ))}
-                          </div>
                           <div
                             style={{
                               display: 'flex',
@@ -2158,6 +2147,17 @@ function OrgPortfolioOverview({
                                 </div>
                               ))}
                             </div>
+                          </div>
+                          <div style={{ display: 'grid', gap: 8 }}>
+                            {visibilityGraphQuestions.slice(0, 5).map((question) => (
+                              <div key={question} style={VISIBILITY_TYPE_CARD}>
+                                <span style={VISIBILITY_TYPE_CARD_LEFT}>
+                                  <span style={VISIBILITY_TYPE_CARD_CIRCLE} />
+                                  <span style={{ fontSize: 12 }}>{question}</span>
+                                </span>
+                                <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       ) : null}

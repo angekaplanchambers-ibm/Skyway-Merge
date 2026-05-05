@@ -1186,14 +1186,6 @@ function VisibilityPage({
 
                 {activeVisibilityATab === 'core' ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'grid', gap: 8, height: '100%', gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))` }}>
-                      {visibilityCoreQueries.map((query) => (
-                        <div key={query} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
-                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
                     <div style={{ display: 'grid', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: 10 }}>
                       <div style={{ display: 'grid', gap: 4 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>Performance Posture Snapshot</div>
@@ -1226,19 +1218,19 @@ function VisibilityPage({
                         ))}
                       </div>
                     </div>
+                    <div style={{ display: 'grid', gap: 8, height: '100%', gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))` }}>
+                      {visibilityCoreQueries.map((query) => (
+                        <div key={query} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
+                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
 
                 {activeVisibilityATab === 'targeted' ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {graphQuestions.map((question) => (
-                        <div key={question} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
-                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: '10px 12px', boxSizing: 'border-box', height: '100%' }}>
                       <div style={{ display: 'grid', gap: 2 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>Targeted Performance Stressors</div>
@@ -1257,19 +1249,19 @@ function VisibilityPage({
                         ))}
                       </div>
                     </div>
+                    <div style={{ display: 'grid', gap: 8 }}>
+                      {graphQuestions.map((question) => (
+                        <div key={question} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
+                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
 
                 {activeVisibilityATab === 'types' ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {explorerTypeCards.map((label) => (
-                        <div key={label} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
-                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: '10px 12px', boxSizing: 'border-box', height: '100%' }}>
                       <div style={{ display: 'grid', gap: 2 }}>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, position: 'relative' }}>
@@ -1296,13 +1288,21 @@ function VisibilityPage({
                         ))}
                       </div>
                     </div>
+                    <div style={{ display: 'grid', gap: 8 }}>
+                      {explorerTypeCards.map((label) => (
+                        <div key={label} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
+                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
 
                 {activeVisibilityATab === 'use-cases' ? (
-                  <div style={{ ...CARD_GRID, marginTop: 12 }}>
+                  <div style={{ ...CARD_GRID, marginTop: 12, direction: 'rtl' }}>
                     {explorerUseCases.map((label) => (
-                      <div key={label} style={CARD}>
+                      <div key={label} style={{ ...CARD, direction: 'ltr' }}>
                         <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
                         <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
                       </div>
@@ -1458,14 +1458,6 @@ function VisibilityPage({
 
                 {activeVisibilityATab === 'core' ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'grid', gap: 8, height: '100%', gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))` }}>
-                      {visibilityCoreQueries.map((query) => (
-                        <div key={query} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
-                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
                     <div style={{ display: 'grid', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: 10 }}>
                       <div style={{ display: 'grid', gap: 4 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>Performance Posture Snapshot</div>
@@ -1498,19 +1490,19 @@ function VisibilityPage({
                         ))}
                       </div>
                     </div>
+                    <div style={{ display: 'grid', gap: 8, height: '100%', gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))` }}>
+                      {visibilityCoreQueries.map((query) => (
+                        <div key={query} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
+                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
 
                 {activeVisibilityATab === 'targeted' ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {graphQuestions.map((question) => (
-                        <div key={question} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
-                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: '10px 12px', boxSizing: 'border-box', height: '100%' }}>
                       <div style={{ display: 'grid', gap: 2 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>Targeted Performance Stressors</div>
@@ -1529,19 +1521,19 @@ function VisibilityPage({
                         ))}
                       </div>
                     </div>
+                    <div style={{ display: 'grid', gap: 8 }}>
+                      {graphQuestions.map((question) => (
+                        <div key={question} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
+                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
 
                 {activeVisibilityATab === 'types' ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {explorerTypeCards.map((label) => (
-                        <div key={label} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
-                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: '10px 12px', boxSizing: 'border-box', height: '100%' }}>
                       <div style={{ display: 'grid', gap: 2 }}>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, position: 'relative' }}>
@@ -1568,13 +1560,21 @@ function VisibilityPage({
                         ))}
                       </div>
                     </div>
+                    <div style={{ display: 'grid', gap: 8 }}>
+                      {explorerTypeCards.map((label) => (
+                        <div key={label} style={CARD}>
+                          <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
+                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
 
                 {activeVisibilityATab === 'use-cases' ? (
-                  <div style={{ ...CARD_GRID, marginTop: 12 }}>
+                  <div style={{ ...CARD_GRID, marginTop: 12, direction: 'rtl' }}>
                     {explorerUseCases.map((label) => (
-                      <div key={label} style={CARD}>
+                      <div key={label} style={{ ...CARD, direction: 'ltr' }}>
                         <span style={CARD_LEFT_WITH_CIRCLE}><span style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
                         <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
                       </div>
