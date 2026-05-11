@@ -4,9 +4,14 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 import path from 'path'
 import fs from 'fs'
 
-// Read the outputName from the active showcase config.
+// Read output name from env or optional config, with a safe fallback.
 function readOutputName(): string {
+  const fromEnv = process.env.SHOWCASE_OUTPUT_NAME?.trim()
+  if (fromEnv) return fromEnv
+
   const configPath = path.resolve(__dirname, 'showcases/incident-response/config.tsx')
+  if (!fs.existsSync(configPath)) return 'showcase'
+
   const src = fs.readFileSync(configPath, 'utf-8')
   const match = src.match(/outputName:\s*['"]([^'"]+)['"]/)
   return match?.[1] ?? 'showcase'

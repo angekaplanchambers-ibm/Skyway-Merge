@@ -89,14 +89,19 @@ OPENCODE_PLUGINS_DIR="$OPENCODE_CONFIG_DIR/plugins"
 
 echo "Installing OpenCode sound plugin..."
 mkdir -p "$OPENCODE_PLUGINS_DIR"
-cp .opencode/plugins/sound.js "$OPENCODE_PLUGINS_DIR/sound.js"
+if [ -f ".opencode/plugins/sound.js" ]; then
+    cp .opencode/plugins/sound.js "$OPENCODE_PLUGINS_DIR/sound.js"
+    echo "✓ Sound plugin file copied"
+else
+    echo "⏭ Sound plugin source not found at .opencode/plugins/sound.js, skipping file copy"
+fi
 
 # Ensure @opencode-ai/plugin dependency is installed
 if [ ! -f "$OPENCODE_CONFIG_DIR/package.json" ]; then
     echo '{ "dependencies": { "@opencode-ai/plugin": "1.2.15" } }' > "$OPENCODE_CONFIG_DIR/package.json"
 fi
 (cd "$OPENCODE_CONFIG_DIR" && npm install --silent 2>/dev/null || bun install --silent 2>/dev/null || true)
-echo "✓ Sound plugin installed (Glass = main completion, Pop = subagent)"
+echo "✓ Sound plugin setup complete (Glass = main completion, Pop = subagent)"
 echo ""
 
 # 5. Verify
