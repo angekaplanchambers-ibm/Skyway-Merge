@@ -20,7 +20,7 @@ const TOK = {
   border: 'var(--z-border-subtle)',
 };
 
-const landscapeIcon = new URL('../../../output/figma/landscape-icon.png', import.meta.url).href;
+const landscapeIcon = '/landscape-icon.png';
 
 const SHELL: CSSProperties = {
   position: 'absolute',
