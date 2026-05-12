@@ -658,8 +658,7 @@ function organizationOverviewHref(): string {
   return '?path=/story/wireframes-orgportfoliooverview--default';
 }
 
-function visibilityStoryHref(variant: 'a' | 'b'): string {
-  if (variant === 'b') return '?path=/story/wireframes-visibility--visibility-b';
+function visibilityStoryHref(): string {
   return '?path=/story/wireframes-visibility--visibility-a';
 }
 
@@ -698,17 +697,15 @@ function NavGlyph() {
 
 function VisibilityPage({
   pageLabel = 'Visibility',
-  layoutVariant = 'A',
 }: {
-  pageLabel?: 'Visibility' | 'Visibility (B)';
-  layoutVariant?: 'A' | 'B';
+  pageLabel?: 'Visibility';
 }) {
   const [showOrganizationMenu, setShowOrganizationMenu] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState('ILM_Demo_Space');
   const [activeVisibilityATab, setActiveVisibilityATab] = useState<'core' | 'targeted' | 'types' | 'use-cases' | 'saved'>('core');
   const [openPerformanceInsightTooltip, setOpenPerformanceInsightTooltip] = useState<string | null>(null);
   const [showPerformancePressureTooltip, setShowPerformancePressureTooltip] = useState(false);
-  const [queryMenuOpenFor, setQueryMenuOpenFor] = useState<'a' | 'b' | null>(null);
+  const [queryMenuOpenFor, setQueryMenuOpenFor] = useState<'a' | null>(null);
   const [selectedQueryMenuSection, setSelectedQueryMenuSection] = useState('recommended');
   const [savedViewMenuOpenFor, setSavedViewMenuOpenFor] = useState<string | null>(null);
   const [showTypeFilterMenu, setShowTypeFilterMenu] = useState(false);
@@ -901,8 +898,6 @@ function VisibilityPage({
 
   const queryResourceTypes = queryResourceTypesBySection[selectedQueryMenuSection] ?? queryResourceTypesBySection.recommended;
 
-  const isVisibilityA = layoutVariant === 'A';
-  const isVisibilityB = layoutVariant === 'B';
   const pageSubtitle =
     "Explore your resources and ask graph-based questions to investigate Terraform usage, resource relationships, and risk.";
 
@@ -919,7 +914,7 @@ function VisibilityPage({
     fontSize: 12,
   };
 
-  function renderQueryDropdown(menuKey: 'a' | 'b') {
+  function renderQueryDropdown(menuKey: 'a') {
     const isStaticQuerySection =
       selectedQueryMenuSection === 'types-static' || selectedQueryMenuSection === 'use-cases-static';
 
@@ -1120,7 +1115,7 @@ function VisibilityPage({
           <div style={NAV_ACTIVE}>
             <div style={NAV_ITEM_LEFT}>
               <NavGlyph />
-              <a href={visibilityStoryHref('a')} target="_top" style={{ ...visibilityInlineRowStyle, ...visibilityNavLinkStyle }}>
+              <a href={visibilityStoryHref()} target="_top" style={{ ...visibilityInlineRowStyle, ...visibilityNavLinkStyle }}>
                 Visibility
               </a>
             </div>
@@ -1176,7 +1171,7 @@ function VisibilityPage({
               </div>
             </div>
 
-            {isVisibilityA ? (
+            {(
               <div style={{ marginTop: 12 }}>
                 <div style={{ ...PANEL, padding: 10, background: TOK.layer01 }}>
                   <div style={{ fontSize: 12, color: TOK.textSecondary, marginBottom: 8 }}>Build your Infragraph query</div>
@@ -1448,254 +1443,7 @@ function VisibilityPage({
                   </div>
                 ) : null}
               </div>
-            ) : isVisibilityB ? (
-              <div style={{ marginTop: 12 }}>
-                <div style={{ ...PANEL, padding: 10, background: TOK.layer01 }}>
-                  <div style={{ fontSize: 12, color: TOK.textSecondary, marginBottom: 8 }}>Build your Infragraph query</div>
-                  <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-                    <button type="button" style={{ ...TAB, borderRadius: 4 }}>Clear query</button>
-                    <button type="button" style={{ ...TAB, borderRadius: 4 }}>{'</>'}</button>
-                    <button type="button" style={{ ...TAB, borderRadius: 4 }}>x</button>
-                  </div>
-                  {renderQueryDropdown('b')}
-                </div>
-
-                <div style={HDS_TAB_ROW}>
-                  <button type="button" onClick={() => setActiveVisibilityATab('core')} style={activeVisibilityATab === 'core' ? HDS_TAB_ACTIVE : HDS_TAB}>Core</button>
-                  <button type="button" onClick={() => setActiveVisibilityATab('targeted')} style={activeVisibilityATab === 'targeted' ? HDS_TAB_ACTIVE : HDS_TAB}>Targeted</button>
-                  <button type="button" onClick={() => setActiveVisibilityATab('types')} style={activeVisibilityATab === 'types' ? HDS_TAB_ACTIVE : HDS_TAB}>Types</button>
-                  <button type="button" onClick={() => setActiveVisibilityATab('use-cases')} style={activeVisibilityATab === 'use-cases' ? HDS_TAB_ACTIVE : HDS_TAB}>Use cases</button>
-                  <button type="button" onClick={() => setActiveVisibilityATab('saved')} style={activeVisibilityATab === 'saved' ? HDS_TAB_ACTIVE : HDS_TAB}>
-                    Saved Views
-                    <span style={TAB_COUNT_BADGE}>{savedViews.length}</span>
-                  </button>
-                </div>
-
-                {activeVisibilityATab === 'core' ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'grid', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: 10 }}>
-                      <div style={{ display: 'grid', gap: 4 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>Performance Posture Snapshot</div>
-                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>This scorecard summarizes how balanced, stable, and resilient system performance is across key dimensions.</div>
-                      </div>
-                      <div style={{ display: 'grid', gap: 12 }}>
-                        {visibilityPerformanceInsights.map((insight) => (
-                          <div key={insight.label} style={{ display: 'grid', gridTemplateColumns: '170px 1fr auto', alignItems: 'center', gap: 10 }}>
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.label}</span>
-                            <span style={{ display: 'grid', gridTemplateColumns: `${insight.score}fr ${100 - insight.score}fr`, alignItems: 'stretch', height: 12, minWidth: 0 }}>
-                              <span style={{ background: TOK.textPrimary }} />
-                              <span style={{ backgroundImage: 'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)', backgroundColor: '#ffffff', borderLeft: '1px solid #ffffff' }} />
-                            </span>
-                            <span style={{ position: 'relative', display: 'inline-flex', justifyContent: 'flex-end' }}>
-                              <button
-                                type="button"
-                                onClick={() => setOpenPerformanceInsightTooltip((current) => current === insight.label ? null : insight.label)}
-                                aria-label={`${insight.status} status info`}
-                                style={{ fontSize: 11, color: TOK.textPrimary, border: `1px solid ${TOK.border}`, borderRadius: 999, padding: '2px 8px', background: insight.status === 'Healthy' ? '#e8f5e9' : insight.status === 'Watch' ? '#fff7e6' : '#fdecea', cursor: 'pointer' }}
-                              >
-                                {insight.status}
-                              </button>
-                              {openPerformanceInsightTooltip === insight.label ? (
-                                <span role="tooltip" style={{ position: 'absolute', top: 24, right: 0, width: 220, border: `1px solid ${TOK.border}`, borderRadius: 4, background: TOK.layer01, color: TOK.textPrimary, fontSize: 12, fontWeight: 400, padding: '6px 8px', zIndex: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.10)', textAlign: 'left' }}>
-                                  {performanceInsightStatusHelp[insight.status as keyof typeof performanceInsightStatusHelp]}
-                                </span>
-                              ) : null}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ display: 'grid', gap: 8, height: '100%', gridTemplateRows: `repeat(${visibilityCoreQueries.length}, minmax(0, 1fr))` }}>
-                      {visibilityCoreQueries.map((query) => (
-                        <div key={query} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{query}</span></span>
-                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-
-                {activeVisibilityATab === 'targeted' ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: '10px 12px', boxSizing: 'border-box', height: '100%' }}>
-                      <div style={{ display: 'grid', gap: 2 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>Targeted Performance Stressors</div>
-                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>How specific infrastructure conditions contribute to observed performance stress (7d)</div>
-                      </div>
-                      <div style={{ display: 'grid', gap: 4, gridTemplateRows: `repeat(${visibilityTargetedPerformanceInsights.length}, minmax(0, 1fr))`, flex: 1, padding: '2px 0 4px 0', boxSizing: 'border-box' }}>
-                        {visibilityTargetedPerformanceInsights.map((insight) => (
-                          <div key={insight.label} style={{ display: 'grid', gridTemplateColumns: '130px 1fr auto', alignItems: 'center', gap: 8, minHeight: 0 }}>
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.label}</span>
-                            <span style={{ display: 'grid', gridTemplateColumns: `${insight.score}fr ${100 - insight.score}fr`, alignItems: 'stretch', height: 12, minWidth: 0 }}>
-                              <span style={{ background: TOK.textPrimary }} />
-                              <span style={{ backgroundImage: 'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)', backgroundColor: '#ffffff', borderLeft: '1px solid #ffffff' }} />
-                            </span>
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{insight.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {graphQuestions.map((question) => (
-                        <div key={question} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{question}</span></span>
-                          <span style={{ color: TOK.textSecondary }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-
-                {activeVisibilityATab === 'types' ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'stretch', marginTop: 12 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#ffffff', border: `1px solid ${TOK.border}`, borderRadius: 6, padding: '10px 12px', boxSizing: 'border-box', height: '100%' }}>
-                      <div style={{ display: 'grid', gap: 2 }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, position: 'relative' }}>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>Performance Impact by Type</div>
-                          <button type="button" onClick={() => setShowPerformancePressureTooltip((v) => !v)} aria-label="Performance Impact by Type info" style={{ width: 14, height: 14, borderRadius: 999, border: `1px solid ${TOK.border}`, background: TOK.layer01, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: TOK.textSecondary, cursor: 'pointer', padding: 0, flexShrink: 0 }}>i</button>
-                          {showPerformancePressureTooltip ? (
-                            <div role="tooltip" style={{ position: 'absolute', top: 20, left: 0, maxWidth: 260, border: `1px solid ${TOK.border}`, borderRadius: 4, background: TOK.layer01, color: TOK.textPrimary, fontSize: 12, fontWeight: 400, padding: '5px 8px', zIndex: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.10)' }}>
-                              How much a given layer contributes to observed performance stress or degradation.
-                            </div>
-                          ) : null}
-                        </div>
-                        <div style={{ fontSize: 11, color: TOK.textSecondary }}>Distribution of performance impact across infrastructure layers (7d)</div>
-                      </div>
-                      <div style={{ display: 'grid', gap: 6, gridTemplateRows: `repeat(${visibilityTypeDistribution.length}, minmax(0, 1fr))`, flex: 1, padding: '2px 0 6px 0', boxSizing: 'border-box' }}>
-                        {visibilityTypeDistribution.map((item) => (
-                          <div key={item.label} style={{ display: 'grid', gridTemplateColumns: '130px 1fr auto', alignItems: 'center', gap: 8, minHeight: 0 }}>
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{item.label}</span>
-                            <span style={{ display: 'grid', gridTemplateColumns: `${item.score}fr ${100 - item.score}fr`, alignItems: 'stretch', height: 12, minWidth: 0 }}>
-                              <span style={{ background: TOK.textPrimary }} />
-                              <span style={{ backgroundImage: 'repeating-linear-gradient(90deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px), repeating-linear-gradient(0deg, rgba(51,51,51,0.95) 0 3px, transparent 3px 6px)', backgroundColor: '#ffffff', borderLeft: '1px solid #ffffff' }} />
-                            </span>
-                            <span style={{ fontSize: 12, color: TOK.textPrimary }}>{item.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                      {explorerTypeCards.map((label) => (
-                        <div key={label} style={CARD}>
-                          <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
-                          <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-
-                {activeVisibilityATab === 'use-cases' ? (
-                  <div style={{ ...CARD_GRID, marginTop: 12, direction: 'rtl' }}>
-                    {explorerUseCases.map((label) => (
-                      <div key={label} style={{ ...CARD, direction: 'ltr' }}>
-                        <span style={CARD_LEFT_WITH_CIRCLE}><img src={landscapeIcon} alt="" aria-hidden style={CARD_CIRCLE_ICON} /><span style={{ fontSize: 12 }}>{label}</span></span>
-                        <span style={{ color: 'var(--z-accent, #2563eb)' }}>{'>'}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-
-                {activeVisibilityATab === 'saved' ? (
-                  <div style={{ marginTop: 12 }}>
-                    <div style={SAVED_FILTER_ROW}>
-                      <div style={SAVED_FILTER_INPUT}>
-                        <span style={{ color: '#6b7280', fontSize: 11, lineHeight: 1 }}>o</span>
-                        <span>Search</span>
-                      </div>
-                      <div style={SAVED_TYPE_FILTER_WRAPPER}>
-                        <button
-                          type="button"
-                          style={{ ...SAVED_FILTER_SELECT, border: 'none', cursor: 'pointer' }}
-                          onClick={() => setShowTypeFilterMenu((current) => !current)}
-                          aria-haspopup="menu"
-                          aria-expanded={showTypeFilterMenu}
-                        >
-                          <span>Type</span>
-                          <span style={{ color: '#4b5563', fontSize: 11, lineHeight: 1 }}>v</span>
-                        </button>
-                        {showTypeFilterMenu ? (
-                          <div role="menu" aria-label="Type filters" style={SAVED_TYPE_FILTER_MENU}>
-                            {savedViewTypeOptions.map((typeOption) => {
-                              const isChecked = selectedSavedViewTypes.includes(typeOption);
-                              return (
-                                <button
-                                  key={typeOption}
-                                  type="button"
-                                  role="menuitemcheckbox"
-                                  aria-checked={isChecked}
-                                  style={SAVED_TYPE_FILTER_ITEM}
-                                  onClick={() => {
-                                    setSelectedSavedViewTypes((current) =>
-                                      current.includes(typeOption)
-                                        ? current.filter((item) => item !== typeOption)
-                                        : [...current, typeOption],
-                                    );
-                                  }}
-                                >
-                                  <span style={{ width: 12, color: '#374151', lineHeight: 1 }}>{isChecked ? 'x' : ''}</span>
-                                  <span>{typeOption}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div style={{ color: TOK.textSecondary, fontSize: 12, marginBottom: 8 }}>No filters applied</div>
-                    <div style={{ ...PANEL, background: TOK.layer01, overflow: 'hidden' }}>
-                      <div style={SAVED_TABLE_HEADER}>
-                        <div style={SAVED_CELL}>Name</div>
-                        <div style={SAVED_CELL}>Type</div>
-                        <div style={SAVED_CELL}>Owner</div>
-                        <div style={SAVED_CELL}>Last Updated</div>
-                        <div style={SAVED_CELL_LAST}>Options</div>
-                      </div>
-                      {savedViews.map((view) => (
-                        <div key={view.name} style={SAVED_TABLE_ROW}>
-                          <div style={SAVED_CELL}><span style={SAVED_LINK}>{view.name}</span></div>
-                          <div style={SAVED_CELL}>{view.type}</div>
-                          <div style={SAVED_CELL}>{view.owner}</div>
-                          <div style={SAVED_CELL}>{view.updated}</div>
-                          <div style={SAVED_CELL_LAST}>
-                            <button
-                              type="button"
-                              onClick={() => setSavedViewMenuOpenFor((current) => (current === view.name ? null : view.name))}
-                              aria-haspopup="menu"
-                              aria-expanded={savedViewMenuOpenFor === view.name}
-                              style={{ border: `1px solid ${TOK.border}`, borderRadius: 4, background: TOK.layer01, color: TOK.textSecondary, fontSize: 12, lineHeight: 1, padding: '4px 7px' }}
-                            >
-                              ...
-                            </button>
-                            {savedViewMenuOpenFor === view.name ? (
-                              <div role="menu" aria-label={`Saved view options for ${view.name}`} style={SAVED_ROW_MENU}>
-                                <button type="button" role="menuitem" style={SAVED_ROW_MENU_ITEM} onClick={() => setSavedViewMenuOpenFor(null)}>Rename</button>
-                                <button type="button" role="menuitem" style={SAVED_ROW_MENU_ITEM} onClick={() => setSavedViewMenuOpenFor(null)}>Delete</button>
-                              </div>
-                            ) : null}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div style={SAVED_FOOTER}>
-                      <div>1-20 of 50</div>
-                      <div style={SAVED_PAGER}>
-                        <span>{'<'}</span>
-                        <span style={{ color: 'var(--z-accent, #2563eb)', fontWeight: 600 }}>1</span>
-                        <span>2</span>
-                        <span>3</span>
-                        <span>{'>'}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8 }}>
-                        <span>Items per page</span>
-                        <button type="button" style={{ ...TAB, borderRadius: 4, padding: '2px 8px' }}>20</button>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+            )}
           </section>
         </main>
       </div>
@@ -1890,10 +1638,3 @@ export default meta;
 type Story = StoryObj<typeof VisibilityPage>;
 
 export const VisibilityA: Story = {};
-
-export const VisibilityB: Story = {
-  args: {
-    pageLabel: 'Visibility (B)',
-    layoutVariant: 'B',
-  },
-};

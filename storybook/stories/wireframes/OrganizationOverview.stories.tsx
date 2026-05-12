@@ -561,8 +561,7 @@ function organizationOverviewStoryHref(
   return `?path=/story/wireframes-organizationoverview--${storyId}&args=model.organizationName:${encodeURIComponent(organizationName)}`;
 }
 
-function visibilityStoryHref(variant: 'a' | 'b'): string {
-  if (variant === 'b') return '?path=/story/wireframes-visibility--visibility-b';
+function visibilityStoryHref(): string {
   return '?path=/story/wireframes-visibility--visibility-a';
 }
 
@@ -667,7 +666,7 @@ function SideNav({ portfolioHref }: { portfolioHref?: string }) {
       <div style={NAV_ITEM}>
         <div style={NAV_ITEM_LEFT}>
           <NavGlyph />
-          <a href={visibilityStoryHref('a')} target="_top" style={{ ...visibilityInlineRowStyle, ...visibilityNavLinkStyle }}>
+          <a href={visibilityStoryHref()} target="_top" style={{ ...visibilityInlineRowStyle, ...visibilityNavLinkStyle }}>
             Visibility
           </a>
         </div>
