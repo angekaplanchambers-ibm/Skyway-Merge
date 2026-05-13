@@ -8,6 +8,7 @@ node_modules/
 # Build output
 **/dist/
 storybook/storybook-static/
+storybook/storybook-archive-static/
 
 # Logs
 *.log

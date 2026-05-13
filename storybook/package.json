@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "storybook": "storybook dev -p 6007",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "storybook:archive": "storybook dev -c .storybook-archive -p 6008",
+    "build-storybook:archive": "storybook build -c .storybook-archive -o storybook-archive-static",
+    "archive:new": "node scripts/create-archive-entry.mjs"
   },
   "dependencies": {
     "@hashicorp/flight-icons": "^4.2.1",

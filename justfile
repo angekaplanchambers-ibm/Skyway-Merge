@@ -17,6 +17,22 @@ storybook:
 storybook-build:
     cd storybook && npm run build-storybook
 
+# Run archive Storybook (port 6008)
+storybook-archive:
+    cd storybook && npm run storybook:archive
+
+# Build archive Storybook static site
+storybook-archive-build:
+    cd storybook && npm run build-storybook:archive
+
+# Create a dated archive Storybook entry
+archive-new slug="":
+    cd storybook && npm run archive:new -- "{{slug}}"
+
+# Create archive entry, commit, and push to prod target
+checkin-prod message slug="":
+    scripts/checkin-prod.sh "{{message}}" "{{slug}}"
+
 # Run showcase dev server
 showcase-dev:
     cd showcase && npm run dev
@@ -32,11 +48,11 @@ showcase-preview:
     cd showcase && npm run preview
 
 # Build everything
-build: storybook-build showcase-build
+build: storybook-build storybook-archive-build showcase-build
 
 # Clean build artifacts
 clean:
-    rm -rf storybook/storybook-static showcase/dist
+    rm -rf storybook/storybook-static storybook/storybook-archive-static showcase/dist
 
 # Reset output — remove all pipeline artifacts and wireframe stories (keeps WireframeChrome.tsx)
 reset:
