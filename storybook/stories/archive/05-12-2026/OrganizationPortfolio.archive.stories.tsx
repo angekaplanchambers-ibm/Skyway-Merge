@@ -6,7 +6,7 @@ import portfolioMeta, {
 
 const meta = {
   ...portfolioMeta,
-  title: 'Archive/2026 05 13 Prod Checkin/Organization Portfolio',
+  title: 'Archive/05-12-2026/Organization Portfolio',
   parameters: {
     ...portfolioMeta.parameters,
     wireframeChrome: {

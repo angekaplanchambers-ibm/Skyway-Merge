@@ -6,7 +6,7 @@ import overviewMeta, {
 
 const meta = {
   ...overviewMeta,
-  title: 'Archive/2026 05 13 Prod Checkin/Organization Overview',
+  title: 'Archive/05-13-2026/Organization Overview',
   parameters: {
     ...overviewMeta.parameters,
     wireframeChrome: {

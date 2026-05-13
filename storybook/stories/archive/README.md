@@ -1,11 +1,17 @@
 # Archive Storybook Entries
 
-Create a new archive entry before every prod check-in so the active wireframes have a dated Storybook reference point.
+Create a new archive entry before every prod check-in so the active wireframes have a dated Storybook reference point. Archive folders use `MM-DD-YYYY`.
 
 Use one of these commands:
 
 ```bash
 npm --prefix storybook run archive:new
+```
+
+To generate a specific date:
+
+```bash
+npm --prefix storybook run archive:new -- 05-13-2026
 ```
 
 ```bash

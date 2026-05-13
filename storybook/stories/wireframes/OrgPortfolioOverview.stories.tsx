@@ -1,5 +1,9 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import { IconFileText16 } from '@hashicorp/flight-icons/svg-react/file-text-16';
+import { IconReload16 } from '@hashicorp/flight-icons/svg-react/reload-16';
+import { IconThumbsDown16 } from '@hashicorp/flight-icons/svg-react/thumbs-down-16';
+import { IconThumbsUp16 } from '@hashicorp/flight-icons/svg-react/thumbs-up-16';
 import {
   orgPortfolioDefaultFixture,
   orgPortfolioHighRiskFixture,
@@ -15,6 +19,7 @@ const TOK = {
   textSecondary: 'var(--z-text-secondary)',
   textPlaceholder: 'var(--z-text-placeholder)',
   border: 'var(--z-border-subtle)',
+  danger: 'var(--z-error)',
 };
 
 const landscapeIcon = '/landscape-icon.png';
@@ -819,6 +824,12 @@ function formatKpiValue(card: OrgPortfolioViewModel['postureKpiCards'][number]):
   return card.value.toLocaleString();
 }
 
+function formatAttachmentSize(size: number): string {
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 function organizationOverviewStoryHref(
   story: 'default' | 'high-risk',
   organizationName: string,
@@ -938,10 +949,32 @@ function OrgPortfolioOverview({
     { title: string; time: string; detail: string } | null
   >(null);
   const [isChatHistoryView, setIsChatHistoryView] = useState(false);
-  const [chatCenterTab, setChatCenterTab] = useState<'chat-history' | 'bookmarks'>('chat-history');
   const [thinkingDotIndex, setThinkingDotIndex] = useState(0);
   const [thinkingStatusText, setThinkingStatusText] = useState('');
   const [thinkingSummaryBullets, setThinkingSummaryBullets] = useState<string[]>([]);
+  const [logChatPrompt, setLogChatPrompt] = useState('');
+  const [logChatAttachment, setLogChatAttachment] = useState<File | null>(null);
+  const [logChatSubmittedAttachment, setLogChatSubmittedAttachment] = useState<File | null>(null);
+  const [logChatRefreshIndex, setLogChatRefreshIndex] = useState(0);
+  const [defaultChatPrompt, setDefaultChatPrompt] = useState('');
+  const [defaultChatSubmittedPrompt, setDefaultChatSubmittedPrompt] = useState('');
+  const [defaultChatAttachment, setDefaultChatAttachment] = useState<File | null>(null);
+  const [defaultChatSubmittedAttachment, setDefaultChatSubmittedAttachment] = useState<File | null>(null);
+  const [defaultChatSubmitted, setDefaultChatSubmitted] = useState(false);
+  const [defaultChatStatusText, setDefaultChatStatusText] = useState('');
+  const [defaultChatSummaryBullets, setDefaultChatSummaryBullets] = useState<string[]>([]);
+  const [defaultChatRefreshIndex, setDefaultChatRefreshIndex] = useState(0);
+  const [chatHistoryItems, setChatHistoryItems] = useState([
+    { id: 'unmanaged-aws-resources-triage-plan', title: 'Unmanaged AWS resources - triage plan', time: '10:42 AM' },
+    { id: 'workspace-drift-detection-follow-up', title: 'Workspace drift detection follow-up', time: '9:18 AM' },
+  ]);
+  const [openChatHistoryMenuId, setOpenChatHistoryMenuId] = useState<string | null>(null);
+  const [renamingChatHistoryId, setRenamingChatHistoryId] = useState<string | null>(null);
+  const [renamingChatHistoryTitle, setRenamingChatHistoryTitle] = useState('');
+  const logChatFileInputRef = useRef<HTMLInputElement | null>(null);
+  const defaultChatFileInputRef = useRef<HTMLInputElement | null>(null);
+  const isDefaultChatThinking = defaultChatSubmitted && !selectedActivityLog;
+  const defaultChatFollowUpQuestion = 'Would you like me to assign an AI Agent in the Drift Fleet to remediate this issue by creating a Jira ticket?';
   const chatDetailBlockWidth = isChatExpanded ? '50%' : '100%';
   const chatDetailBlockOffset = isChatExpanded ? 'auto' : 0;
   const chatDetailBlockPadding = '8px 10px';
@@ -956,10 +989,6 @@ function OrgPortfolioOverview({
     ? workspaceFromRoute(recommendedConversionItem.nextActionRoute)
     : undefined;
   const visibilityTypeCards = ['Modules', 'Providers', 'Workspaces', 'Resources (Beta)', 'Terraform Versions'];
-  const chatHistoryItems = [
-    { title: 'Unmanaged AWS resources - triage plan', time: '10:42 AM' },
-    { title: 'Workspace drift detection follow-up', time: '9:18 AM' },
-  ];
   const visibilityTypeDistribution = [
     { label: 'Terraform Versions', value: '7%', score: 14 },
     { label: 'Providers', value: '10%', score: 20 },
@@ -1136,8 +1165,50 @@ function OrgPortfolioOverview({
     return entries;
   })();
 
+  function submitDefaultChatPrompt() {
+    if (!defaultChatPrompt.trim() && !defaultChatAttachment) return;
+    setDefaultChatSubmittedPrompt(defaultChatPrompt.trim());
+    setDefaultChatSubmittedAttachment(defaultChatAttachment);
+    setDefaultChatPrompt('');
+    setDefaultChatAttachment(null);
+    setDefaultChatSubmitted(true);
+    setDefaultChatRefreshIndex((current) => current + 1);
+  }
+
+  function submitLogChatPrompt() {
+    if (!logChatPrompt.trim() && !logChatAttachment) return;
+    setLogChatSubmittedAttachment(logChatAttachment);
+    setLogChatPrompt('');
+    setLogChatAttachment(null);
+    setLogChatRefreshIndex((current) => current + 1);
+  }
+
+  function defaultSummaryCopyText(): string {
+    return [
+      defaultChatSubmittedPrompt ? `Request: ${defaultChatSubmittedPrompt}` : 'Request: review the attached context',
+      defaultChatStatusText,
+      ...defaultChatSummaryBullets,
+      defaultChatFollowUpQuestion,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  function refreshDefaultSummary() {
+    setDefaultChatStatusText('');
+    setDefaultChatSummaryBullets([]);
+    setDefaultChatSubmitted(true);
+    setDefaultChatRefreshIndex((current) => current + 1);
+  }
+
+  function copyDefaultSummaryText() {
+    const text = defaultSummaryCopyText();
+    if (!text || !navigator.clipboard) return;
+    void navigator.clipboard.writeText(text);
+  }
+
   useEffect(() => {
-    if (!isChatOpen || !selectedActivityLog) {
+    if (!isChatOpen || (!selectedActivityLog && !isDefaultChatThinking)) {
       setThinkingDotIndex(0);
       return;
     }
@@ -1149,7 +1220,7 @@ function OrgPortfolioOverview({
     return () => {
       window.clearInterval(timer);
     };
-  }, [isChatOpen, selectedActivityLog]);
+  }, [isChatOpen, selectedActivityLog, isDefaultChatThinking]);
 
   useEffect(() => {
     if (!isChatOpen || !selectedActivityLog) {
@@ -1162,20 +1233,32 @@ function OrgPortfolioOverview({
     setThinkingSummaryBullets([]);
 
     const fetchingTimer = window.setTimeout(() => {
-      setThinkingStatusText('Fetching content from the specific log to understand its details');
+      setThinkingStatusText(
+        logChatSubmittedAttachment
+          ? 'Reviewing the attached file against this specific log'
+          : 'Fetching content from the specific log to understand its details',
+      );
     }, 4000);
 
     const summaryTimer = window.setTimeout(() => {
       setThinkingStatusText(
-        `This log details ${selectedActivityLog.title.toLowerCase()} activity requiring follow-up review.`,
+        logChatSubmittedAttachment
+          ? `This log details ${selectedActivityLog.title.toLowerCase()} activity, and the attachment adds remediation context for follow-up review.`
+          : `This log details ${selectedActivityLog.title.toLowerCase()} activity requiring follow-up review.`,
       );
       setThinkingSummaryBullets([
         `Event detected: ${selectedActivityLog.title}`,
         `Time observed: ${selectedActivityLog.time}`,
         `What happened: ${selectedActivityLog.detail}`,
+        ...(logChatSubmittedAttachment
+          ? [
+              `Attachment added: ${logChatSubmittedAttachment.name} (${formatAttachmentSize(logChatSubmittedAttachment.size)})`,
+              'Attachment analysis: the file appears to include run output and provider constraint details that match the drift pattern described in the log.',
+              `Relationship to log: the attachment supports the ${selectedActivityLog.title.toLowerCase()} event by pointing to the workspace configuration that likely triggered the alert.`,
+            ]
+          : []),
         'Operational impact: this may affect workspace consistency and can delay safe automation rollouts if unresolved.',
         'Risk context: similar patterns often indicate drift, policy gaps, or stale configuration paths that need owner validation.',
-        'Recommended next step: open a change request, assign an owner, and trace this event to related workspaces before applying remediation.',
       ]);
     }, 8000);
 
@@ -1183,7 +1266,40 @@ function OrgPortfolioOverview({
       window.clearTimeout(fetchingTimer);
       window.clearTimeout(summaryTimer);
     };
-  }, [isChatOpen, selectedActivityLog]);
+  }, [isChatOpen, logChatRefreshIndex, logChatSubmittedAttachment, selectedActivityLog]);
+
+  useEffect(() => {
+    if (!isChatOpen || !isDefaultChatThinking) {
+      setDefaultChatStatusText('');
+      setDefaultChatSummaryBullets([]);
+      return;
+    }
+
+    setDefaultChatStatusText('');
+    setDefaultChatSummaryBullets([]);
+
+    const fetchingTimer = window.setTimeout(() => {
+      setDefaultChatStatusText('Reviewing your request and any attached context');
+    }, 4000);
+
+    const summaryTimer = window.setTimeout(() => {
+      setDefaultChatStatusText('I can help turn this into a focused follow-up path.');
+      setDefaultChatSummaryBullets([
+        defaultChatSubmittedPrompt ? `Request: ${defaultChatSubmittedPrompt}` : 'Request: review the attached context',
+        defaultChatSubmittedAttachment
+          ? `Attachment included: ${defaultChatSubmittedAttachment.name} (${formatAttachmentSize(defaultChatSubmittedAttachment.size)})`
+          : 'Attachment included: none',
+        'Finding: atlas-retail-prod has 3 failed runs tied to provider version drift and one unmanaged aws_instance created outside Terraform.',
+        'Impact: the issue affects workspace app-checkout-prod and is blocking the nightly policy validation workflow for the Payments team.',
+        'Owner: route follow-up to Maya Chen in Platform Operations; the linked GitHub repo is hashicorp/atlas-retail-infra.',
+      ]);
+    }, 8000);
+
+    return () => {
+      window.clearTimeout(fetchingTimer);
+      window.clearTimeout(summaryTimer);
+    };
+  }, [defaultChatRefreshIndex, defaultChatSubmittedAttachment, defaultChatSubmittedPrompt, isChatOpen, isDefaultChatThinking]);
 
   function renderFindDropdown() {
     const isStaticQuerySection =
@@ -2298,6 +2414,10 @@ function OrgPortfolioOverview({
                               time: entry.time,
                               detail: entry.detail,
                             });
+                            setLogChatPrompt('');
+                            setLogChatAttachment(null);
+                            setLogChatSubmittedAttachment(null);
+                            setLogChatRefreshIndex((current) => current + 1);
                             setIsChatHistoryView(false);
                             setIsChatOpen(true);
                           }}
@@ -2362,12 +2482,92 @@ function OrgPortfolioOverview({
             borderRadius: '8px 8px 0 0',
             background: TOK.layer01,
             display: 'grid',
-            gridTemplateRows: '40px 1fr 116px',
+            gridTemplateRows: isChatHistoryView || !selectedActivityLog ? '40px 1fr' : '40px 1fr 266px',
             boxShadow: '0 12px 28px rgba(0, 0, 0, 0.18)',
             zIndex: 3,
             overflow: 'hidden',
           }}
         >
+          <style>
+            {`
+              @keyframes agent-greeting-type {
+                from {
+                  width: 0;
+                }
+
+                to {
+                  width: 26ch;
+                }
+              }
+
+              @keyframes agent-prompt-fade {
+                from {
+                  opacity: 0;
+                }
+
+                to {
+                  opacity: 1;
+                }
+              }
+
+              @keyframes agent-action-reveal {
+                from {
+                  opacity: 0;
+                  transform: translateY(6px);
+                }
+
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+
+              .agent-greeting-type {
+                animation: agent-greeting-type 1.25s steps(26, end) both;
+                display: inline-block;
+                max-width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+              }
+
+              .agent-prompt-fade {
+                animation: agent-prompt-fade 0.28s ease-out 1.28s both;
+                opacity: 0;
+              }
+
+              .agent-default-action-row {
+                animation: agent-action-reveal 0.28s ease-out both;
+                opacity: 0;
+              }
+
+              .agent-default-action-row:nth-child(1) {
+                animation-delay: 1.68s;
+              }
+
+              .agent-default-action-row:nth-child(2) {
+                animation-delay: 1.80s;
+              }
+
+              .agent-default-action-row:nth-child(3) {
+                animation-delay: 1.92s;
+              }
+
+              .agent-default-action-row:nth-child(4) {
+                animation-delay: 2.04s;
+              }
+
+              @media (prefers-reduced-motion: reduce) {
+                .agent-greeting-type,
+                .agent-prompt-fade,
+                .agent-default-action-row {
+                  animation: none !important;
+                  opacity: 1 !important;
+                  transform: none !important;
+                  width: auto !important;
+                }
+              }
+            `}
+          </style>
           <div
             style={{
               borderBottom: `1px solid ${TOK.border}`,
@@ -2404,90 +2604,45 @@ function OrgPortfolioOverview({
             </button>
           </div>
 
-          <div style={{ padding: 10, display: 'grid', alignContent: 'start', gap: 8, overflowY: 'auto' }}>
+          <div
+            style={{
+              padding: 10,
+              display: 'grid',
+              alignContent: isDefaultChatThinking && !isChatHistoryView ? 'stretch' : 'start',
+              gridTemplateRows: isDefaultChatThinking && !isChatHistoryView ? 'auto minmax(0, 1fr)' : undefined,
+              gap: 8,
+              overflowY: 'auto',
+            }}
+          >
             {selectedActivityLog ? (
               <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
-                {isChatHistoryView ? (
-                  <span style={{ display: 'inline-flex', gap: 6 }}>
-                    <button
-                      type="button"
-                      aria-label="Close tabbed chat view"
-                      onClick={() => setIsChatHistoryView(false)}
-                      style={{
-                        border: `1px solid ${TOK.border}`,
-                        borderRadius: 6,
-                        background: TOK.layer01,
-                        color: TOK.textPrimary,
-                        width: 24,
-                        height: 24,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        fontSize: 13,
-                        lineHeight: 1,
-                      }}
-                    >
-                      ✕
-                    </button>
-                    {isChatExpanded ? (
-                      <button
-                        type="button"
-                        aria-label="Restore chat width"
-                        onClick={() => setIsChatExpanded(false)}
-                        style={{
-                          border: `1px solid ${TOK.border}`,
-                          borderRadius: 6,
-                          background: TOK.layer01,
-                          color: TOK.textPrimary,
-                          width: 24,
-                          height: 24,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          fontSize: 13,
-                          lineHeight: 1,
-                        }}
-                      >
-                        →
-                      </button>
-                    ) : null}
-                  </span>
-                ) : isChatExpanded ? (
-                  <button
-                    type="button"
-                    aria-label="Restore chat width"
-                    onClick={() => setIsChatExpanded(false)}
-                    style={{
-                      border: `1px solid ${TOK.border}`,
-                      borderRadius: 6,
-                      background: TOK.layer01,
-                      color: TOK.textPrimary,
-                      width: 24,
-                      height: 24,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      fontSize: 13,
-                      lineHeight: 1,
-                    }}
-                  >
-                    →
-                  </button>
-                ) : (
-                  <span />
-                )}
+                <button
+                  type="button"
+                  aria-label={isChatExpanded ? 'Restore chat width' : 'Expand chat'}
+                  onClick={() => setIsChatExpanded((prev) => !prev)}
+                  style={{
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 6,
+                    background: TOK.layer01,
+                    color: TOK.textPrimary,
+                    width: 24,
+                    height: 24,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    lineHeight: 1,
+                  }}
+                >
+                  {isChatExpanded ? '→' : '⤡'}
+                </button>
 
                 <span style={{ display: 'inline-flex', gap: 6 }}>
                   <button
                     type="button"
                     aria-label="Log timeline"
-                    onClick={() => {
-                      setIsChatHistoryView(true);
-                      setChatCenterTab('chat-history');
-                    }}
+                    onClick={() => setIsChatHistoryView(true)}
                     style={{
                       border: `1px solid ${TOK.border}`,
                       borderRadius: 6,
@@ -2507,28 +2662,11 @@ function OrgPortfolioOverview({
                   </button>
                   <button
                     type="button"
-                    aria-label="Expand chat"
-                    onClick={() => setIsChatExpanded((prev) => !prev)}
-                    style={{
-                      border: `1px solid ${TOK.border}`,
-                      borderRadius: 6,
-                      background: TOK.layer01,
-                      color: TOK.textPrimary,
-                      width: 24,
-                      height: 24,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      fontSize: 12,
-                      lineHeight: 1,
-                    }}
-                  >
-                    ⤢
-                  </button>
-                  <button
-                    type="button"
                     aria-label="Edit note"
+                    onClick={() => {
+                      setIsChatHistoryView(false);
+                      setSelectedActivityLog(null);
+                    }}
                     style={{
                       border: `1px solid ${TOK.border}`,
                       borderRadius: 6,
@@ -2590,60 +2728,60 @@ function OrgPortfolioOverview({
                 >
                   <button
                     type="button"
-                    onClick={() => setChatCenterTab('chat-history')}
                     style={{
                       border: 'none',
-                      borderBottom: chatCenterTab === 'chat-history' ? '2px solid var(--z-accent, #2563eb)' : '2px solid transparent',
+                      borderBottom: '2px solid var(--z-accent, #2563eb)',
                       background: 'transparent',
-                      color: chatCenterTab === 'chat-history' ? TOK.textPrimary : TOK.textSecondary,
+                      color: TOK.textPrimary,
                       fontSize: 12,
                       fontWeight: 600,
                       padding: '6px 8px',
-                      cursor: 'pointer',
+                      cursor: 'default',
                     }}
                   >
                     Chat History
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setChatCenterTab('bookmarks')}
-                    style={{
-                      border: 'none',
-                      borderBottom: chatCenterTab === 'bookmarks' ? '2px solid var(--z-accent, #2563eb)' : '2px solid transparent',
-                      background: 'transparent',
-                      color: chatCenterTab === 'bookmarks' ? TOK.textPrimary : TOK.textSecondary,
-                      fontSize: 12,
-                      fontWeight: 600,
-                      padding: '6px 8px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Bookmarks
-                  </button>
                 </div>
 
-                {chatCenterTab === 'chat-history' ? (
-                  <div style={{ display: 'grid', gap: 10, width: '100%' }}>
-                    <input
-                      type="search"
-                      aria-label="Search chat history"
-                      placeholder="Search chats"
-                      style={{
-                        width: '100%',
-                        border: `1px solid ${TOK.border}`,
-                        borderRadius: 6,
-                        background: TOK.layer01,
-                        color: TOK.textPrimary,
-                        fontSize: 12,
-                        padding: '8px 10px',
-                        boxSizing: 'border-box',
-                      }}
-                    />
-                    <div style={{ fontSize: 12, fontWeight: 700, color: TOK.textSecondary }}>Today</div>
-                    <div style={{ display: 'grid', gap: 8, width: '100%' }}>
-                      {chatHistoryItems.map((item) => (
+                <div style={{ display: 'grid', gap: 10, width: '100%' }}>
+                  <input
+                    type="search"
+                    aria-label="Search chat history"
+                    placeholder="Search chats"
+                    style={{
+                      width: '100%',
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: TOK.layer01,
+                      color: TOK.textPrimary,
+                      fontSize: 12,
+                      padding: '8px 10px',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                  <div style={{ fontSize: 12, fontWeight: 700, color: TOK.textSecondary }}>Today</div>
+                  <div style={{ display: 'grid', gap: 8, width: '100%' }}>
+                    {chatHistoryItems.map((item) => {
+                      const chatHistoryMenuId = item.id;
+                      const isRenamingChatHistoryItem = renamingChatHistoryId === chatHistoryMenuId;
+                      const saveRenamedChatHistoryItem = () => {
+                        const updatedTitle = renamingChatHistoryTitle.trim();
+
+                        if (updatedTitle) {
+                          setChatHistoryItems((current) => current.map((historyItem) => (
+                            historyItem.id === item.id
+                              ? { ...historyItem, title: updatedTitle }
+                              : historyItem
+                          )));
+                        }
+
+                        setRenamingChatHistoryId(null);
+                        setRenamingChatHistoryTitle('');
+                      };
+
+                      return (
                         <div
-                          key={`${item.title}-${item.time}`}
+                          key={chatHistoryMenuId}
                           style={{
                             border: `1px solid ${TOK.border}`,
                             borderRadius: 6,
@@ -2655,16 +2793,105 @@ function OrgPortfolioOverview({
                             columnGap: 10,
                             width: '100%',
                             boxSizing: 'border-box',
+                            position: 'relative',
                           }}
                         >
                           <div style={{ display: 'grid', gap: 4 }}>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: TOK.textPrimary }}>{item.title}</div>
+                            {isRenamingChatHistoryItem ? (
+                              <div style={{ position: 'relative', width: '100%' }}>
+                                <input
+                                  type="text"
+                                  aria-label="Rename chat"
+                                  placeholder={item.title}
+                                  value={renamingChatHistoryTitle}
+                                  onChange={(event) => setRenamingChatHistoryTitle(event.target.value)}
+                                  onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                      event.preventDefault();
+                                      saveRenamedChatHistoryItem();
+                                    }
+                                  }}
+                                  autoFocus
+                                  style={{
+                                    width: '100%',
+                                    border: `1px solid ${TOK.border}`,
+                                    borderRadius: 6,
+                                    background: TOK.bg,
+                                    color: TOK.textPrimary,
+                                    boxSizing: 'border-box',
+                                    fontSize: 12,
+                                    fontWeight: 600,
+                                    padding: '6px 30px 6px 8px',
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  aria-label="Save chat name"
+                                  onClick={saveRenamedChatHistoryItem}
+                                  style={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    right: 4,
+                                    transform: 'translateY(-50%)',
+                                    border: `1px solid ${TOK.border}`,
+                                    borderRadius: 4,
+                                    background: TOK.layer01,
+                                    color: TOK.textPrimary,
+                                    width: 22,
+                                    height: 22,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    fontSize: 12,
+                                    lineHeight: 1,
+                                  }}
+                                >
+                                  ✓
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                aria-label={`Open chat ${item.title}`}
+                                onClick={() => {
+                                  setSelectedActivityLog((current) => (
+                                    current
+                                      ? { ...current, title: item.title, time: item.time }
+                                      : current
+                                  ));
+                                  setIsChatHistoryView(false);
+                                  setOpenChatHistoryMenuId(null);
+                                  setRenamingChatHistoryId(null);
+                                  setRenamingChatHistoryTitle('');
+                                }}
+                                style={{
+                                  border: 0,
+                                  background: 'transparent',
+                                  color: TOK.textPrimary,
+                                  cursor: 'pointer',
+                                  fontSize: 12,
+                                  fontWeight: 600,
+                                  padding: 0,
+                                  textAlign: 'left',
+                                  width: '100%',
+                                }}
+                              >
+                                {item.title}
+                              </button>
+                            )}
                             <div style={{ fontSize: 11, color: TOK.textSecondary }}>{item.time}</div>
                           </div>
-                          <span style={{ display: 'inline-flex', gap: 6 }}>
+                          <div style={{ position: 'relative' }}>
                             <button
                               type="button"
                               aria-label="More chat actions"
+                              aria-expanded={openChatHistoryMenuId === chatHistoryMenuId}
+                              onClick={() => {
+                                setOpenChatHistoryMenuId((current) => (
+                                  current === chatHistoryMenuId ? null : chatHistoryMenuId
+                                ));
+                              }}
                               style={{
                                 border: `1px solid ${TOK.border}`,
                                 borderRadius: 6,
@@ -2682,45 +2909,82 @@ function OrgPortfolioOverview({
                             >
                               ⋯
                             </button>
-                            <button
-                              type="button"
-                              aria-label="Bookmark chat"
-                              style={{
-                                border: `1px solid ${TOK.border}`,
-                                borderRadius: 6,
-                                background: TOK.layer01,
-                                color: TOK.textPrimary,
-                                width: 24,
-                                height: 24,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                fontSize: 12,
-                                lineHeight: 1,
-                              }}
-                            >
-                              🔖
-                            </button>
-                          </span>
+                            {openChatHistoryMenuId === chatHistoryMenuId ? (
+                              <div
+                                role="menu"
+                                aria-label="Chat actions"
+                                style={{
+                                  position: 'absolute',
+                                  top: 28,
+                                  right: 0,
+                                  zIndex: 20,
+                                  minWidth: 112,
+                                  border: `1px solid ${TOK.border}`,
+                                  borderRadius: 6,
+                                  background: TOK.layer01,
+                                  boxShadow: '0 10px 24px rgba(15, 23, 42, 0.18)',
+                                  padding: 4,
+                                  display: 'grid',
+                                  gap: 2,
+                                }}
+                              >
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  onClick={() => {
+                                    setRenamingChatHistoryId(chatHistoryMenuId);
+                                    setRenamingChatHistoryTitle('');
+                                    setOpenChatHistoryMenuId(null);
+                                  }}
+                                  style={{
+                                    border: 0,
+                                    borderRadius: 4,
+                                    background: 'transparent',
+                                    color: TOK.textPrimary,
+                                    cursor: 'pointer',
+                                    fontSize: 12,
+                                    fontWeight: 600,
+                                    padding: '7px 8px',
+                                    textAlign: 'left',
+                                  }}
+                                >
+                                  Rename
+                                </button>
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  onClick={() => {
+                                    setChatHistoryItems((current) => current.filter((historyItem) => (
+                                      historyItem.id !== item.id
+                                    )));
+                                    if (renamingChatHistoryId === chatHistoryMenuId) {
+                                      setRenamingChatHistoryId(null);
+                                      setRenamingChatHistoryTitle('');
+                                    }
+                                    setOpenChatHistoryMenuId(null);
+                                  }}
+                                  style={{
+                                    border: 0,
+                                    borderRadius: 4,
+                                    background: 'transparent',
+                                    color: TOK.danger,
+                                    cursor: 'pointer',
+                                    fontSize: 12,
+                                    fontWeight: 600,
+                                    padding: '7px 8px',
+                                    textAlign: 'left',
+                                  }}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            ) : null}
+                          </div>
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                ) : (
-                  <div
-                    style={{
-                      border: `1px solid ${TOK.border}`,
-                      borderRadius: 6,
-                      background: TOK.layer01,
-                      padding: '10px 12px',
-                      fontSize: 12,
-                      color: TOK.textSecondary,
-                    }}
-                  >
-                    You haven't bookmarked any conversations yet. Click the bookmark to save chats that you want to revisit.
-                  </div>
-                )}
+                </div>
               </div>
             ) : (
               <>
@@ -2744,21 +3008,27 @@ function OrgPortfolioOverview({
                       <span>{selectedActivityLog.detail}</span>
                     </span>
                   ) : (
-                    'Ask anything about activity, organizations, automation, or monitoring.'
+                    <span style={{ display: 'grid', gap: 6 }}>
+                      <span className="agent-greeting-type" style={{ fontSize: 13, fontWeight: 700 }}>
+                        How can we help you today?
+                      </span>
+                      <span className="agent-prompt-fade">Ask anything about activity, organizations, automation, or monitoring.</span>
+                    </span>
                   )}
                 </div>
-                {selectedActivityLog ? (
-                  <div
-                    style={{
-                      width: isChatExpanded ? '100%' : chatDetailBlockWidth,
-                      marginLeft: isChatExpanded ? 0 : chatDetailBlockOffset,
-                      padding: chatDetailBlockPadding,
-                      boxSizing: 'border-box',
-                      textAlign: 'left',
-                      display: 'grid',
-                      gap: 8,
-                    }}
-                  >
+                <div
+                  style={{
+                    width: isChatExpanded ? '100%' : chatDetailBlockWidth,
+                    marginLeft: isChatExpanded ? 0 : chatDetailBlockOffset,
+                    padding: chatDetailBlockPadding,
+                    boxSizing: 'border-box',
+                    textAlign: 'left',
+                    display: 'grid',
+                    gap: 8,
+                  }}
+                >
+                  {selectedActivityLog ? (
+                    <>
                     <div
                       style={{
                         display: 'inline-flex',
@@ -2888,89 +3158,497 @@ function OrgPortfolioOverview({
                         ) : null}
                       </div>
                     ) : null}
-                  </div>
-                ) : null}
+                    </>
+                  ) : (
+                    <div
+                      style={{
+                        display: 'grid',
+                        gap: 8,
+                        height: isDefaultChatThinking ? '100%' : undefined,
+                        minHeight: isDefaultChatThinking ? 0 : undefined,
+                        gridTemplateRows: isDefaultChatThinking ? 'minmax(0, 1fr) auto' : undefined,
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: 'relative',
+                          order: isDefaultChatThinking ? 2 : undefined,
+                          alignSelf: isDefaultChatThinking ? 'end' : undefined,
+                        }}
+                      >
+                        <button
+                          type="button"
+                          aria-label="Attachment button"
+                          onClick={() => defaultChatFileInputRef.current?.click()}
+                          style={{
+                            position: 'absolute',
+                            left: 4,
+                            bottom: 8,
+                            width: 26,
+                            height: 26,
+                            border: `1px solid ${TOK.border}`,
+                            borderRadius: 4,
+                            background: TOK.layer01,
+                            color: TOK.textPrimary,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 13,
+                            lineHeight: 1,
+                            cursor: 'pointer',
+                            padding: 0,
+                          }}
+                        >
+                          📎
+                        </button>
+                        <input
+                          ref={defaultChatFileInputRef}
+                          type="file"
+                          aria-label="Choose attachment"
+                          onChange={(event) => {
+                            setDefaultChatAttachment(event.currentTarget.files?.[0] ?? null);
+                            event.currentTarget.value = '';
+                          }}
+                          style={{ display: 'none' }}
+                        />
+                        {defaultChatAttachment ? (
+                          <button
+                            type="button"
+                            aria-label={`Remove attachment ${defaultChatAttachment.name}`}
+                            onClick={() => setDefaultChatAttachment(null)}
+                            style={{
+                              position: 'absolute',
+                              left: 36,
+                              bottom: 8,
+                              maxWidth: 'calc(100% - 78px)',
+                              border: `1px solid ${TOK.border}`,
+                              borderRadius: 6,
+                              background: TOK.layer01,
+                              color: TOK.textPrimary,
+                              display: 'grid',
+                              gridTemplateColumns: '1fr auto',
+                              alignItems: 'center',
+                              columnGap: 8,
+                              padding: '6px 8px',
+                              fontSize: 12,
+                              boxSizing: 'border-box',
+                              cursor: 'pointer',
+                              textAlign: 'left',
+                            }}
+                          >
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {defaultChatAttachment.name} · {formatAttachmentSize(defaultChatAttachment.size)}
+                            </span>
+                            <span aria-hidden style={{ color: TOK.textSecondary, fontSize: 14, lineHeight: 1 }}>
+                              ×
+                            </span>
+                          </button>
+                        ) : null}
+                        <textarea
+                          value={defaultChatPrompt}
+                          onChange={(event) => setDefaultChatPrompt(event.currentTarget.value)}
+                          onKeyDown={(event) => {
+                            if (event.key !== 'Enter' || event.shiftKey) return;
+                            event.preventDefault();
+                            submitDefaultChatPrompt();
+                          }}
+                          aria-label="Chat input"
+                          placeholder="I want to.."
+                          style={{
+                            width: '100%',
+                            height: 250,
+                            border: `1px solid ${TOK.border}`,
+                            borderRadius: 6,
+                            background: '#fff',
+                            color: TOK.textPrimary,
+                            padding: defaultChatAttachment ? '8px 44px 42px 10px' : '8px 44px 8px 10px',
+                            fontSize: 12,
+                            boxSizing: 'border-box',
+                            resize: 'none',
+                            lineHeight: 1.35,
+                          }}
+                        />
+                        <button
+                          type="button"
+                          aria-label="Send"
+                          onClick={submitDefaultChatPrompt}
+                          style={{
+                            position: 'absolute',
+                            right: 4,
+                            bottom: 8,
+                            width: 26,
+                            height: 26,
+                            border: `1px solid ${TOK.border}`,
+                            borderRadius: 4,
+                            background: TOK.layer01,
+                            color: TOK.textPrimary,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 14,
+                            lineHeight: 1,
+                            cursor: 'pointer',
+                            padding: 0,
+                          }}
+                        >
+                          ✓
+                        </button>
+                      </div>
+
+                      {defaultChatSubmitted ? (
+                        <div
+                          style={{
+                            display: 'grid',
+                            gap: 8,
+                            alignContent: 'start',
+                            minHeight: 0,
+                            overflowY: 'auto',
+                          }}
+                        >
+                          {defaultChatSubmittedPrompt ? (
+                            <div
+                              style={{
+                                border: `1px solid ${TOK.border}`,
+                                borderRadius: 6,
+                                background: TOK.layer02,
+                                color: TOK.textPrimary,
+                                padding: '8px 10px',
+                                fontSize: 12,
+                                lineHeight: 1.35,
+                                boxSizing: 'border-box',
+                              }}
+                            >
+                              {defaultChatSubmittedPrompt}
+                            </div>
+                          ) : null}
+                          <div
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              padding: 0,
+                              fontSize: 12,
+                              fontWeight: 700,
+                            }}
+                          >
+                            {defaultChatSummaryBullets.length > 0 ? (
+                              <span style={{ letterSpacing: '0.01em' }}>Thought for 8 seconds</span>
+                            ) : (
+                              <>
+                                <span style={{ letterSpacing: '0.04em' }}>THINKING</span>
+                                <span style={{ display: 'inline-flex', gap: 4 }} aria-label="Thinking animation">
+                                  {[0, 1, 2].map((dotIndex) => (
+                                    <span
+                                      key={dotIndex}
+                                      style={{
+                                        width: 4,
+                                        height: 4,
+                                        borderRadius: 999,
+                                        background: TOK.textSecondary,
+                                        opacity: thinkingDotIndex === dotIndex ? 1 : 0.15,
+                                        transition: 'opacity 0.18s ease-in-out',
+                                      }}
+                                    />
+                                  ))}
+                                </span>
+                              </>
+                            )}
+                          </div>
+
+                          {defaultChatStatusText ? (
+                            <div
+                              style={{
+                                color: TOK.textSecondary,
+                                fontSize: 12,
+                                lineHeight: 1.35,
+                              }}
+                            >
+                              {defaultChatStatusText}
+                              {defaultChatSummaryBullets.length > 0 ? (
+                                <>
+                                  <ul
+                                    style={{
+                                      margin: '8px 0 0',
+                                      paddingLeft: 16,
+                                      display: 'grid',
+                                      gap: 4,
+                                    }}
+                                  >
+                                    {defaultChatSummaryBullets.map((item) => (
+                                      <li key={item}>{item}</li>
+                                    ))}
+                                  </ul>
+                                  <p style={{ margin: '10px 0 0' }}>
+                                    {defaultChatFollowUpQuestion}
+                                  </p>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+                                    {[
+                                      { label: 'Refresh', icon: <IconReload16 aria-hidden />, onClick: refreshDefaultSummary },
+                                      { label: 'Copy text', icon: <IconFileText16 aria-hidden />, onClick: copyDefaultSummaryText },
+                                      { label: 'Thumbs Up', icon: <IconThumbsUp16 aria-hidden />, onClick: () => undefined },
+                                      { label: 'Thumbs down', icon: <IconThumbsDown16 aria-hidden />, onClick: () => undefined },
+                                    ].map((action) => (
+                                      <button
+                                        key={action.label}
+                                        type="button"
+                                        aria-label={action.label}
+                                        title={action.label}
+                                        onClick={action.onClick}
+                                        style={{
+                                          border: `1px solid ${TOK.border}`,
+                                          borderRadius: 6,
+                                          background: TOK.layer01,
+                                          color: TOK.textPrimary,
+                                          width: 28,
+                                          height: 28,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          padding: 0,
+                                          lineHeight: 1,
+                                          cursor: 'pointer',
+                                        }}
+                                      >
+                                        {action.icon}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </>
+                              ) : null}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : (
+                      <div className="agent-default-actions" style={{ display: 'grid', gap: 8 }}>
+                      <div
+                        className="agent-default-action-row"
+                        style={{
+                          border: `1px solid ${TOK.border}`,
+                          borderRadius: 6,
+                          background: TOK.layer01,
+                          padding: '8px 10px',
+                          display: 'grid',
+                          gridTemplateColumns: '16px 1fr',
+                          alignItems: 'start',
+                          columnGap: 8,
+                        }}
+                      >
+                        <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                        <a
+                          href="/app/organizations?agent-focus=activity"
+                          target="_top"
+                          style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          Summarize organization activity and highlight the changes that need review
+                        </a>
+                      </div>
+
+                      <div
+                        className="agent-default-action-row"
+                        style={{
+                          border: `1px solid ${TOK.border}`,
+                          borderRadius: 6,
+                          background: TOK.layer01,
+                          padding: '8px 10px',
+                          display: 'grid',
+                          gridTemplateColumns: '16px 1fr',
+                          alignItems: 'start',
+                          columnGap: 8,
+                        }}
+                      >
+                        <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                        <a
+                          href="/app/workspaces?agent-focus=drift"
+                          target="_top"
+                          style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          Find workspaces with drift, failed runs, or policy checks blocking delivery
+                        </a>
+                      </div>
+
+                      <div
+                        className="agent-default-action-row"
+                        style={{
+                          border: `1px solid ${TOK.border}`,
+                          borderRadius: 6,
+                          background: TOK.layer01,
+                          padding: '8px 10px',
+                          display: 'grid',
+                          gridTemplateColumns: '16px 1fr',
+                          alignItems: 'start',
+                          columnGap: 8,
+                        }}
+                      >
+                        <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                        <a
+                          href="/app/change-requests/new?source=agent-assistant"
+                          target="_top"
+                          style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          Draft a Change Request from recent activity and assign the right owner
+                        </a>
+                      </div>
+
+                      <div
+                        className="agent-default-action-row"
+                        style={{
+                          border: `1px solid ${TOK.border}`,
+                          borderRadius: 6,
+                          background: TOK.layer01,
+                          padding: '8px 10px',
+                          display: 'grid',
+                          gridTemplateColumns: '16px 1fr',
+                          alignItems: 'start',
+                          columnGap: 8,
+                        }}
+                      >
+                        <span aria-hidden style={{ fontSize: 12, lineHeight: 1.3 }}>↗</span>
+                        <a
+                          href="/app/agents/remediation/new?source=agent-assistant"
+                          target="_top"
+                          style={{ color: 'var(--z-accent, #2563eb)', textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          Create a remediation Agent workflow for the highest-risk organization
+                        </a>
+                      </div>
+                      </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </>
             )}
           </div>
 
-          <div
-            style={{
-              borderTop: `1px solid ${TOK.border}`,
-              padding: 8,
-              display: 'block',
-            }}
-          >
-            <div style={{ position: 'relative' }}>
-              <button
-                type="button"
-                aria-label="Attach"
-                style={{
-                  position: 'absolute',
-                  left: 4,
-                  bottom: 8,
-                  width: 26,
-                  height: 26,
-                  border: `1px solid ${TOK.border}`,
-                  borderRadius: 4,
-                  background: TOK.layer01,
-                  color: TOK.textPrimary,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 13,
-                  lineHeight: 1,
-                  cursor: 'pointer',
-                  padding: 0,
-                }}
-              >
-                📎
-              </button>
-              <textarea
-                value=""
-                readOnly
-                aria-label="Chat input"
-                placeholder="I want to.."
-                style={{
-                  width: '100%',
-                  height: 100,
-                  border: `1px solid ${TOK.border}`,
-                  borderRadius: 6,
-                  background: '#fff',
-                  color: TOK.textPlaceholder,
-                  padding: '8px 44px 8px 10px',
-                  fontSize: 12,
-                  boxSizing: 'border-box',
-                  resize: 'none',
-                  lineHeight: 1.35,
-                }}
-              />
-              <button
-                type="button"
-                aria-label="Send"
-                style={{
-                  position: 'absolute',
-                  right: 4,
-                  bottom: 8,
-                  width: 26,
-                  height: 26,
-                  border: `1px solid ${TOK.border}`,
-                  borderRadius: 4,
-                  background: TOK.layer01,
-                  color: TOK.textPrimary,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 14,
-                  lineHeight: 1,
-                  cursor: 'pointer',
-                  padding: 0,
-                }}
-              >
-                ✓
-              </button>
+          {isChatHistoryView || !selectedActivityLog ? null : (
+            <div
+              style={{
+                borderTop: `1px solid ${TOK.border}`,
+                padding: 8,
+                display: 'block',
+              }}
+            >
+              <div style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  aria-label="Attachment button"
+                  onClick={() => logChatFileInputRef.current?.click()}
+                  style={{
+                    position: 'absolute',
+                    left: 4,
+                    bottom: 8,
+                    width: 26,
+                    height: 26,
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 4,
+                    background: TOK.layer01,
+                    color: TOK.textPrimary,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 13,
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  📎
+                </button>
+                <input
+                  ref={logChatFileInputRef}
+                  type="file"
+                  aria-label="Choose attachment"
+                  onChange={(event) => {
+                    setLogChatAttachment(event.currentTarget.files?.[0] ?? null);
+                    event.currentTarget.value = '';
+                  }}
+                  style={{ display: 'none' }}
+                />
+                {logChatAttachment ? (
+                  <button
+                    type="button"
+                    aria-label={`Remove attachment ${logChatAttachment.name}`}
+                    onClick={() => setLogChatAttachment(null)}
+                    style={{
+                      position: 'absolute',
+                      left: 36,
+                      bottom: 8,
+                      maxWidth: 'calc(100% - 78px)',
+                      border: `1px solid ${TOK.border}`,
+                      borderRadius: 6,
+                      background: TOK.layer01,
+                      color: TOK.textPrimary,
+                      display: 'grid',
+                      gridTemplateColumns: '1fr auto',
+                      alignItems: 'center',
+                      columnGap: 8,
+                      padding: '6px 8px',
+                      fontSize: 12,
+                      boxSizing: 'border-box',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {logChatAttachment.name} · {formatAttachmentSize(logChatAttachment.size)}
+                    </span>
+                    <span aria-hidden style={{ color: TOK.textSecondary, fontSize: 14, lineHeight: 1 }}>
+                      ×
+                    </span>
+                  </button>
+                ) : null}
+                <textarea
+                  value={logChatPrompt}
+                  onChange={(event) => setLogChatPrompt(event.currentTarget.value)}
+                  onKeyDown={(event) => {
+                    if (event.key !== 'Enter' || event.shiftKey) return;
+                    event.preventDefault();
+                    submitLogChatPrompt();
+                  }}
+                  aria-label="Chat input"
+                  placeholder="I want to.."
+                  style={{
+                    width: '100%',
+                    height: 250,
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 6,
+                    background: '#fff',
+                    color: TOK.textPrimary,
+                    padding: logChatAttachment ? '8px 44px 42px 10px' : '8px 44px 8px 10px',
+                    fontSize: 12,
+                    boxSizing: 'border-box',
+                    resize: 'none',
+                    lineHeight: 1.35,
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label="Send"
+                  onClick={submitLogChatPrompt}
+                  style={{
+                    position: 'absolute',
+                    right: 4,
+                    bottom: 8,
+                    width: 26,
+                    height: 26,
+                    border: `1px solid ${TOK.border}`,
+                    borderRadius: 4,
+                    background: TOK.layer01,
+                    color: TOK.textPrimary,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 14,
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  ✓
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       ) : null}
 

@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import overviewMeta, {
   Default as OverviewDefault,
   HighRisk as OverviewHighRisk,
-} from '../wireframes/OrganizationOverview.stories';
+} from '../../wireframes/OrganizationOverview.stories';
 
 const meta = {
   ...overviewMeta,
-  title: 'Archive/2026-05-12 Skyway Merge/Organization Overview',
+  title: 'Archive/05-12-2026/Organization Overview',
   parameters: {
     ...overviewMeta.parameters,
     wireframeChrome: {

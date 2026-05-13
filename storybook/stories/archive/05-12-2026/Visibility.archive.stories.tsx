@@ -5,7 +5,7 @@ import visibilityMeta, {
 
 const meta = {
   ...visibilityMeta,
-  title: 'Archive/2026 05 13 Prod Checkin/Visibility',
+  title: 'Archive/05-12-2026/Visibility',
   parameters: {
     ...visibilityMeta.parameters,
     wireframeChrome: {

@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import visibilityMeta, {
   VisibilityA,
-} from '../wireframes/Visibility.stories';
+} from '../../wireframes/Visibility.stories';
 
 const meta = {
   ...visibilityMeta,
-  title: 'Archive/2026-05-12 Skyway Merge/Visibility',
+  title: 'Archive/05-13-2026/Visibility',
   parameters: {
     ...visibilityMeta.parameters,
     wireframeChrome: {

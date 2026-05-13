@@ -2,20 +2,20 @@
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then
-  echo 'Usage: scripts/checkin-prod.sh "type(scope): commit message" [archive-slug]' >&2
+  echo 'Usage: scripts/checkin-prod.sh "type(scope): commit message" [archive-date]' >&2
   exit 2
 fi
 
 commit_message="$1"
-archive_slug="${2:-}"
+archive_date="${2:-}"
 repo_root="$(git rev-parse --show-toplevel)"
 remote="${PROD_REMOTE:-origin}"
 branch="${PROD_BRANCH:-main}"
 
 cd "$repo_root"
 
-if [[ -n "$archive_slug" ]]; then
-  npm --prefix storybook run archive:new -- "$archive_slug"
+if [[ -n "$archive_date" ]]; then
+  npm --prefix storybook run archive:new -- "$archive_date"
 else
   npm --prefix storybook run archive:new
 fi

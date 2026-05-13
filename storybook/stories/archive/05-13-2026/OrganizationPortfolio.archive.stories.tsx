@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import portfolioMeta, {
   Default as PortfolioDefault,
   HighRisk as PortfolioHighRisk,
-} from '../wireframes/OrgPortfolioOverview.stories';
+} from '../../wireframes/OrgPortfolioOverview.stories';
 
 const meta = {
   ...portfolioMeta,
-  title: 'Archive/2026-05-12 Skyway Merge/Organization Portfolio',
+  title: 'Archive/05-13-2026/Organization Portfolio',
   parameters: {
     ...portfolioMeta.parameters,
     wireframeChrome: {

@@ -13,30 +13,38 @@ function pad(value) {
 
 function defaultStamp() {
   const now = new Date();
+  return formatDate(now);
+}
+
+function formatDate(date) {
   return [
-    now.getFullYear(),
-    pad(now.getMonth() + 1),
-    pad(now.getDate()),
-    pad(now.getHours()),
-    pad(now.getMinutes()),
-    pad(now.getSeconds()),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    String(date.getFullYear()),
   ].join('-');
 }
 
-function slugify(value) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+function normalizeArchiveDate(value) {
+  if (!value) {
+    return defaultStamp();
+  }
+
+  const normalized = value.trim();
+  const archiveDate = normalized.match(/^(\d{1,2})[/-](\d{1,2})[/-](20\d{2})$/);
+  if (archiveDate) {
+    return [pad(archiveDate[1]), pad(archiveDate[2]), archiveDate[3]].join('-');
+  }
+
+  const isoDate = normalized.match(/^(20\d{2})-(\d{1,2})-(\d{1,2})$/);
+  if (isoDate) {
+    return [pad(isoDate[2]), pad(isoDate[3]), isoDate[1]].join('-');
+  }
+
+  throw new Error('Archive date must use MM-DD-YYYY, MM/DD/YYYY, or YYYY-MM-DD.');
 }
 
-const requestedSlug = process.argv[2] || `${defaultStamp()}-skyway-merge`;
-const entrySlug = slugify(requestedSlug);
-const entryTitle = entrySlug
-  .split('-')
-  .map((part) => part.length === 4 && /^20\d\d$/.test(part) ? part : part.charAt(0).toUpperCase() + part.slice(1))
-  .join(' ');
+const entrySlug = normalizeArchiveDate(process.argv[2]);
+const entryTitle = entrySlug;
 const entryDir = join(archiveRoot, entrySlug);
 
 const files = {
@@ -145,7 +153,7 @@ Stories included:
 mkdirSync(entryDir, { recursive: true });
 
 for (const [fileName, content] of Object.entries(files)) {
-  writeFileSync(join(entryDir, fileName), content, { flag: 'wx' });
+  writeFileSync(join(entryDir, fileName), content);
 }
 
 console.log(`Created archive entry: storybook/stories/archive/${entrySlug}`);

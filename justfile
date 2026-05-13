@@ -26,12 +26,12 @@ storybook-archive-build:
     cd storybook && npm run build-storybook:archive
 
 # Create a dated archive Storybook entry
-archive-new slug="":
-    cd storybook && npm run archive:new -- "{{slug}}"
+archive-new date="":
+    cd storybook && npm run archive:new -- "{{date}}"
 
 # Create archive entry, commit, and push to prod target
-checkin-prod message slug="":
-    scripts/checkin-prod.sh "{{message}}" "{{slug}}"
+checkin-prod message date="":
+    scripts/checkin-prod.sh "{{message}}" "{{date}}"
 
 # Run showcase dev server
 showcase-dev:
